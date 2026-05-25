@@ -1,8 +1,0 @@
-{
-  "name": "iit-rrhh",
-  "version": "1.0.0",
-  "scripts": {
-    "build": "echo done",
-    "build:azure": "echo done"
-  }
-}
