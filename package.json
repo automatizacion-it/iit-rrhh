@@ -1,8 +1,8 @@
 {
   "name": "iit-rrhh",
   "version": "1.0.0",
-  "description": "IIT Sistema RRHH",
   "scripts": {
-    "build": "echo 'Static HTML — no build needed'"
+    "build": "echo done",
+    "build:azure": "echo done"
   }
 }
