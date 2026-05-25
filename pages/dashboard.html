@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a href="dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-search">
+      <span class="topbar-search-icon">🔍</span>
+      <input type="text" placeholder="Buscar empleado por nombre o cédula..." id="global-search">
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item active" data-page="dashboard" href="dashboard.html">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+
+    <div class="nav-section">Empleados</div>
+    <a class="nav-item" data-page="empleados" href="empleados.html" data-roles="empresa,administrador,usuario">
+      <span class="nav-icon">👥</span> Empleados
+    </a>
+    <a class="nav-item" data-page="sabana" href="sabana.html" data-roles="empresa,administrador">
+      <span class="nav-icon">📋</span> Sábana general
+    </a>
+    <a class="nav-item" data-page="nuevo-empleado" href="nuevo-empleado.html" data-roles="empresa,administrador">
+      <span class="nav-icon">➕</span> Nuevo empleado
+    </a>
+
+    <div class="nav-section">Mi información</div>
+    <a class="nav-item" data-page="mi-perfil" href="mi-perfil.html" data-roles="empleado">
+      <span class="nav-icon">👤</span> Mi perfil
+    </a>
+    <a class="nav-item" data-page="mis-documentos" href="mis-documentos.html" data-roles="empleado">
+      <span class="nav-icon">📁</span> Mis documentos
+    </a>
+
+    <div class="nav-section">Tiempo</div>
+    <a class="nav-item" data-page="vacaciones" href="vacaciones.html">
+      <span class="nav-icon">🏖</span> Vacaciones
+    </a>
+    <a class="nav-item" data-page="permisos" href="permisos.html">
+      <span class="nav-icon">⏸</span> Permisos
+    </a>
+    <a class="nav-item" data-page="ausencias" href="ausencias.html">
+      <span class="nav-icon">🚫</span> Ausencias
+    </a>
+    <a class="nav-item" data-page="incapacidades" href="incapacidades.html">
+      <span class="nav-icon">🏥</span> Incapacidades
+    </a>
+
+    <div class="nav-section">Formación</div>
+    <a class="nav-item" data-page="capacitaciones" href="capacitaciones.html">
+      <span class="nav-icon">🎓</span> Capacitaciones
+    </a>
+    <a class="nav-item" data-page="socializacion" href="socializacion.html">
+      <span class="nav-icon">📢</span> Socialización
+    </a>
+
+    <div class="nav-section">Nómina</div>
+    <a class="nav-item" data-page="nomina" href="nomina.html" data-roles="empresa,administrador">
+      <span class="nav-icon">💰</span> Nómina
+    </a>
+    <a class="nav-item" data-page="ss" href="seguridad-social.html" data-roles="empresa,administrador">
+      <span class="nav-icon">❤️</span> Seg. social
+    </a>
+
+    <div class="nav-section">Reportes</div>
+    <a class="nav-item" data-page="informes" href="informes.html" data-roles="empresa,administrador">
+      <span class="nav-icon">📈</span> Informes
+    </a>
+
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" data-page="usuarios" href="usuarios.html" data-roles="empresa,administrador">
+      <span class="nav-icon">🔐</span> Usuarios
+    </a>
+    <a class="nav-item" data-page="config" href="config-empresa.html" data-roles="empresa,administrador">
+      <span class="nav-icon">⚙️</span> Configuración
+    </a>
+    <a class="nav-item" data-page="backup" href="backup.html" data-roles="empresa">
+      <span class="nav-icon">💾</span> Backup
+    </a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer;">
+      <span class="nav-icon">🚪</span> Cerrar sesión
+    </a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub" id="dash-welcome">Bienvenido al sistema de RRHH de IIT</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-secondary btn-sm" onclick="location.href='nuevo-empleado.html'" data-roles="empresa,administrador">
+          ➕ Nuevo empleado
+        </button>
+        <button class="btn-primary btn-sm" onclick="location.href='informes.html'" data-roles="empresa,administrador">
+          📊 Informes
+        </button>
+      </div>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics-grid" id="metrics-admin" data-roles="empresa,administrador,usuario">
+      <div class="metric-card">
+        <div class="metric-label">👥 Total empleados</div>
+        <div class="metric-value" style="color:#0078d4">38</div>
+        <div class="metric-sub">activos en IIT</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:100%;background:#0078d4"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">✅ Nuevos 2026</div>
+        <div class="metric-value" style="color:#107c10">5</div>
+        <div class="metric-sub">ingresos este año</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:40%;background:#107c10"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">🏖 En vacaciones</div>
+        <div class="metric-value" style="color:#797600">3</div>
+        <div class="metric-sub">empleados hoy</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:20%;background:#f7c948"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">🏥 Incapacitados</div>
+        <div class="metric-value" style="color:#c50f1f">2</div>
+        <div class="metric-sub">empleados hoy</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:15%;background:#c50f1f"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">📋 Perfil completo</div>
+        <div class="metric-value" style="color:#0078d4">72%</div>
+        <div class="metric-sub">datos cargados</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:72%;background:#0078d4"></div></div>
+      </div>
+    </div>
+
+    <!-- Métricas empleado -->
+    <div class="metrics-grid hidden" id="metrics-empleado" data-roles="empleado">
+      <div class="metric-card">
+        <div class="metric-label">🏖 Vacaciones disponibles</div>
+        <div class="metric-value" style="color:#107c10">12</div>
+        <div class="metric-sub">días hábiles</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:80%;background:#107c10"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">⏸ Permisos usados</div>
+        <div class="metric-value" style="color:#797600">3</div>
+        <div class="metric-sub">de 5 permitidos</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:60%;background:#f7c948"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">🏥 Incapacidades</div>
+        <div class="metric-value">8</div>
+        <div class="metric-sub">días en 2026</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:27%;background:#605e5c"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">🎓 Capacitaciones</div>
+        <div class="metric-value" style="color:#0078d4">7</div>
+        <div class="metric-sub">completadas</div>
+        <div class="metric-bar"><div class="metric-fill" style="width:78%;background:#0078d4"></div></div>
+      </div>
+    </div>
+
+    <!-- Dos columnas -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+      <!-- Últimos empleados -->
+      <div class="card" data-roles="empresa,administrador,usuario">
+        <div class="card-header">
+          <div class="card-title">👥 Empleados recientes</div>
+          <a href="empleados.html" class="btn-secondary btn-sm">Ver todos</a>
+        </div>
+        <div id="recent-employees">
+          <table style="width:100%;font-size:13px">
+            <tbody id="recent-tbody">
+              <tr>
+                <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div><div class="cell-name">Carlos Rodríguez</div><div class="cell-sub">Téc. Eléctrico</div></div></div></td>
+                <td><span class="badge badge-ok">Activo</span></td>
+                <td style="color:#605e5c;font-size:12px">15 Mar 2022</td>
+              </tr>
+              <tr>
+                <td><div class="cell-avatar"><div class="avatar" style="background:#107c10">ML</div><div><div class="cell-name">María López</div><div class="cell-sub">Coordinadora</div></div></div></td>
+                <td><span class="badge badge-ok">Activo</span></td>
+                <td style="color:#605e5c;font-size:12px">02 Ene 2020</td>
+              </tr>
+              <tr>
+                <td><div class="cell-avatar"><div class="avatar" style="background:#797600">JM</div><div><div class="cell-name">Jorge Martínez</div><div class="cell-sub">Ing. Proyectos</div></div></div></td>
+                <td><span class="badge badge-ok">Activo</span></td>
+                <td style="color:#605e5c;font-size:12px">10 Jun 2021</td>
+              </tr>
+              <tr>
+                <td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">LG</div><div><div class="cell-name">Luis García</div><div class="cell-sub">Téc. Solar</div></div></div></td>
+                <td><span class="badge badge-warn">Incap.</span></td>
+                <td style="color:#605e5c;font-size:12px">03 Mar 2022</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Alertas y pendientes -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔔 Pendientes y alertas</div>
+        </div>
+        <div id="alerts-list">
+
+          <div class="flex-between gap-8" style="padding:8px 0;border-bottom:1px solid #e1dfdd">
+            <div>
+              <div style="font-size:13px;font-weight:500">Capacitaciones por firmar</div>
+              <div class="text-small text-muted">Trabajo en alturas · SCALL inducción</div>
+            </div>
+            <span class="badge badge-warn">2 pendientes</span>
+          </div>
+
+          <div class="flex-between gap-8" style="padding:8px 0;border-bottom:1px solid #e1dfdd" data-roles="empresa,administrador">
+            <div>
+              <div style="font-size:13px;font-weight:500">Vacaciones por aprobar</div>
+              <div class="text-small text-muted">Carlos Rodríguez · 12–18 Jun</div>
+            </div>
+            <span class="badge badge-info">1 solicitud</span>
+          </div>
+
+          <div class="flex-between gap-8" style="padding:8px 0;border-bottom:1px solid #e1dfdd" data-roles="empresa,administrador">
+            <div>
+              <div style="font-size:13px;font-weight:500">Certificaciones por vencer</div>
+              <div class="text-small text-muted">Luis García · Manejo eléctrico BT · Jul 2026</div>
+            </div>
+            <span class="badge badge-warn">⚠ 30 días</span>
+          </div>
+
+          <div class="flex-between gap-8" style="padding:8px 0" data-roles="empresa,administrador">
+            <div>
+              <div style="font-size:13px;font-weight:500">Perfiles incompletos</div>
+              <div class="text-small text-muted">11 empleados sin foto o documentos</div>
+            </div>
+            <span class="badge badge-danger">11</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚡ Accesos rápidos</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
+        <button class="btn-secondary" onclick="location.href='nuevo-empleado.html'" data-roles="empresa,administrador">➕ Nuevo empleado</button>
+        <button class="btn-secondary" onclick="location.href='sabana.html'" data-roles="empresa,administrador">📋 Sábana general</button>
+        <button class="btn-secondary" onclick="location.href='informes.html'" data-roles="empresa,administrador">📊 Informes PDF/Excel</button>
+        <button class="btn-secondary" onclick="location.href='socializacion.html'">📢 Nueva capacitación</button>
+        <button class="btn-secondary" onclick="location.href='ausencias.html'">🚫 Registrar ausencia</button>
+        <button class="btn-secondary" onclick="location.href='backup.html'" data-roles="empresa">💾 Backup datos</button>
+        <button class="btn-secondary" onclick="location.href='config-empresa.html'" data-roles="empresa,administrador">⚙️ Configuración</button>
+        <button class="btn-secondary" onclick="location.href='usuarios.html'" data-roles="empresa,administrador">🔐 Gestionar usuarios</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="../js/auth.js"></script>
+<script>
+  var session = Auth.requireAuth();
+  if (session) {
+    Auth.renderUserBar(session);
+    Auth.applyRoleVisibility(session.rol);
+    document.getElementById('dash-welcome').textContent =
+      'Bienvenido, ' + session.nombre + ' · ' + new Date().toLocaleDateString('es-CO', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+    if (session.rol === 'empleado') {
+      document.getElementById('metrics-admin').classList.add('hidden');
+      document.getElementById('metrics-empleado').classList.remove('hidden');
+    }
+  }
+</script>
+</body>
+</html>
