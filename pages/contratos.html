@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plantillas de Contrato — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+.contrato-tipo-card {
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:18px;
+  cursor:pointer;
+  transition:var(--transition);
+  position:relative;
+  overflow:hidden;
+}
+.contrato-tipo-card:hover { border-color:var(--primary); transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.contrato-tipo-card.activo { border-color:var(--primary); background:var(--primary-light); }
+.contrato-tipo-card::before {
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+}
+.ct-indefinido::before  { background:#107c10; }
+.ct-fijo::before        { background:#0078d4; }
+.ct-obra::before        { background:#797600; }
+.ct-aprendizaje::before { background:#8764b8; }
+.ct-prestacion::before  { background:#c50f1f; }
+
+.contrato-preview {
+  font-family:'Times New Roman',serif;
+  font-size:12px;
+  line-height:1.8;
+  color:#1b1b1b;
+  padding:40px;
+  background:#fff;
+  border:1px solid #e0e0e0;
+  border-radius:var(--radius-lg);
+  max-height:600px;
+  overflow-y:auto;
+  position:relative;
+}
+
+.contrato-preview h1 { font-size:16px;text-align:center;margin-bottom:4px;font-weight:700; }
+.contrato-preview h2 { font-size:13px;text-align:center;margin-bottom:20px; }
+.contrato-preview h3 { font-size:12px;font-weight:700;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.05em; }
+.contrato-preview p  { margin-bottom:10px;text-align:justify; }
+.contrato-preview .clausula { margin-bottom:12px; }
+.contrato-preview .firmas {
+  display:grid;grid-template-columns:1fr 1fr;gap:40px;
+  margin-top:40px;padding-top:16px;
+}
+.contrato-preview .firma-bloque { text-align:center; }
+.contrato-preview .firma-linea { border-bottom:1px solid #333;margin-bottom:6px;height:40px; }
+.contrato-preview .watermark {
+  position:sticky;top:50%;
+  text-align:center;
+  font-size:48px;
+  opacity:.04;
+  pointer-events:none;
+  font-weight:700;
+  letter-spacing:.1em;
+  transform:rotate(-30deg);
+}
+
+.campo-editable {
+  background:#fff8e1;
+  border:1px dashed #f7c948;
+  border-radius:3px;
+  padding:0 3px;
+  display:inline-block;
+  min-width:80px;
+  cursor:text;
+}
+.campo-editable:focus { outline:2px solid #f7c948; background:#fff; }
+
+.form-contrato .field-group { margin-bottom:10px; }
+.toolbar-pdf {
+  display:flex;gap:8px;align-items:center;
+  padding:10px 16px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Empleados</div>
+    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
+    <a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>
+    <div class="nav-section">IA · Contratos</div>
+    <a class="nav-item" href="/pages/asistente-ia.html"><span class="nav-icon">🤖</span> Asistente IA</a>
+    <a class="nav-item" href="/pages/aspirantes.html"><span class="nav-icon">👔</span> Aspirantes</a>
+    <a class="nav-item active" href="/pages/contratos.html"><span class="nav-icon">📄</span> Plantillas contrato</a>
+    <div class="nav-section">Seguridad</div>
+    <a class="nav-item" href="/pages/seguridad.html"><span class="nav-icon">🔒</span> Est. seguridad</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
+    <a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">📄 Plantillas de contrato</div>
+        <div class="page-sub">5 tipos · Normativa colombiana · Exportación PDF lista para firmar</div>
+      </div>
+    </div>
+
+    <!-- Selector de tipo -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:20px">
+
+      <div class="contrato-tipo-card ct-indefinido activo" id="tipo-indefinido" onclick="seleccionarTipo('indefinido')">
+        <div style="font-size:24px;margin-bottom:6px">📋</div>
+        <div style="font-size:13px;font-weight:600;color:#107c10">Contrato indefinido</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Art. 45 CST · Sin fecha de vencimiento</div>
+      </div>
+
+      <div class="contrato-tipo-card ct-fijo" id="tipo-fijo" onclick="seleccionarTipo('fijo')">
+        <div style="font-size:24px;margin-bottom:6px">📅</div>
+        <div style="font-size:13px;font-weight:600;color:#0078d4">Término fijo</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Art. 46 CST · Hasta 3 años prorrogables</div>
+      </div>
+
+      <div class="contrato-tipo-card ct-obra" id="tipo-obra" onclick="seleccionarTipo('obra')">
+        <div style="font-size:24px;margin-bottom:6px">🔧</div>
+        <div style="font-size:13px;font-weight:600;color:#797600">Obra o labor</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Art. 45 CST · Duración según proyecto</div>
+      </div>
+
+      <div class="contrato-tipo-card ct-aprendizaje" id="tipo-aprendizaje" onclick="seleccionarTipo('aprendizaje')">
+        <div style="font-size:24px;margin-bottom:6px">🎓</div>
+        <div style="font-size:13px;font-weight:600;color:#8764b8">Aprendizaje SENA</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Art. 83 Ley 789/02 · Etapa lectiva y práctica</div>
+      </div>
+
+      <div class="contrato-tipo-card ct-prestacion" id="tipo-prestacion" onclick="seleccionarTipo('prestacion')">
+        <div style="font-size:24px;margin-bottom:6px">🤝</div>
+        <div style="font-size:13px;font-weight:600;color:#c50f1f">Prestación servicios</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Sin subordinación · Independiente</div>
+      </div>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:16px">
+
+      <!-- Panel datos -->
+      <div>
+        <div class="card form-contrato">
+          <div class="card-header" style="margin-bottom:12px">
+            <div class="card-title" id="form-titulo">📋 Datos — Contrato indefinido</div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Ciudad y fecha</label>
+            <input type="date" class="field-input" id="c-fecha" oninput="actualizarContrato()">
+          </div>
+
+          <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin:10px 0 6px;text-transform:uppercase">Empleado</div>
+
+          <div class="field-group">
+            <label class="field-label">Nombres y apellidos <span class="required">*</span></label>
+            <input type="text" class="field-input" id="c-nombre" placeholder="Carlos Andrés Rodríguez Gómez" oninput="actualizarContrato()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Cédula <span class="required">*</span></label>
+            <input type="text" class="field-input" id="c-cedula" placeholder="1.234.567.890" oninput="actualizarContrato()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Ciudad de expedición CC</label>
+            <input type="text" class="field-input" id="c-ciu-cc" placeholder="Bogotá" oninput="actualizarContrato()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Cargo <span class="required">*</span></label>
+            <select class="field-input" id="c-cargo" onchange="actualizarContrato()">
+              <option>Técnico en Instalaciones Eléctricas</option>
+              <option>Técnico Solar Fotovoltaico</option>
+              <option>Ingeniero de Proyectos</option>
+              <option>Asesor Comercial</option>
+              <option>Técnico en Redes</option>
+              <option>Asistente Administrativo</option>
+              <option>Coordinador RRHH</option>
+            </select>
+          </div>
+
+          <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin:10px 0 6px;text-transform:uppercase">Condiciones</div>
+
+          <div class="field-group">
+            <label class="field-label">Salario mensual (COP) <span class="required">*</span></label>
+            <input type="number" class="field-input" id="c-salario" value="2800000" oninput="actualizarContrato()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Auxilio de transporte</label>
+            <select class="field-input" id="c-aux" onchange="actualizarContrato()">
+              <option value="200000">Sí — $200.000</option>
+              <option value="0">No aplica</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Jornada laboral</label>
+            <select class="field-input" id="c-jornada" onchange="actualizarContrato()">
+              <option>Lunes a viernes 8:00 AM – 5:00 PM</option>
+              <option>Lunes a sábado 7:00 AM – 4:00 PM</option>
+              <option>Flexible según proyecto</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Lugar de trabajo</label>
+            <input type="text" class="field-input" id="c-lugar" value="Bogotá D.C. y obras del proyecto" oninput="actualizarContrato()">
+          </div>
+
+          <div id="campos-extra"></div>
+
+          <div class="field-group" style="margin-top:12px">
+            <label class="field-label">Representante legal IIT</label>
+            <input type="text" class="field-input" id="c-rep-legal" value="Administrador IIT" oninput="actualizarContrato()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">CC representante</label>
+            <input type="text" class="field-input" id="c-rep-cc" placeholder="1.234.xxx.xxx" oninput="actualizarContrato()">
+          </div>
+
+          <button class="btn-primary btn-full" onclick="imprimirContrato()" style="margin-top:8px">
+            🖨️ Imprimir / Guardar PDF
+          </button>
+          <button class="btn-secondary btn-full" onclick="limpiarFormulario()" style="margin-top:6px">
+            🔄 Nuevo contrato
+          </button>
+        </div>
+      </div>
+
+      <!-- Vista previa -->
+      <div>
+        <div class="toolbar-pdf">
+          <span style="font-size:12px;color:var(--text-muted)">Vista previa del contrato:</span>
+          <span class="badge badge-ok" id="toolbar-tipo">Indefinido</span>
+          <button class="btn-primary btn-sm" onclick="imprimirContrato()">🖨️ Imprimir / PDF</button>
+          <button class="btn-secondary btn-sm" onclick="copiarTexto()">📋 Copiar texto</button>
+        </div>
+        <div class="contrato-preview" id="contrato-preview"></div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Auth.renderUserBar(session);
+
+var tipoActual = 'indefinido';
+
+var EMPRESA = {
+  nombre: 'InfraestructuraIT SAS',
+  nit:    '900.123.456-7',
+  dir:    'Cra 7 # 32-15, Bogotá D.C.',
+  tel:    '+57 601 234 5678',
+  email:  'rrhh@iit.com.co'
+};
+
+// Inicializar fecha de hoy
+document.getElementById('c-fecha').value = new Date().toISOString().slice(0,10);
+
+function seleccionarTipo(tipo) {
+  tipoActual = tipo;
+  document.querySelectorAll('.contrato-tipo-card').forEach(function(c){ c.classList.remove('activo'); });
+  document.getElementById('tipo-'+tipo).classList.add('activo');
+
+  var titulos = {
+    indefinido: '📋 Datos — Contrato indefinido',
+    fijo:       '📅 Datos — Término fijo',
+    obra:       '🔧 Datos — Obra o labor',
+    aprendizaje:'🎓 Datos — Aprendizaje SENA',
+    prestacion: '🤝 Datos — Prestación servicios'
+  };
+  var badgesT = {
+    indefinido:'Indefinido', fijo:'Término fijo',
+    obra:'Obra o labor', aprendizaje:'Aprendizaje', prestacion:'Prestación servicios'
+  };
+  document.getElementById('form-titulo').textContent   = titulos[tipo];
+  document.getElementById('toolbar-tipo').textContent  = badgesT[tipo];
+
+  // Campos extra según tipo
+  var extra = '';
+  if (tipo === 'fijo') {
+    extra = '<div class="field-group"><label class="field-label">Duración del contrato</label>' +
+      '<select class="field-input" id="c-duracion" onchange="actualizarContrato()">' +
+      '<option>6 meses</option><option>1 año</option><option>2 años</option><option>3 años</option></select></div>';
+  }
+  if (tipo === 'obra') {
+    extra = '<div class="field-group"><label class="field-label">Nombre del proyecto</label>' +
+      '<input type="text" class="field-input" id="c-proyecto" placeholder="Instalación eléctrica Centro Comercial X" oninput="actualizarContrato()"></div>';
+  }
+  if (tipo === 'aprendizaje') {
+    extra = '<div class="field-group"><label class="field-label">Programa SENA</label>' +
+      '<input type="text" class="field-input" id="c-programa" placeholder="Técnico en Instalaciones Eléctricas" oninput="actualizarContrato()"></div>' +
+      '<div class="field-group"><label class="field-label">Centro SENA</label>' +
+      '<input type="text" class="field-input" id="c-centro" placeholder="Centro de Electricidad, Bogotá" oninput="actualizarContrato()"></div>';
+  }
+  if (tipo === 'prestacion') {
+    extra = '<div class="field-group"><label class="field-label">Descripción del servicio</label>' +
+      '<textarea class="field-input" id="c-servicio" rows="2" placeholder="Consultoría en instalaciones eléctricas..." oninput="actualizarContrato()"></textarea></div>' +
+      '<div class="field-group"><label class="field-label">Honorarios mensuales (COP)</label>' +
+      '<input type="number" class="field-input" id="c-honorarios" placeholder="3000000" oninput="actualizarContrato()"></div>';
+  }
+  document.getElementById('campos-extra').innerHTML = extra;
+  actualizarContrato();
+}
+
+function v(id, fallback) {
+  var el = document.getElementById(id);
+  return el ? (el.value.trim() || fallback || '_________________') : (fallback || '_________________');
+}
+
+function fmt(n) {
+  var num = parseInt(n)||0;
+  return '$ '+num.toLocaleString('es-CO')+' M/CTE';
+}
+
+function fechaLarga() {
+  var d = document.getElementById('c-fecha').value;
+  if (!d) return '___ de _______ de ______';
+  var fecha = new Date(d+'T12:00:00');
+  return fecha.toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'});
+}
+
+function generarTexto() {
+  var nombre   = v('c-nombre','_________________________________');
+  var cedula   = v('c-cedula','_______________');
+  var ciuCC    = v('c-ciu-cc','Bogotá');
+  var cargo    = v('c-cargo','_________________________________');
+  var salario  = fmt(document.getElementById('c-salario').value);
+  var aux      = parseInt(document.getElementById('c-aux').value)||0;
+  var jornada  = v('c-jornada','Lunes a viernes 8:00 AM – 5:00 PM');
+  var lugar    = v('c-lugar','Bogotá D.C.');
+  var repLegal = v('c-rep-legal','Administrador IIT');
+  var repCC    = v('c-rep-cc','_____________');
+  var fecha    = fechaLarga();
+
+  var header = `
+<h1>CONTRATO DE TRABAJO</h1>
+<h2>${TIPO_TITULOS[tipoActual]}</h2>
+<p>Entre los suscritos a saber, de una parte <strong>${EMPRESA.nombre}</strong>, sociedad domiciliada en ${EMPRESA.dir}, identificada con NIT ${EMPRESA.nit}, representada legalmente por <strong>${repLegal}</strong>, identificado con C.C. No. ${repCC}, quien en adelante se denominará <strong>EL EMPLEADOR</strong>; y de otra parte <strong>${nombre}</strong>, identificado con Cédula de Ciudadanía No. <strong>${cedula}</strong> expedida en ${ciuCC}, quien en adelante se denominará <strong>EL TRABAJADOR</strong>; se ha celebrado el presente Contrato de Trabajo que se regirá por las siguientes cláusulas:</p>`;
+
+  var clausulas = {
+    indefinido: `
+<h3>PRIMERA — OBJETO</h3>
+<p class="clausula">EL TRABAJADOR se obliga a prestar sus servicios personales como <strong>${cargo}</strong>, ejecutando las funciones propias del cargo y las demás que le sean asignadas por EL EMPLEADOR, de conformidad con las políticas y procedimientos de <strong>${EMPRESA.nombre}</strong>.</p>
+
+<h3>SEGUNDA — DURACIÓN</h3>
+<p class="clausula">El presente contrato es a <strong>TÉRMINO INDEFINIDO</strong> y comenzará a regir a partir del ${fecha}. Podrá darse por terminado según las causales previstas en el Código Sustantivo del Trabajo.</p>
+
+<h3>TERCERA — LUGAR DE TRABAJO</h3>
+<p class="clausula">EL TRABAJADOR desempeñará sus funciones en <strong>${lugar}</strong>, pudiendo ser trasladado según las necesidades de EL EMPLEADOR, respetando los derechos laborales del TRABAJADOR (Art. 23 CST).</p>
+
+<h3>CUARTA — JORNADA LABORAL</h3>
+<p class="clausula">La jornada de trabajo será de <strong>${jornada}</strong>, para un total de cuarenta y seis (46) horas semanales, de conformidad con el artículo 161 del C.S.T. y sus modificaciones. Las horas extras serán reconocidas y pagadas según la ley.</p>
+
+<h3>QUINTA — REMUNERACIÓN</h3>
+<p class="clausula">EL EMPLEADOR reconocerá y pagará al TRABAJADOR como remuneración mensual la suma de <strong>${salario}</strong>${aux>0?', más auxilio de transporte de <strong>'+fmt(aux)+'</strong> mensuales,':','} salario que incluye el pago de descansos dominicales y festivos. El pago se efectuará de forma mensual mediante transferencia bancaria.</p>
+
+<h3>SEXTA — PRESTACIONES SOCIALES</h3>
+<p class="clausula">EL TRABAJADOR tendrá derecho a todas las prestaciones sociales establecidas en el C.S.T.: prima de servicios (Art. 306), cesantías (Art. 249), intereses sobre cesantías (Ley 52/75), vacaciones (Art. 186), y todas las demás de ley.</p>
+
+<h3>SÉPTIMA — SEGURIDAD SOCIAL</h3>
+<p class="clausula">EL EMPLEADOR afiliará al TRABAJADOR al sistema de Seguridad Social Integral (Salud, Pensión y Riesgos Laborales) de conformidad con la Ley 100 de 1993 y el Decreto 1072 de 2015, y realizará los aportes correspondientes dentro de los plazos legales.</p>
+
+<h3>OCTAVA — OBLIGACIONES DEL TRABAJADOR</h3>
+<p class="clausula">Son obligaciones del TRABAJADOR: (a) Realizar personalmente las funciones encomendadas con diligencia y eficiencia; (b) Cumplir el Reglamento Interno de Trabajo; (c) Guardar reserva sobre los asuntos de la empresa; (d) Conservar y restituir los bienes de la empresa; (e) Comunicar oportunamente las situaciones que puedan afectar la ejecución del trabajo.</p>
+
+<h3>NOVENA — CLÁUSULA DE CONFIDENCIALIDAD</h3>
+<p class="clausula">EL TRABAJADOR se compromete a mantener estricta confidencialidad sobre toda la información técnica, comercial, financiera y de clientes de <strong>${EMPRESA.nombre}</strong>, tanto durante la vigencia del contrato como con posterioridad a su terminación, so pena de las acciones legales correspondientes.</p>
+
+<h3>DÉCIMA — TERMINACIÓN DEL CONTRATO</h3>
+<p class="clausula">El presente contrato podrá darse por terminado por cualquiera de las partes según las causales establecidas en los artículos 62 y 63 del C.S.T., o por mutuo acuerdo. En caso de despido sin justa causa, EL EMPLEADOR reconocerá la indemnización de que trata el artículo 64 del C.S.T.</p>
+
+<h3>DÉCIMA PRIMERA — LEGISLACIÓN APLICABLE</h3>
+<p class="clausula">El presente contrato se rige por el Código Sustantivo del Trabajo, sus reformas y demás normas laborales vigentes en la República de Colombia. Para todos los efectos legales, las partes se someten a los jueces laborales del Circuito de Bogotá D.C.</p>`,
+
+    fijo: `
+<h3>PRIMERA — OBJETO</h3>
+<p class="clausula">EL TRABAJADOR se obliga a prestar sus servicios personales como <strong>${cargo}</strong>, ejecutando las funciones propias del cargo y las que le sean asignadas por EL EMPLEADOR.</p>
+
+<h3>SEGUNDA — DURACIÓN</h3>
+<p class="clausula">El presente contrato tendrá una duración de <strong>${v('c-duracion','6 meses')}</strong> a partir del ${fecha}, prorrogable de conformidad con el artículo 46 del C.S.T. Para no prorrogarlo, la parte que no desee renovarlo deberá informar con al menos treinta (30) días de antelación.</p>
+
+<h3>TERCERA — LUGAR Y JORNADA</h3>
+<p class="clausula">EL TRABAJADOR desempeñará sus funciones en <strong>${lugar}</strong>, con jornada de <strong>${jornada}</strong>.</p>
+
+<h3>CUARTA — REMUNERACIÓN</h3>
+<p class="clausula">EL EMPLEADOR pagará al TRABAJADOR la suma mensual de <strong>${salario}</strong>${aux>0?', más auxilio de transporte de <strong>'+fmt(aux)+'</strong>':''}, incluidos descansos dominicales y festivos.</p>
+
+<h3>QUINTA — PRESTACIONES Y SEGURIDAD SOCIAL</h3>
+<p class="clausula">EL TRABAJADOR tendrá derecho a todas las prestaciones sociales y a la afiliación al Sistema de Seguridad Social Integral conforme a la Ley 100 de 1993, proporcionales al tiempo servido.</p>
+
+<h3>SEXTA — CLÁUSULA DE CONFIDENCIALIDAD</h3>
+<p class="clausula">EL TRABAJADOR se compromete a mantener total reserva sobre la información de <strong>${EMPRESA.nombre}</strong> durante y después de la vigencia del presente contrato.</p>
+
+<h3>SÉPTIMA — TERMINACIÓN</h3>
+<p class="clausula">Además de las causales del Art. 62 del C.S.T., el contrato termina por vencimiento del término pactado. Si se prorroga por tres (3) o más períodos consecutivos, el siguiente tendrá término mínimo de un (1) año según el Art. 46 del C.S.T.</p>`,
+
+    obra: `
+<h3>PRIMERA — OBJETO</h3>
+<p class="clausula">EL TRABAJADOR se obliga a prestar sus servicios personales como <strong>${cargo}</strong> para la ejecución del proyecto denominado: <strong>"${v('c-proyecto','_________________________________')}"</strong>.</p>
+
+<h3>SEGUNDA — DURACIÓN</h3>
+<p class="clausula">El presente contrato tendrá vigencia durante el tiempo necesario para la ejecución de la obra o labor objeto del mismo, iniciando el ${fecha}. La terminación de la obra constituye justa causa de terminación del contrato (Art. 45 C.S.T.).</p>
+
+<h3>TERCERA — LUGAR Y JORNADA</h3>
+<p class="clausula">EL TRABAJADOR prestará sus servicios en las instalaciones del proyecto en <strong>${lugar}</strong>, con jornada de <strong>${jornada}</strong>.</p>
+
+<h3>CUARTA — REMUNERACIÓN</h3>
+<p class="clausula">EL EMPLEADOR pagará al TRABAJADOR la suma mensual de <strong>${salario}</strong>${aux>0?', más auxilio de transporte de <strong>'+fmt(aux)+'</strong>':''}.</p>
+
+<h3>QUINTA — PRESTACIONES Y SEGURIDAD SOCIAL</h3>
+<p class="clausula">EL TRABAJADOR gozará de todas las prestaciones sociales legales proporcionales al tiempo servido y será afiliado al Sistema de Seguridad Social Integral.</p>
+
+<h3>SEXTA — CLÁUSULA DE CONFIDENCIALIDAD</h3>
+<p class="clausula">EL TRABAJADOR se compromete a mantener total reserva sobre la información técnica y comercial de <strong>${EMPRESA.nombre}</strong> y sus clientes.</p>`,
+
+    aprendizaje: `
+<h3>PRIMERA — OBJETO</h3>
+<p class="clausula">EL APRENDIZ se obliga a recibir formación teórico-práctica como <strong>${cargo}</strong> en el programa <strong>${v('c-programa','_________________________')}</strong> del Centro de Formación <strong>${v('c-centro','_________________________')}</strong> del SENA, de conformidad con el artículo 83 de la Ley 789 de 2002.</p>
+
+<h3>SEGUNDA — ETAPAS Y DURACIÓN</h3>
+<p class="clausula">El contrato comprende: (a) <strong>Etapa lectiva</strong>: formación en el Centro SENA; (b) <strong>Etapa práctica</strong>: inicio el ${fecha}, con duración según el programa académico. La empresa reconocerá el apoyo de sostenimiento equivalente al 75% del SMLMV durante la etapa lectiva y al 100% durante la etapa práctica.</p>
+
+<h3>TERCERA — APOYO DE SOSTENIMIENTO</h3>
+<p class="clausula">EL EMPLEADOR reconocerá un apoyo de sostenimiento mensual de <strong>${salario}</strong>. Este pago no constituye salario ni genera prestaciones sociales, de conformidad con el artículo 83 parágrafo 4° de la Ley 789 de 2002.</p>
+
+<h3>CUARTA — AFILIACIONES</h3>
+<p class="clausula">EL EMPLEADOR afiliará al aprendiz a una ARL durante la etapa práctica y al Sistema de Salud según lo establecido en la Ley 789 de 2002.</p>
+
+<h3>QUINTA — OBLIGACIONES DEL APRENDIZ</h3>
+<p class="clausula">EL APRENDIZ se compromete a: (a) Cumplir el horario de práctica; (b) Aplicar los conocimientos adquiridos; (c) Respetar las normas de la empresa; (d) Guardar reserva de la información empresarial.</p>`,
+
+    prestacion: `
+<h3>PRIMERA — OBJETO</h3>
+<p class="clausula">EL CONTRATISTA se compromete a prestar a EL CONTRATANTE el siguiente servicio: <strong>${v('c-servicio','_________________________________')}</strong>, de manera autónoma e independiente, sin que exista subordinación ni relación laboral alguna entre las partes.</p>
+
+<h3>SEGUNDA — DURACIÓN</h3>
+<p class="clausula">El presente contrato tendrá una duración de ${v('c-duracion','6 meses')} a partir del ${fecha}, prorrogable por mutuo acuerdo de las partes mediante otrosí escrito.</p>
+
+<h3>TERCERA — HONORARIOS</h3>
+<p class="clausula">EL CONTRATANTE cancelará a EL CONTRATISTA la suma mensual de <strong>${fmt(v('c-honorarios','0'))}</strong> como honorarios por los servicios prestados, previa presentación de factura o cuenta de cobro. Sobre este valor EL CONTRATISTA deberá efectuar la retención en la fuente aplicable según las normas tributarias vigentes.</p>
+
+<h3>CUARTA — INDEPENDENCIA</h3>
+<p class="clausula">EL CONTRATISTA actuará con plena autonomía técnica y administrativa en la prestación del servicio, sin estar sujeto a subordinación ni cumplimiento de horario. Deberá afiliarse al Sistema de Seguridad Social Integral como trabajador independiente (Ley 100/1993, Art. 15).</p>
+
+<h3>QUINTA — CONFIDENCIALIDAD</h3>
+<p class="clausula">EL CONTRATISTA se compromete a mantener estricta reserva sobre toda la información de <strong>${EMPRESA.nombre}</strong> a la que tenga acceso en razón del presente contrato, con una vigencia de dos (2) años adicionales a la terminación del mismo.</p>
+
+<h3>SEXTA — TERMINACIÓN</h3>
+<p class="clausula">El presente contrato puede darse por terminado por: (a) Mutuo acuerdo; (b) Vencimiento del término; (c) Incumplimiento de las obligaciones pactadas; (d) Caso fortuito o fuerza mayor que imposibilite la ejecución del objeto.</p>`
+  };
+
+  var footer = `
+<div class="firmas">
+  <div class="firma-bloque">
+    <div class="firma-linea"></div>
+    <strong>${EMPRESA.nombre}</strong><br>
+    NIT ${EMPRESA.nit}<br>
+    ${repLegal}<br>
+    C.C. No. ${repCC}<br>
+    <em>EL EMPLEADOR${tipoActual==='prestacion'?' / CONTRATANTE':''}</em>
+  </div>
+  <div class="firma-bloque">
+    <div class="firma-linea"></div>
+    <strong>${nombre}</strong><br>
+    C.C. No. ${cedula}<br>
+    <br>
+    <em>EL TRABAJADOR${tipoActual==='prestacion'?' / CONTRATISTA':tipoActual==='aprendizaje'?' / APRENDIZ':''}</em>
+  </div>
+</div>
+<p style="text-align:center;margin-top:20px;font-size:10px;color:#666">
+  En constancia de lo anterior, se firma el presente contrato en dos (2) ejemplares del mismo tenor y valor, en la ciudad de Bogotá D.C., el ${fecha}.<br>
+  ${EMPRESA.nombre} · ${EMPRESA.dir} · ${EMPRESA.tel} · ${EMPRESA.email}
+</p>`;
+
+  return header + (clausulas[tipoActual]||'') + footer;
+}
+
+var TIPO_TITULOS = {
+  indefinido:  'A TÉRMINO INDEFINIDO',
+  fijo:        'A TÉRMINO FIJO',
+  obra:        'POR OBRA O LABOR ESPECÍFICA',
+  aprendizaje: 'DE APRENDIZAJE — LEY 789 DE 2002',
+  prestacion:  'DE PRESTACIÓN DE SERVICIOS'
+};
+
+function actualizarContrato() {
+  document.getElementById('contrato-preview').innerHTML = generarTexto();
+}
+
+function imprimirContrato() {
+  var nombre = document.getElementById('c-nombre').value.trim();
+  if (!nombre) { alert('Ingresa el nombre del trabajador antes de imprimir.'); return; }
+
+  var ventana = window.open('','_blank');
+  ventana.document.write(`<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8">
+<title>Contrato — ${nombre}</title>
+<style>
+  body { font-family:'Times New Roman',serif;font-size:12pt;line-height:1.8;color:#000;margin:2cm; }
+  h1 { font-size:16pt;text-align:center;margin-bottom:4px; }
+  h2 { font-size:13pt;text-align:center;margin-bottom:20px; }
+  h3 { font-size:11pt;font-weight:700;margin:16px 0 6px;text-transform:uppercase; }
+  p  { text-align:justify;margin-bottom:10px; }
+  .firmas { display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:50px; }
+  .firma-bloque { text-align:center; }
+  .firma-linea  { border-bottom:1px solid #000;margin-bottom:8px;height:50px; }
+  @media print { body{margin:1.5cm;} }
+</style>
+</head><body>${generarTexto()}</body></html>`);
+  ventana.document.close();
+  setTimeout(function(){ ventana.print(); }, 500);
+}
+
+function copiarTexto() {
+  var texto = document.getElementById('contrato-preview').innerText;
+  navigator.clipboard.writeText(texto).then(function(){
+    alert('✅ Texto del contrato copiado al portapapeles.');
+  }).catch(function(){
+    alert('Selecciona el texto manualmente y copia con Ctrl+C.');
+  });
+}
+
+function limpiarFormulario() {
+  ['c-nombre','c-cedula','c-ciu-cc','c-rep-cc'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('c-salario').value = '2800000';
+  document.getElementById('c-fecha').value = new Date().toISOString().slice(0,10);
+  actualizarContrato();
+}
+
+// Inicializar
+seleccionarTipo('indefinido');
+</script>
+</body>
+</html>
