@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis Documentos — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Mi información</div>
+    <a class="nav-item" href="/pages/mi-perfil.html"><span class="nav-icon">👤</span> Mi perfil</a>
+    <a class="nav-item active" href="/pages/mis-documentos.html"><span class="nav-icon">📁</span> Mis documentos</a>
+    <div class="nav-section">Tiempo</div>
+    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
+    <a class="nav-item" href="/pages/permisos-remunerados.html"><span class="nav-icon">⏸</span> Permisos</a>
+    <a class="nav-item" href="/pages/ausencias.html"><span class="nav-icon">🚫</span> Ausencias</a>
+    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
+    <div class="nav-section">Formación</div>
+    <a class="nav-item" href="/pages/capacitaciones.html"><span class="nav-icon">🎓</span> Capacitaciones</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <div class="page-title">📁 Mis documentos</div>
+        <div class="page-sub" id="doc-sub">Mis documentos personales y laborales</div>
+      </div>
+      <button class="btn-primary" onclick="document.getElementById('upload-doc').click()">📎 Cargar documento</button>
+      <input type="file" id="upload-doc" style="display:none" accept=".pdf,.jpg,.png,.docx" onchange="subirDoc(this)">
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="activarTab(this,'tab-personales')">🪪 Personales</div>
+      <div class="tab" onclick="activarTab(this,'tab-laborales')">💼 Laborales</div>
+      <div class="tab" onclick="activarTab(this,'tab-certificados')">🎓 Certificados</div>
+      <div class="tab" onclick="activarTab(this,'tab-incapacidades')">🏥 Incapacidades</div>
+    </div>
+
+    <!-- Personales -->
+    <div id="tab-personales" class="card">
+      <div class="card-header"><div class="card-title">🪪 Documentos personales</div></div>
+      <div id="lista-personales">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:20px">📄</span>
+          <div style="flex:1"><div style="font-weight:500;font-size:13px">Cédula de ciudadanía</div><div style="font-size:11px;color:var(--text-muted)">PDF · 0.8 MB · Cargado 15 Mar 2022</div></div>
+          <span class="badge badge-ok">Verificado</span>
+          <button class="btn-secondary btn-sm">👁 Ver</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:20px">📄</span>
+          <div style="flex:1"><div style="font-weight:500;font-size:13px">Hoja de vida</div><div style="font-size:11px;color:var(--text-muted)">PDF · 1.2 MB · Cargado 15 Mar 2022</div></div>
+          <span class="badge badge-ok">Verificado</span>
+          <button class="btn-secondary btn-sm">👁 Ver</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+          <span style="font-size:20px">📄</span>
+          <div style="flex:1"><div style="font-weight:500;font-size:13px">Antecedentes disciplinarios</div><div style="font-size:11px;color:var(--text-muted)">PDF · 0.3 MB · Cargado 15 Mar 2022</div></div>
+          <span class="badge badge-ok">Verificado</span>
+          <button class="btn-secondary btn-sm">👁 Ver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Laborales -->
+    <div id="tab-laborales" class="card hidden">
+      <div class="card-header"><div class="card-title">💼 Documentos laborales</div></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:20px">📋</span>
+        <div style="flex:1"><div style="font-weight:500;font-size:13px">Contrato laboral indefinido</div><div style="font-size:11px;color:var(--text-muted)">PDF · 1.8 MB · Firmado 15 Mar 2022</div></div>
+        <span class="badge badge-ok">Firmado</span>
+        <button class="btn-secondary btn-sm">👁 Ver</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:20px">📋</span>
+        <div style="flex:1"><div style="font-weight:500;font-size:13px">Cláusula de confidencialidad</div><div style="font-size:11px;color:var(--text-muted)">PDF · 0.5 MB · Firmado 15 Mar 2022</div></div>
+        <span class="badge badge-ok">Firmado</span>
+        <button class="btn-secondary btn-sm">👁 Ver</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+        <span style="font-size:20px">📋</span>
+        <div style="flex:1"><div style="font-weight:500;font-size:13px">Paz y salvo empresa anterior</div><div style="font-size:11px;color:var(--text-muted)">PDF · 0.4 MB · Cargado 15 Mar 2022</div></div>
+        <span class="badge badge-ok">Verificado</span>
+        <button class="btn-secondary btn-sm">👁 Ver</button>
+      </div>
+    </div>
+
+    <!-- Certificados -->
+    <div id="tab-certificados" class="card hidden">
+      <div class="card-header"><div class="card-title">🎓 Certificados y diplomas</div></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:20px">🎓</span>
+        <div style="flex:1"><div style="font-weight:500;font-size:13px">Diploma Tecnólogo en Electrónica</div><div style="font-size:11px;color:var(--text-muted)">PDF · 1.2 MB · SENA · Verificado</div></div>
+        <span class="badge badge-ok">Verificado</span>
+        <button class="btn-secondary btn-sm">👁 Ver</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:20px">📜</span>
+        <div style="flex:1"><div style="font-weight:500;font-size:13px">Certificado Trabajo en Alturas</div><div style="font-size:11px;color:var(--text-muted)">PDF · 0.5 MB · ARL Sura · Vence Mar 2027</div></div>
+        <span class="badge badge-ok">Vigente</span>
+        <button class="btn-secondary btn-sm">👁 Ver</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+        <span style="font-size:20px">📜</span>
+        <div style="flex:1"><div style="font-weight:500;font-size:13px">Certificado Primeros Auxilios</div><div style="font-size:11px;color:var(--text-muted)">PDF · 0.3 MB · Cruz Roja · Vence Jun 2026</div></div>
+        <span class="badge badge-warn">⚠ Por vencer</span>
+        <button class="btn-secondary btn-sm">👁 Ver</button>
+      </div>
+    </div>
+
+    <!-- Incapacidades -->
+    <div id="tab-incapacidades" class="card hidden">
+      <div class="card-header"><div class="card-title">🏥 Soportes de incapacidades</div></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:20px">🏥</span>
+        <div style="flex:1"><div style="font-weight:500;font-size:13px">Incapacidad Faringitis — Mayo 2026</div><div style="font-size:11px;color:var(--text-muted)">PDF · 0.3 MB · EPS Sanitas · 3 días</div></div>
+        <span class="badge badge-info">Registrado</span>
+        <button class="btn-secondary btn-sm">👁 Ver</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+        <span style="font-size:20px">🏥</span>
+        <div style="flex:1"><div style="font-weight:500;font-size:13px">Incapacidad Lumbalgia — Feb 2026</div><div style="font-size:11px;color:var(--text-muted)">PDF · 0.4 MB · EPS Sanitas · 5 días</div></div>
+        <span class="badge badge-info">Registrado</span>
+        <button class="btn-secondary btn-sm">👁 Ver</button>
+      </div>
+    </div>
+
+    <!-- Zona upload -->
+    <div style="border:2px dashed var(--border-dark);border-radius:var(--radius-lg);padding:24px;text-align:center;margin-top:16px;cursor:pointer" onclick="document.getElementById('upload-doc').click()">
+      <div style="font-size:32px;margin-bottom:8px">📎</div>
+      <div style="font-size:13px;font-weight:500">Arrastra documentos aquí o haz click para cargar</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">PDF, JPG, PNG, DOCX · máx 10MB · Se almacenan en Azure Blob Storage cifrado</div>
+    </div>
+  </main>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) {
+  Auth.renderUserBar(session);
+  document.getElementById('doc-sub').textContent = 'Documentos de ' + session.nombre;
+}
+function activarTab(el, tabId) {
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden');});
+  document.getElementById(tabId).classList.remove('hidden');
+}
+function subirDoc(input) {
+  if (!input.files || !input.files[0]) return;
+  var f = input.files[0];
+  alert('✅ Documento "' + f.name + '" cargado exitosamente.\nDisponible con conexión a Azure Blob Storage.');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liquidación de Retiro — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+.liq-resultado{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.liq-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.liq-row:last-child{border:none}
+.liq-label{font-size:13px;color:var(--text)}
+.liq-value{font-size:13px;font-weight:600}
+.liq-total{background:#dff6dd;border:1px solid #9fd89f;border-radius:var(--radius);padding:14px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+.liq-total-label{font-size:14px;font-weight:600;color:#107c10}
+.liq-total-value{font-size:22px;font-weight:700;color:#107c10}
+.liq-deduccion{color:#c50f1f}
+.tipo-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;cursor:pointer;transition:var(--transition)}
+.tipo-card:hover{border-color:var(--primary);background:var(--primary-light)}
+.tipo-card.activo{border-color:var(--primary);background:var(--primary-light)}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Nómina</div>
+    <a class="nav-item" href="/pages/horas-extras.html"><span class="nav-icon">⏰</span> Horas extras</a>
+    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
+    <a class="nav-item active" href="/pages/liquidacion.html"><span class="nav-icon">💼</span> Liquidación retiro</a>
+    <div class="nav-section">SST</div>
+    <a class="nav-item" href="/pages/arl.html"><span class="nav-icon">🦺</span> ARL</a>
+    <a class="nav-item" href="/pages/examenes-medicos.html"><span class="nav-icon">🩺</span> Exámenes médicos</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <div class="page-title">💼 Liquidación de retiro</div>
+        <div class="page-sub">Cálculo automático · Art. 64, 249, 306 CST · Con y sin justa causa</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-secondary btn-sm" onclick="limpiar()">🔄 Nueva liquidación</button>
+        <button class="btn-primary" id="btn-pdf" onclick="imprimirLiquidacion()" style="display:none">🖨️ Generar acta PDF</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:340px 1fr;gap:16px">
+
+      <!-- Formulario -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">📋 Datos del retiro</div></div>
+
+        <div class="field-group">
+          <label class="field-label">Empleado <span class="required">*</span></label>
+          <select class="field-input" id="liq-emp" onchange="cargarDatosEmpleado()">
+            <option value="">Seleccionar...</option>
+            <option value="1">Carlos Rodríguez · $2.800.000 · 4 años</option>
+            <option value="2">María López · $4.500.000 · 6 años</option>
+            <option value="3">Jorge Martínez · $5.200.000 · 5 años</option>
+            <option value="4">Luis García · $2.600.000 · 4 años</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Tipo de retiro <span class="required">*</span></label>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+            <div class="tipo-card activo" id="tipo-renuncia" onclick="selTipo('renuncia')">
+              <div style="font-weight:500;font-size:12px">🚶 Renuncia voluntaria</div>
+              <div style="font-size:10px;color:var(--text-muted)">Sin indemnización · Art. 62 CST</div>
+            </div>
+            <div class="tipo-card" id="tipo-justa" onclick="selTipo('justa')">
+              <div style="font-weight:500;font-size:12px">⚖️ Despido con justa causa</div>
+              <div style="font-size:10px;color:var(--text-muted)">Sin indemnización · Art. 62 CST</div>
+            </div>
+            <div class="tipo-card" id="tipo-injusta" onclick="selTipo('injusta')">
+              <div style="font-weight:500;font-size:12px;color:#c50f1f">❌ Despido sin justa causa</div>
+              <div style="font-size:10px;color:var(--text-muted)">Con indemnización · Art. 64 CST</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Fecha de ingreso</label>
+          <input type="date" class="field-input" id="liq-ingreso" oninput="calcular()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fecha de retiro</label>
+          <input type="date" class="field-input" id="liq-retiro" value="" oninput="calcular()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Salario básico mensual</label>
+          <input type="number" class="field-input" id="liq-salario" value="2800000" oninput="calcular()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Auxilio de transporte</label>
+          <select class="field-input" id="liq-aux" onchange="calcular()">
+            <option value="200000">Sí — $200.000</option>
+            <option value="0">No aplica</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Vacaciones pendientes (días)</label>
+          <input type="number" class="field-input" id="liq-vac-dias" value="0" min="0" oninput="calcular()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Días trabajados en último mes</label>
+          <input type="number" class="field-input" id="liq-dias-ult" value="30" min="1" max="30" oninput="calcular()">
+        </div>
+        <button class="btn-primary btn-full" onclick="calcular()" style="margin-top:8px">🧮 Calcular liquidación</button>
+      </div>
+
+      <!-- Resultado -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🧮 Liquidación completa</div>
+            <span class="badge" id="badge-tipo" style="background:#f3f2f1;color:#605e5c">Selecciona empleado</span>
+          </div>
+
+          <div id="liq-resultado-wrap" style="display:none">
+
+            <!-- Resumen empleado -->
+            <div style="display:flex;gap:12px;align-items:center;padding:12px;background:var(--bg);border-radius:var(--radius);margin-bottom:16px">
+              <div class="avatar" style="background:#0078d4;width:44px;height:44px;font-size:16px" id="liq-avatar">CR</div>
+              <div>
+                <div style="font-weight:600" id="liq-nombre-show">Carlos Rodríguez</div>
+                <div style="font-size:12px;color:var(--text-muted)" id="liq-info-show">4 años 2 meses · Ingreso 15 Mar 2022</div>
+              </div>
+            </div>
+
+            <div class="liq-resultado">
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">Devengos</div>
+              <div class="liq-row"><span class="liq-label">Salario proporcional último mes</span><span class="liq-value" id="r-salario-prop">$0</span></div>
+              <div class="liq-row"><span class="liq-label">Auxilio de transporte proporcional</span><span class="liq-value" id="r-aux-prop">$0</span></div>
+              <div class="liq-row"><span class="liq-label">Prima de servicios (Art. 306 CST)</span><span class="liq-value" id="r-prima">$0</span></div>
+              <div class="liq-row"><span class="liq-label">Cesantías (Art. 249 CST — 8.33%)</span><span class="liq-value" id="r-cesantias">$0</span></div>
+              <div class="liq-row"><span class="liq-label">Intereses sobre cesantías (12% anual)</span><span class="liq-value" id="r-int-ces">$0</span></div>
+              <div class="liq-row"><span class="liq-label">Vacaciones (Art. 186 CST — 4.17%)</span><span class="liq-value" id="r-vacaciones">$0</span></div>
+              <div class="liq-row" id="row-indemnizacion" style="display:none">
+                <span class="liq-label" style="color:#c50f1f"><strong>Indemnización sin justa causa (Art. 64)</strong></span>
+                <span class="liq-value" id="r-indemnizacion" style="color:#c50f1f">$0</span>
+              </div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin:14px 0 8px">Deducciones</div>
+              <div class="liq-row"><span class="liq-label">Salud empleado (4%)</span><span class="liq-value liq-deduccion" id="r-salud">-$0</span></div>
+              <div class="liq-row"><span class="liq-label">Pensión empleado (4%)</span><span class="liq-value liq-deduccion" id="r-pension">-$0</span></div>
+            </div>
+
+            <div class="liq-total">
+              <div class="liq-total-label">💰 NETO A PAGAR AL TRABAJADOR</div>
+              <div class="liq-total-value" id="r-neto">$0</div>
+            </div>
+
+            <div style="margin-top:12px;padding:10px;background:var(--warning-bg);border-radius:var(--radius);font-size:11px;color:var(--warning)">
+              ⚠️ Esta liquidación es estimada. Verifique los valores exactos con el contador o asesor laboral antes del pago. Los valores se calculan sobre base de <strong>240 horas/mes</strong> y <strong>360 días/año</strong> según el CST.
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn-primary" onclick="imprimirLiquidacion()">🖨️ Generar acta PDF</button>
+              <button class="btn-secondary" onclick="guardarLiquidacion()">💾 Guardar en sistema</button>
+            </div>
+          </div>
+
+          <div id="liq-placeholder" style="text-align:center;padding:40px;color:var(--text-muted)">
+            <div style="font-size:48px;margin-bottom:12px">💼</div>
+            <div>Selecciona un empleado y las fechas para calcular la liquidación</div>
+          </div>
+        </div>
+
+        <!-- Tabla de indemnizaciones -->
+        <div class="card" style="margin-top:12px">
+          <div class="card-header"><div class="card-title">📋 Tabla indemnización sin justa causa — Art. 64 CST</div></div>
+          <table style="width:100%;font-size:12px">
+            <thead><tr style="background:var(--bg)"><th style="padding:8px 12px;text-align:left">Tiempo servicio</th><th style="padding:8px 12px">Indemnización</th><th style="padding:8px 12px">Contrato indefinido</th></tr></thead>
+            <tbody>
+              <tr><td style="padding:8px 12px">Menos de 1 año</td><td style="padding:8px 12px;text-align:center;font-weight:600;color:#c50f1f">30 días de salario</td><td style="padding:8px 12px;font-size:11px;color:var(--text-muted)">Proporcional al tiempo</td></tr>
+              <tr style="background:rgba(239,68,68,.04)"><td style="padding:8px 12px">1 año o más</td><td style="padding:8px 12px;text-align:center;font-weight:600;color:#c50f1f">30 días + 20 días por año adicional</td><td style="padding:8px 12px;font-size:11px;color:var(--text-muted)">Desde el segundo año</td></tr>
+              <tr><td style="padding:8px 12px">10+ años (antes de reforma)</td><td style="padding:8px 12px;text-align:center;font-weight:600;color:#c50f1f">20 días por año adicional</td><td style="padding:8px 12px;font-size:11px;color:var(--text-muted)">Art. 64 modificado Ley 789/02</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Auth.renderUserBar(session);
+var tipoRetiro = 'renuncia';
+
+var EMPLEADOS_DATA = {
+  '1':{nombre:'Carlos Rodríguez',ini:'CR',col:'#0078d4',salario:2800000,aux:200000,ingreso:'2022-03-15',anos:4.2},
+  '2':{nombre:'María López',    ini:'ML',col:'#107c10',salario:4500000,aux:0,      ingreso:'2020-01-02',anos:6.4},
+  '3':{nombre:'Jorge Martínez',ini:'JM',col:'#797600',salario:5200000,aux:0,      ingreso:'2021-06-10',anos:4.9},
+  '4':{nombre:'Luis García',   ini:'LG',col:'#c50f1f',salario:2600000,aux:200000, ingreso:'2022-03-03',anos:4.2}
+};
+
+function selTipo(tipo) {
+  tipoRetiro = tipo;
+  document.querySelectorAll('.tipo-card').forEach(function(c){c.classList.remove('activo');});
+  document.getElementById('tipo-'+tipo).classList.add('activo');
+  calcular();
+}
+
+function cargarDatosEmpleado() {
+  var id = document.getElementById('liq-emp').value;
+  if (!id) return;
+  var e = EMPLEADOS_DATA[id];
+  document.getElementById('liq-salario').value = e.salario;
+  document.getElementById('liq-aux').value     = e.aux;
+  document.getElementById('liq-ingreso').value = e.ingreso;
+  document.getElementById('liq-retiro').value  = new Date().toISOString().slice(0,10);
+  calcular();
+}
+
+function calcular() {
+  var id = document.getElementById('liq-emp').value;
+  if (!id) return;
+  var e       = EMPLEADOS_DATA[id];
+  var salario = parseFloat(document.getElementById('liq-salario').value)||0;
+  var aux     = parseFloat(document.getElementById('liq-aux').value)||0;
+  var diasUlt = parseFloat(document.getElementById('liq-dias-ult').value)||30;
+  var vacDias = parseFloat(document.getElementById('liq-vac-dias').value)||0;
+
+  var ingreso = new Date(document.getElementById('liq-ingreso').value+'T12:00');
+  var retiro  = new Date(document.getElementById('liq-retiro').value+'T12:00');
+  if (!ingreso || !retiro || retiro <= ingreso) return;
+
+  var diasTotal = Math.round((retiro - ingreso)/(1000*60*60*24));
+  var anosTotal = diasTotal/365;
+  var mesesTotal= diasTotal/30;
+
+  // Cálculos
+  var salProp   = (salario/30)*diasUlt;
+  var auxProp   = aux>0 ? (aux/30)*diasUlt : 0;
+  var prima     = ((salario+aux)/360)*diasTotal; // proporcional período
+  var cesantias = ((salario+aux)/12)*anosTotal;
+  var intCes    = cesantias*0.12*(diasTotal/365);
+  var vacaciones= (salario/720)*diasTotal + (vacDias*(salario/30));
+
+  // Indemnización sin justa causa Art. 64
+  var indemn = 0;
+  if (tipoRetiro === 'injusta') {
+    if (anosTotal < 1) {
+      indemn = (salario/30)*30*(anosTotal);
+    } else {
+      indemn = salario + (salario*20/30)*(Math.max(0,anosTotal-1));
+    }
+  }
+
+  var totalBruto = salProp+auxProp+prima+cesantias+intCes+vacaciones+indemn;
+  var salud   = salario*0.04;
+  var pension = salario*0.04;
+  var neto    = totalBruto - salud - pension;
+
+  var fmt = function(n){ return '$'+Math.round(n).toLocaleString('es-CO'); };
+
+  document.getElementById('r-salario-prop').textContent = fmt(salProp);
+  document.getElementById('r-aux-prop').textContent     = fmt(auxProp);
+  document.getElementById('r-prima').textContent        = fmt(prima);
+  document.getElementById('r-cesantias').textContent    = fmt(cesantias);
+  document.getElementById('r-int-ces').textContent      = fmt(intCes);
+  document.getElementById('r-vacaciones').textContent   = fmt(vacaciones);
+  document.getElementById('r-indemnizacion').textContent= fmt(indemn);
+  document.getElementById('r-salud').textContent        = '-'+fmt(salud);
+  document.getElementById('r-pension').textContent      = '-'+fmt(pension);
+  document.getElementById('r-neto').textContent         = fmt(neto);
+
+  document.getElementById('row-indemnizacion').style.display = tipoRetiro==='injusta'?'flex':'none';
+
+  var badgeTxt = {renuncia:'Renuncia voluntaria',justa:'Despido con justa causa',injusta:'Despido sin justa causa'};
+  var badgeCol = {renuncia:'badge-muted',justa:'badge-warn',injusta:'badge-danger'};
+  document.getElementById('badge-tipo').className = 'badge '+badgeCol[tipoRetiro];
+  document.getElementById('badge-tipo').textContent = badgeTxt[tipoRetiro];
+
+  document.getElementById('liq-avatar').textContent   = e.ini;
+  document.getElementById('liq-avatar').style.background = e.col;
+  document.getElementById('liq-nombre-show').textContent = e.nombre;
+  document.getElementById('liq-info-show').textContent   =
+    Math.floor(anosTotal)+' años '+Math.floor((anosTotal%1)*12)+' meses · '+
+    Math.round(diasTotal)+' días · Ingreso '+ingreso.toLocaleDateString('es-CO');
+
+  document.getElementById('liq-resultado-wrap').style.display = 'block';
+  document.getElementById('liq-placeholder').style.display    = 'none';
+  document.getElementById('btn-pdf').style.display            = 'inline-flex';
+}
+
+function imprimirLiquidacion() {
+  var id = document.getElementById('liq-emp').value;
+  if (!id) { alert('Selecciona un empleado'); return; }
+  var e = EMPLEADOS_DATA[id];
+  var ventana = window.open('','_blank');
+  ventana.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Acta Liquidación — ${e.nombre}</title>
+<style>
+body{font-family:'Times New Roman',serif;font-size:12pt;margin:2cm;line-height:1.7}
+h1{text-align:center;font-size:16pt}h2{text-align:center;font-size:13pt;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;margin:10px 0}
+td,th{padding:8px 12px;border:1px solid #ddd}th{background:#f5f5f5;font-weight:600}
+.total{background:#dff6dd;font-weight:700;font-size:14pt}
+.firmas{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:50px;text-align:center}
+.firma-linea{border-bottom:1px solid #000;height:50px;margin-bottom:8px}
+</style></head><body>
+<h1>InfraestructuraIT SAS — NIT 900.123.456-7</h1>
+<h2>ACTA DE LIQUIDACIÓN DE CONTRATO DE TRABAJO</h2>
+<p><strong>Empleado:</strong> ${e.nombre} &nbsp;&nbsp; <strong>Tipo retiro:</strong> ${document.getElementById('badge-tipo').textContent}</p>
+<table>
+<thead><tr><th>Concepto</th><th>Valor</th></tr></thead>
+<tbody>
+<tr><td>Salario proporcional</td><td>${document.getElementById('r-salario-prop').textContent}</td></tr>
+<tr><td>Aux. transporte proporcional</td><td>${document.getElementById('r-aux-prop').textContent}</td></tr>
+<tr><td>Prima de servicios</td><td>${document.getElementById('r-prima').textContent}</td></tr>
+<tr><td>Cesantías</td><td>${document.getElementById('r-cesantias').textContent}</td></tr>
+<tr><td>Intereses sobre cesantías</td><td>${document.getElementById('r-int-ces').textContent}</td></tr>
+<tr><td>Vacaciones</td><td>${document.getElementById('r-vacaciones').textContent}</td></tr>
+${tipoRetiro==='injusta'?'<tr><td><strong>Indemnización sin justa causa</strong></td><td><strong>'+document.getElementById('r-indemnizacion').textContent+'</strong></td></tr>':''}
+<tr><td>(-) Salud empleado 4%</td><td>${document.getElementById('r-salud').textContent}</td></tr>
+<tr><td>(-) Pensión empleado 4%</td><td>${document.getElementById('r-pension').textContent}</td></tr>
+<tr class="total"><td>NETO A PAGAR</td><td>${document.getElementById('r-neto').textContent}</td></tr>
+</tbody></table>
+<p style="font-size:10pt;color:#666">Calculado según CST Arts. 64, 249, 306, 186. SMLMV 2026: $1.423.500</p>
+<div class="firmas">
+<div><div class="firma-linea"></div><strong>InfraestructuraIT SAS</strong><br>Representante Legal</div>
+<div><div class="firma-linea"></div><strong>${e.nombre}</strong><br>El Trabajador</div>
+</div>
+</body></html>`);
+  ventana.document.close();
+  setTimeout(function(){ventana.print();},500);
+}
+
+function guardarLiquidacion() { alert('✅ Liquidación guardada en el sistema. Estado: Pendiente de firma.'); }
+function limpiar() {
+  document.getElementById('liq-emp').value = '';
+  document.getElementById('liq-resultado-wrap').style.display='none';
+  document.getElementById('liq-placeholder').style.display='block';
+  document.getElementById('btn-pdf').style.display='none';
+}
+</script>
+</body>
+</html>
