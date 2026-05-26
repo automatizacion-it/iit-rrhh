@@ -1,8 +1,8 @@
-{
+﻿{
   "routes": [
     {
       "route": "/pages/*",
-      "allowedRoles": ["authenticated"]
+      "allowedRoles": ["anonymous"]
     },
     {
       "route": "/",
@@ -10,17 +10,11 @@
     }
   ],
   "responseOverrides": {
-    "401": {
-      "redirect": "/index.html",
-      "statusCode": 302
-    },
     "404": {
       "rewrite": "/index.html"
     }
   },
   "globalHeaders": {
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "SAMEORIGIN",
     "Cache-Control": "no-cache"
   }
 }
