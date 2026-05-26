@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ausencias — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Empleados</div>
+    <a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>
+    <div class="nav-section">Tiempo</div>
+    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
+    <a class="nav-item active" href="/pages/ausencias.html"><span class="nav-icon">🚫</span> Ausencias</a>
+    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">🚫 Registro de ausencias</div>
+        <div class="page-sub">Permisos, calamidades y ausencias justificadas e injustificadas</div>
+      </div>
+      <button class="btn-primary" onclick="abrirModal()">➕ Registrar ausencia</button>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card">
+        <div class="metric-label">Ausencias este mes</div>
+        <div class="metric-value" style="color:#c50f1f">8</div>
+        <div class="metric-sub">días totales</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Justificadas</div>
+        <div class="metric-value" style="color:#107c10">6</div>
+        <div class="metric-sub">con soporte</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Injustificadas</div>
+        <div class="metric-value" style="color:#c50f1f">2</div>
+        <div class="metric-sub">descuento nómina</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Empleados con ausencia</div>
+        <div class="metric-value">5</div>
+        <div class="metric-sub">este mes</div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card" style="padding:14px 20px;margin-bottom:12px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div class="filter-group">
+          <div class="field-label">Tipo</div>
+          <select class="field-input" style="width:150px" id="f-tipo" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option>Permiso</option>
+            <option>Calamidad doméstica</option>
+            <option>Fuerza mayor</option>
+            <option>No justificada</option>
+            <option>Licencia no remunerada</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="field-label">Estado</div>
+          <select class="field-input" style="width:130px" id="f-estado" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option>Pendiente</option>
+            <option>Aprobado</option>
+            <option>Rechazado</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="field-label">Mes</div>
+          <select class="field-input" style="width:120px" id="f-mes" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option>Mayo 2026</option>
+            <option>Abril 2026</option>
+            <option>Marzo 2026</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Horas</th>
+            <th>Justificada</th>
+            <th>Soporte</th>
+            <th>Estado</th>
+            <th>Descuento</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="ausencias-tbody">
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td>
+            <td>Permiso</td>
+            <td>20/05/2026</td>
+            <td>4 hrs</td>
+            <td><span class="badge badge-ok">Sí</span></td>
+            <td><span class="badge badge-info">Cita médica</span></td>
+            <td><span class="badge badge-ok">Aprobado</span></td>
+            <td><span class="badge badge-muted">No</span></td>
+            <td><button class="btn-secondary btn-sm" onclick="verDetalle(1)">Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#107c10">LG</div><div class="cell-name">Luis García</div></div></td>
+            <td>No justificada</td>
+            <td>18/05/2026</td>
+            <td>8 hrs</td>
+            <td><span class="badge badge-danger">No</span></td>
+            <td><span class="badge badge-muted">Sin soporte</span></td>
+            <td><span class="badge badge-ok">Registrada</span></td>
+            <td><span class="badge badge-danger">Sí</span></td>
+            <td><button class="btn-secondary btn-sm" onclick="verDetalle(2)">Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#797600">JM</div><div class="cell-name">Jorge Martínez</div></div></td>
+            <td>Calamidad doméstica</td>
+            <td>15/05/2026</td>
+            <td>8 hrs</td>
+            <td><span class="badge badge-ok">Sí</span></td>
+            <td><span class="badge badge-info">Documento</span></td>
+            <td><span class="badge badge-ok">Aprobado</span></td>
+            <td><span class="badge badge-muted">No</span></td>
+            <td><button class="btn-secondary btn-sm" onclick="verDetalle(3)">Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">AP</div><div class="cell-name">Andrea Parra</div></div></td>
+            <td>Permiso</td>
+            <td>10/05/2026</td>
+            <td>4 hrs</td>
+            <td><span class="badge badge-ok">Sí</span></td>
+            <td><span class="badge badge-info">Diligencia</span></td>
+            <td><span class="badge badge-warn">Pendiente</span></td>
+            <td><span class="badge badge-muted">No</span></td>
+            <td>
+              <button class="btn-success btn-sm" onclick="aprobar(this)">✓</button>
+              <button class="btn-danger btn-sm" onclick="rechazar(this)">✗</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal registrar -->
+<div id="modal-aus" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🚫 Registrar ausencia</div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="campo-emp-aus"></div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">Tipo de ausencia <span class="required">*</span></label>
+          <select class="field-input" id="aus-tipo">
+            <option>Permiso</option>
+            <option>Calamidad doméstica</option>
+            <option>Fuerza mayor</option>
+            <option>No justificada</option>
+            <option>Licencia no remunerada</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fecha <span class="required">*</span></label>
+          <input type="date" class="field-input" id="aus-fecha">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Horas de ausencia</label>
+          <select class="field-input" id="aus-horas">
+            <option value="4">Medio día (4 hrs)</option>
+            <option value="8">Día completo (8 hrs)</option>
+            <option value="2">2 horas</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">¿Justificada?</label>
+          <select class="field-input" id="aus-justificada">
+            <option value="1">Sí — con soporte</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Justificación / Observaciones</label>
+          <textarea class="field-input" id="aus-obs" placeholder="Describe el motivo de la ausencia..."></textarea>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Documento soporte</label>
+          <input type="file" class="field-input" id="aus-doc" accept=".pdf,.jpg,.png">
+          <div style="font-size:11px;color:var(--text-muted);margin-top:3px">PDF, JPG o PNG · máx 5MB</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">¿Descuento en nómina?</label>
+          <select class="field-input" id="aus-descuento">
+            <option value="0">No</option>
+            <option value="1">Sí</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarAusencia()">Registrar ausencia</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) {
+  Auth.renderUserBar(session);
+  if (Auth.isAdmin()) {
+    document.getElementById('campo-emp-aus').innerHTML =
+      '<div class="field-group"><label class="field-label">Empleado</label>' +
+      '<select class="field-input" id="aus-empleado">' +
+      '<option>Carlos Rodríguez</option><option>María López</option>' +
+      '<option>Jorge Martínez</option><option>Andrea Parra</option>' +
+      '<option>Luis García</option></select></div>';
+  }
+}
+
+function abrirModal() { document.getElementById('modal-aus').classList.remove('hidden'); }
+function cerrarModal() { document.getElementById('modal-aus').classList.add('hidden'); }
+
+function guardarAusencia() {
+  var fecha = document.getElementById('aus-fecha').value;
+  if (!fecha) { alert('La fecha es obligatoria'); return; }
+  cerrarModal();
+
+  var tbody = document.getElementById('ausencias-tbody');
+  var tipo  = document.getElementById('aus-tipo').value;
+  var horas = document.getElementById('aus-horas').options[document.getElementById('aus-horas').selectedIndex].text;
+  var just  = document.getElementById('aus-justificada').value === '1';
+  var emp   = Auth.isAdmin() && document.getElementById('aus-empleado')
+    ? document.getElementById('aus-empleado').value : session.nombre;
+
+  var fechaFmt = new Date(fecha).toLocaleDateString('es-CO');
+  var ini = emp.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+
+  var row = '<tr>' +
+    '<td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini+'</div><div class="cell-name">'+emp+'</div></div></td>' +
+    '<td>'+tipo+'</td>' +
+    '<td>'+fechaFmt+'</td>' +
+    '<td>'+horas+'</td>' +
+    '<td>'+(just?'<span class="badge badge-ok">Sí</span>':'<span class="badge badge-danger">No</span>')+'</td>' +
+    '<td><span class="badge badge-muted">Registrado</span></td>' +
+    '<td><span class="badge badge-warn">Pendiente</span></td>' +
+    '<td><span class="badge badge-muted">No</span></td>' +
+    '<td><button class="btn-secondary btn-sm" onclick="verDetalle(99)">Ver</button></td>' +
+  '</tr>';
+  tbody.insertAdjacentHTML('afterbegin', row);
+  alert('✅ Ausencia registrada exitosamente.');
+}
+
+function aprobar(btn) {
+  var fila = btn.closest('tr');
+  fila.cells[6].innerHTML = '<span class="badge badge-ok">Aprobado</span>';
+  fila.cells[8].innerHTML = '<button class="btn-secondary btn-sm" onclick="verDetalle(99)">Ver</button>';
+}
+
+function rechazar(btn) {
+  var fila = btn.closest('tr');
+  fila.cells[6].innerHTML = '<span class="badge badge-danger">Rechazado</span>';
+  fila.cells[8].innerHTML = '<button class="btn-secondary btn-sm" onclick="verDetalle(99)">Ver</button>';
+}
+
+function verDetalle(id) {
+  alert('Detalle de ausencia #'+id+' — disponible con conexión a base de datos.');
+}
+
+function filtrar() { /* con BD real se filtraría aquí */ }
+</script>
+</body>
+</html>
