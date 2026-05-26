@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empleados — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-search">
+      <span class="topbar-search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Buscar empleado..." oninput="filtrar()">
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Empleados</div>
+    <a class="nav-item active" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
+    <a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>
+    <a class="nav-item" href="/pages/nuevo-empleado.html"><span class="nav-icon">➕</span> Nuevo empleado</a>
+    <div class="nav-section">Tiempo</div>
+    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
+    <a class="nav-item" href="/pages/ausencias.html"><span class="nav-icon">🚫</span> Ausencias</a>
+    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
+    <div class="nav-section">Nómina</div>
+    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
+    <div class="nav-section">Reportes</div>
+    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/usuarios.html"><span class="nav-icon">🔐</span> Usuarios</a>
+    <a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>
+    <a class="nav-item" href="/pages/backup.html"><span class="nav-icon">💾</span> Backup</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">👥 Empleados</div>
+        <div class="page-sub">Directorio de empleados IIT</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-secondary btn-sm" id="btn-lista" onclick="verLista()">☰ Lista</button>
+        <button class="btn-secondary btn-sm" id="btn-cards" onclick="verCards()">⊞ Tarjetas</button>
+        <a class="btn-primary btn-sm" href="/pages/nuevo-empleado.html">➕ Nuevo empleado</a>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card" style="padding:12px 20px;margin-bottom:12px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <select class="field-input" style="width:130px" id="f-depto" onchange="filtrar()">
+          <option value="">Todos los deptos.</option>
+          <option>Instalaciones</option>
+          <option>Administración</option>
+          <option>Comercial</option>
+          <option>Tecnología</option>
+          <option>RRHH</option>
+        </select>
+        <select class="field-input" style="width:110px" id="f-sede" onchange="filtrar()">
+          <option value="">Todas las sedes</option>
+          <option>Bogotá</option>
+          <option>Medellín</option>
+          <option>Cali</option>
+        </select>
+        <select class="field-input" style="width:110px" id="f-estado" onchange="filtrar()">
+          <option value="">Todos</option>
+          <option>Activo</option>
+          <option>Incapacitado</option>
+          <option>Vacaciones</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Vista tarjetas -->
+    <div id="vista-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+    </div>
+
+    <!-- Vista lista -->
+    <div id="vista-lista" class="table-wrap hidden">
+      <table>
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Cédula</th>
+            <th>Cargo</th>
+            <th>Departamento</th>
+            <th>Sede</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="lista-tbody"></tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Auth.renderUserBar(session);
+
+var EMPLEADOS = [
+  {id:1,nombres:'Carlos Andrés',apellidos:'Rodríguez Gómez',cedula:'1.234.567.890',cargo:'Téc. Eléctrico',depto:'Instalaciones',sede:'Bogotá',estado:'Activo',email:'c.rodriguez@iit.com.co',tel:'+57 310 456 7890'},
+  {id:2,nombres:'María Fernanda',apellidos:'López Castillo',cedula:'52.456.789',cargo:'Coordinadora',depto:'Administración',sede:'Bogotá',estado:'Activo',email:'m.lopez@iit.com.co',tel:'+57 311 234 5678'},
+  {id:3,nombres:'Jorge Alberto',apellidos:'Martínez Ruiz',cedula:'79.234.567',cargo:'Ing. Proyectos',depto:'Instalaciones',sede:'Medellín',estado:'Activo',email:'j.martinez@iit.com.co',tel:'+57 312 345 6789'},
+  {id:4,nombres:'Andrea Patricia',apellidos:'Parra Vargas',cedula:'1.098.765.432',cargo:'Asistente RRHH',depto:'RRHH',sede:'Bogotá',estado:'Activo',email:'a.parra@iit.com.co',tel:'+57 313 456 7890'},
+  {id:5,nombres:'Luis Fernando',apellidos:'García Mora',cedula:'80.123.456',cargo:'Téc. Solar',depto:'Instalaciones',sede:'Cali',estado:'Incapacitado',email:'l.garcia@iit.com.co',tel:'+57 314 567 8901'},
+  {id:6,nombres:'Diana Carolina',apellidos:'Herrera Díaz',cedula:'1.020.345.678',cargo:'Asesor Comercial',depto:'Comercial',sede:'Bogotá',estado:'Activo',email:'d.herrera@iit.com.co',tel:'+57 315 678 9012'},
+  {id:7,nombres:'Ricardo Alejandro',apellidos:'Mora Peña',cedula:'79.876.543',cargo:'Téc. Redes',depto:'Tecnología',sede:'Bogotá',estado:'Vacaciones',email:'r.mora@iit.com.co',tel:'+57 316 789 0123'},
+  {id:8,nombres:'Sandra Milena',apellidos:'Castro Reyes',cedula:'52.789.012',cargo:'Administradora',depto:'Administración',sede:'Medellín',estado:'Activo',email:'s.castro@iit.com.co',tel:'+57 317 890 1234'}
+];
+
+var colores = ['#0078d4','#107c10','#797600','#c50f1f','#8764b8','#038387','#ca5010','#005b70'];
+var filtrados = EMPLEADOS.slice();
+
+function iniciales(e) { return (e.nombres[0]+e.apellidos[0]).toUpperCase(); }
+function color(id) { return colores[(id-1)%colores.length]; }
+
+function badgeEstado(e) {
+  var m = {Activo:'badge-ok',Incapacitado:'badge-danger',Vacaciones:'badge-warn'};
+  return '<span class="badge '+(m[e]||'badge-muted')+'">'+e+'</span>';
+}
+
+function renderCards() {
+  var c = document.getElementById('vista-cards');
+  c.innerHTML = filtrados.map(function(e) {
+    return '<div style="border:1px solid var(--border);border-radius:var(--border-radius-lg);padding:16px;background:var(--color-background-primary)">' +
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">' +
+        '<div class="avatar" style="background:'+color(e.id)+';width:44px;height:44px;font-size:16px">'+iniciales(e)+'</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+e.nombres+' '+e.apellidos+'</div>' +
+          '<div style="font-size:12px;color:var(--color-text-secondary)">'+e.cargo+'</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--color-text-tertiary);line-height:1.8">' +
+        '🏢 '+e.depto+' · '+e.sede+'<br>' +
+        '📧 '+e.email+'<br>' +
+        '📱 '+e.tel +
+      '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--color-border-tertiary)">' +
+        badgeEstado(e.estado) +
+        '<a href="/pages/mi-perfil.html" class="btn-secondary btn-sm">Ver perfil</a>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderLista() {
+  var tbody = document.getElementById('lista-tbody');
+  tbody.innerHTML = filtrados.map(function(e) {
+    return '<tr>' +
+      '<td><div class="cell-avatar"><div class="avatar" style="background:'+color(e.id)+'">'+iniciales(e)+'</div>' +
+        '<div><div class="cell-name">'+e.nombres+' '+e.apellidos+'</div>' +
+        '<div class="cell-sub">'+e.email+'</div></div></div></td>' +
+      '<td style="font-size:12px;color:var(--color-text-secondary)">'+e.cedula+'</td>' +
+      '<td>'+e.cargo+'</td><td>'+e.depto+'</td><td>'+e.sede+'</td>' +
+      '<td>'+badgeEstado(e.estado)+'</td>' +
+      '<td><a href="/pages/mi-perfil.html" class="btn-secondary btn-sm">Ver</a></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function filtrar() {
+  var txt  = (document.getElementById('search-input').value||'').toLowerCase();
+  var dep  = document.getElementById('f-depto').value;
+  var sed  = document.getElementById('f-sede').value;
+  var est  = document.getElementById('f-estado').value;
+  filtrados = EMPLEADOS.filter(function(e) {
+    return (!txt || (e.nombres+' '+e.apellidos+' '+e.cedula).toLowerCase().includes(txt)) &&
+           (!dep || e.depto===dep) && (!sed || e.sede===sed) && (!est || e.estado===est);
+  });
+  renderCards(); renderLista();
+}
+
+function verCards() {
+  document.getElementById('vista-cards').style.display='grid';
+  document.getElementById('vista-lista').classList.add('hidden');
+  document.getElementById('btn-cards').style.background='var(--primary-light)';
+  document.getElementById('btn-lista').style.background='';
+}
+
+function verLista() {
+  document.getElementById('vista-cards').style.display='none';
+  document.getElementById('vista-lista').classList.remove('hidden');
+  document.getElementById('btn-lista').style.background='var(--primary-light)';
+  document.getElementById('btn-cards').style.background='';
+}
+
+renderCards(); renderLista();
+</script>
+</body>
+</html>
