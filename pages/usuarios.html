@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usuarios — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Empleados</div>
+    <a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>
+    <a class="nav-item" href="/pages/nuevo-empleado.html"><span class="nav-icon">➕</span> Nuevo empleado</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item active" href="/pages/usuarios.html"><span class="nav-icon">🔐</span> Usuarios</a>
+    <a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>
+    <a class="nav-item" href="/pages/backup.html"><span class="nav-icon">💾</span> Backup</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">🔐 Gestión de usuarios</div>
+        <div class="page-sub">Accesos al sistema · 4 roles · La cédula es el ID principal</div>
+      </div>
+      <button class="btn-primary" onclick="abrirModalNuevo()">➕ Crear usuario</button>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card">
+        <div class="metric-label">Total usuarios</div>
+        <div class="metric-value" style="color:#0078d4">4</div>
+        <div class="metric-sub">cuentas activas</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Último acceso</div>
+        <div class="metric-value" style="font-size:14px">Hoy</div>
+        <div class="metric-sub">Administrador IIT</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Cuentas bloqueadas</div>
+        <div class="metric-value" style="color:#c50f1f">0</div>
+        <div class="metric-sub">sin bloqueos</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Primer acceso pendiente</div>
+        <div class="metric-value" style="color:#797600">2</div>
+        <div class="metric-sub">deben cambiar clave</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Cédula (ID)</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Último acceso</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">IE</div><div><div class="cell-name">IIT Empresa</div><div class="cell-sub">Propietario</div></div></div></td>
+            <td style="font-family:monospace;font-size:12px">0000000001</td>
+            <td style="font-size:12px">empresa@iit.com.co</td>
+            <td><span class="badge badge-danger">Empresa</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Hoy 21:15</td>
+            <td><span class="badge badge-ok">Activo</span></td>
+            <td><button class="btn-secondary btn-sm" onclick="editarUsuario(1)">✏️ Editar</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#797600">AI</div><div><div class="cell-name">Administrador IIT</div><div class="cell-sub">RRHH</div></div></div></td>
+            <td style="font-family:monospace;font-size:12px">0000000002</td>
+            <td style="font-size:12px">admin@iit.com.co</td>
+            <td><span class="badge badge-warn">Admin</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Hoy 20:30</td>
+            <td><span class="badge badge-ok">Activo</span></td>
+            <td>
+              <button class="btn-secondary btn-sm" onclick="editarUsuario(2)">✏️ Editar</button>
+              <button class="btn-danger btn-sm" onclick="bloquear(this,2)">🔒</button>
+            </td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">AR</div><div><div class="cell-name">Asistente RRHH</div><div class="cell-sub">Auxiliar</div></div></div></td>
+            <td style="font-family:monospace;font-size:12px">0000000003</td>
+            <td style="font-size:12px">usuario@iit.com.co</td>
+            <td><span class="badge badge-info">Usuario</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Ayer</td>
+            <td><span class="badge badge-ok">Activo</span></td>
+            <td>
+              <button class="btn-secondary btn-sm" onclick="editarUsuario(3)">✏️ Editar</button>
+              <button class="btn-danger btn-sm" onclick="bloquear(this,3)">🔒</button>
+            </td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#107c10">CR</div><div><div class="cell-name">Carlos Rodríguez</div><div class="cell-sub">Empleado</div></div></div></td>
+            <td style="font-family:monospace;font-size:12px">1234567890</td>
+            <td style="font-size:12px">c.rodriguez@iit.com.co</td>
+            <td><span class="badge badge-ok">Empleado</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Nunca</td>
+            <td><span class="badge badge-warn">⚠ Primer acceso</span></td>
+            <td>
+              <button class="btn-secondary btn-sm" onclick="reenviarInvitacion(4)">📧 Reenviar</button>
+              <button class="btn-danger btn-sm" onclick="bloquear(this,4)">🔒</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Info roles -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-header">
+        <div class="card-title">ℹ️ Permisos por rol</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">
+        <div style="border:1px solid #f1bcbe;border-radius:var(--radius-lg);padding:12px">
+          <div style="font-weight:600;color:#c50f1f;margin-bottom:6px">🏢 Empresa</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.7">Todo sin excepción · Backup · Config · Nómina · Solo 1 cuenta</div>
+        </div>
+        <div style="border:1px solid #f8e08e;border-radius:var(--radius-lg);padding:12px">
+          <div style="font-weight:600;color:#797600;margin-bottom:6px">⚙️ Administrador</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.7">CRUD completo · Sábana general · Informes · Sin backup ni config global</div>
+        </div>
+        <div style="border:1px solid #b3d6f5;border-radius:var(--radius-lg);padding:12px">
+          <div style="font-weight:600;color:#0078d4;margin-bottom:6px">👩 Usuario</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.7">Alimenta datos · Sin nómina · Sin préstamos · Sin estudio de seguridad</div>
+        </div>
+        <div style="border:1px solid #9fd89f;border-radius:var(--radius-lg);padding:12px">
+          <div style="font-weight:600;color:#107c10;margin-bottom:6px">👤 Empleado</div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.7">Solo sus datos · Cargar documentos · Firmar actas · Ver sus vacaciones</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal nuevo usuario -->
+<div id="modal-user" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-user-title">➕ Crear nuevo usuario</div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info" style="margin-bottom:16px">
+        La <strong>cédula</strong> es el ID principal del usuario en todo el sistema.
+      </div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">Cédula (ID) <span class="required">*</span></label>
+          <input type="text" class="field-input" id="usr-cedula" placeholder="1234567890">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Nombre completo <span class="required">*</span></label>
+          <input type="text" class="field-input" id="usr-nombre" placeholder="Carlos Rodríguez">
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Email <span class="required">*</span></label>
+          <input type="email" class="field-input" id="usr-email" placeholder="nombre@iit.com.co">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Rol <span class="required">*</span></label>
+          <select class="field-input" id="usr-rol">
+            <option value="empleado">Empleado</option>
+            <option value="usuario">Usuario</option>
+            <option value="administrador">Administrador</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Contraseña temporal</label>
+          <input type="text" class="field-input" id="usr-pass" value="IIT2026*">
+        </div>
+        <div class="field-group span-2">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" id="usr-email-inv" checked style="width:16px;height:16px">
+            <label for="usr-email-inv" style="font-size:13px;cursor:pointer">Enviar invitación por email con link de activación</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarUsuario()">Crear usuario</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) {
+  Auth.renderUserBar(session);
+  if (!Auth.isAdmin()) {
+    document.querySelector('.main-content').innerHTML =
+      '<div class="alert alert-error" style="margin:40px">⛔ Solo administradores pueden gestionar usuarios.</div>';
+  }
+}
+
+function abrirModalNuevo() {
+  document.getElementById('modal-user-title').textContent = '➕ Crear nuevo usuario';
+  document.getElementById('modal-user').classList.remove('hidden');
+}
+function cerrarModal() { document.getElementById('modal-user').classList.add('hidden'); }
+
+function guardarUsuario() {
+  var ced    = document.getElementById('usr-cedula').value.trim();
+  var nombre = document.getElementById('usr-nombre').value.trim();
+  var email  = document.getElementById('usr-email').value.trim();
+  var rol    = document.getElementById('usr-rol').value;
+  if (!ced || !nombre || !email) { alert('Cédula, nombre y email son obligatorios'); return; }
+
+  var rolBadges = {
+    empresa:'<span class="badge badge-danger">Empresa</span>',
+    administrador:'<span class="badge badge-warn">Admin</span>',
+    usuario:'<span class="badge badge-info">Usuario</span>',
+    empleado:'<span class="badge badge-ok">Empleado</span>'
+  };
+  var ini = nombre.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+  var tbody = document.getElementById('users-tbody');
+  tbody.insertAdjacentHTML('afterbegin',
+    '<tr>' +
+    '<td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini+'</div><div class="cell-name">'+nombre+'</div></div></td>' +
+    '<td style="font-family:monospace;font-size:12px">'+ced+'</td>' +
+    '<td style="font-size:12px">'+email+'</td>' +
+    '<td>'+rolBadges[rol]+'</td>' +
+    '<td style="font-size:12px;color:var(--text-muted)">Nunca</td>' +
+    '<td><span class="badge badge-warn">⚠ Primer acceso</span></td>' +
+    '<td><button class="btn-secondary btn-sm" onclick="reenviarInvitacion(99)">📧 Reenviar</button></td>' +
+    '</tr>');
+  cerrarModal();
+  alert('✅ Usuario '+nombre+' creado. Se envió invitación a '+email+'.');
+}
+
+function editarUsuario(id) {
+  document.getElementById('modal-user-title').textContent = '✏️ Editar usuario';
+  document.getElementById('modal-user').classList.remove('hidden');
+}
+
+function bloquear(btn, id) {
+  if (!confirm('¿Bloquear el acceso de este usuario?')) return;
+  var fila = btn.closest('tr');
+  fila.cells[5].innerHTML = '<span class="badge badge-danger">🔒 Bloqueado</span>';
+  btn.textContent = '🔓';
+  btn.onclick = function() { desbloquear(btn, id); };
+}
+
+function desbloquear(btn, id) {
+  var fila = btn.closest('tr');
+  fila.cells[5].innerHTML = '<span class="badge badge-ok">Activo</span>';
+  btn.textContent = '🔒';
+  btn.onclick = function() { bloquear(btn, id); };
+}
+
+function reenviarInvitacion(id) {
+  alert('📧 Invitación reenviada al correo del usuario.');
+}
+</script>
+</body>
+</html>
