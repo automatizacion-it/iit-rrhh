@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Socialización — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Empleados</div>
+    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
+    <a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>
+    <a class="nav-item" href="/pages/nuevo-empleado.html"><span class="nav-icon">➕</span> Nuevo empleado</a>
+    <div class="nav-section">Tiempo</div>
+    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
+    <a class="nav-item" href="/pages/permisos.html"><span class="nav-icon">⏸</span> Permisos</a>
+    <a class="nav-item" href="/pages/ausencias.html"><span class="nav-icon">🚫</span> Ausencias</a>
+    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
+    <div class="nav-section">Formación</div>
+    <a class="nav-item" href="/pages/capacitaciones.html"><span class="nav-icon">🎓</span> Capacitaciones</a>
+    <a class="nav-item active" href="/pages/socializacion.html"><span class="nav-icon">📢</span> Socialización</a>
+    <div class="nav-section">Nómina</div>
+    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
+    <div class="nav-section">Reportes</div>
+    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/usuarios.html"><span class="nav-icon">🔐</span> Usuarios</a>
+    <a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>
+    <a class="nav-item" href="/pages/backup.html"><span class="nav-icon">💾</span> Backup</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">📢 Socialización</div>
+        <div class="page-sub">Capacitaciones, reuniones, inducciones y simulacros con lista de asistencia y actas</div>
+      </div>
+      <button class="btn-primary" onclick="abrirModal()">➕ Nuevo evento</button>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card">
+        <div class="metric-label">Eventos 2026</div>
+        <div class="metric-value" style="color:#0078d4">12</div>
+        <div class="metric-sub">realizados</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Firmas pendientes</div>
+        <div class="metric-value" style="color:#c50f1f">5</div>
+        <div class="metric-sub">empleados sin firmar</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Próximo evento</div>
+        <div class="metric-value" style="font-size:14px;color:#797600">28 May</div>
+        <div class="metric-sub">Simulacro evacuación</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Horas socializadas</div>
+        <div class="metric-value">48</div>
+        <div class="metric-sub">este año</div>
+      </div>
+    </div>
+
+    <!-- Lista de eventos -->
+    <div style="display:grid;gap:12px" id="eventos-lista">
+
+      <div class="card" style="padding:16px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span class="badge badge-warn">SST</span>
+              <span class="badge badge-ok">Realizado</span>
+              <span style="font-size:12px;color:var(--text-muted)">20 May 2026 · 8 hrs · Presencial</span>
+            </div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:4px">Capacitación Trabajo en Alturas — ARL Sura</div>
+            <div style="font-size:12px;color:var(--text-muted)">Expositor: Dr. Carlos Méndez — ARL Sura · Lugar: Sede Bogotá Sala 1</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Temas: Normativa alturas, EPP, procedimientos seguros, rescate</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            <div style="font-size:12px;color:var(--text-muted)">8 asistentes · <span style="color:#c50f1f">2 sin firmar</span></div>
+            <div class="btn-group">
+              <button class="btn-secondary btn-sm" onclick="verAsistentes(1)">👥 Asistentes</button>
+              <button class="btn-secondary btn-sm" onclick="verDocumentos(1)">📁 Documentos</button>
+              <button class="btn-primary btn-sm" onclick="firmarActa(1)">✍ Firmar acta</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span class="badge badge-info">Interna</span>
+              <span class="badge badge-ok">Realizado</span>
+              <span style="font-size:12px;color:var(--text-muted)">22 May 2026 · 2 hrs · Presencial</span>
+            </div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:4px">Inducción SCALL — Sistema de Automatización IIT</div>
+            <div style="font-size:12px;color:var(--text-muted)">Expositor: Equipo IIT · Lugar: Sala de reuniones principal</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Temas: Funciones SCALL, comandos de voz, integración Google Drive</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            <div style="font-size:12px;color:var(--text-muted)">12 asistentes · <span style="color:#c50f1f">3 sin firmar</span></div>
+            <div class="btn-group">
+              <button class="btn-secondary btn-sm" onclick="verAsistentes(2)">👥 Asistentes</button>
+              <button class="btn-secondary btn-sm" onclick="verDocumentos(2)">📁 Documentos</button>
+              <button class="btn-primary btn-sm" onclick="firmarActa(2)">✍ Firmar acta</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px;border-color:rgba(251,191,36,.4)">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span class="badge badge-warn">SST</span>
+              <span class="badge badge-warn">Programado</span>
+              <span style="font-size:12px;color:var(--text-muted)">28 May 2026 · 4 hrs · Presencial</span>
+            </div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:4px">Simulacro de Evacuación — Sede Bogotá</div>
+            <div style="font-size:12px;color:var(--text-muted)">Organiza: Brigada de emergencias IIT · Aplica a: Todos los empleados</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Temas: Rutas evacuación, puntos de encuentro, uso extintores</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            <div style="font-size:12px;color:var(--text-muted)">Todos los empleados</div>
+            <div class="btn-group">
+              <button class="btn-secondary btn-sm" onclick="editarEvento(3)">✏️ Editar</button>
+              <button class="btn-danger btn-sm" onclick="cancelarEvento(3)">🗑 Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal nuevo evento -->
+<div id="modal-ev" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal" style="max-width:660px">
+    <div class="modal-header">
+      <div class="modal-title">📢 Nuevo evento de socialización</div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">Tipo de evento <span class="required">*</span></label>
+          <select class="field-input" id="ev-tipo">
+            <option>Capacitación</option><option>Reunión</option>
+            <option>Inducción</option><option>Reinducción</option>
+            <option>Simulacro</option><option>Comité</option><option>Taller</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Modalidad</label>
+          <select class="field-input" id="ev-modalidad">
+            <option>Presencial</option><option>Virtual</option><option>Mixta</option>
+          </select>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Título <span class="required">*</span></label>
+          <input type="text" class="field-input" id="ev-titulo" placeholder="Ej: Capacitación SST — Trabajo en alturas">
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Objetivo</label>
+          <textarea class="field-input" id="ev-objetivo" placeholder="Objetivo del evento..." style="height:60px"></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fecha <span class="required">*</span></label>
+          <input type="date" class="field-input" id="ev-fecha">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Duración (horas)</label>
+          <input type="number" class="field-input" id="ev-horas" placeholder="8" min="1">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Expositor</label>
+          <input type="text" class="field-input" id="ev-expositor" placeholder="Nombre del expositor">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Entidad</label>
+          <input type="text" class="field-input" id="ev-entidad" placeholder="ARL, SENA, IIT...">
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Aplica a</label>
+          <select class="field-input" id="ev-aplica">
+            <option>Todos los empleados</option>
+            <option>Solo Instalaciones</option>
+            <option>Solo Administración</option>
+            <option>Solo Bogotá</option>
+          </select>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Temas a tratar</label>
+          <textarea class="field-input" id="ev-temas" placeholder="Describe los temas principales..." style="height:60px"></textarea>
+        </div>
+        <div class="field-group">
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+            <input type="checkbox" id="ev-sst" style="width:16px;height:16px">
+            <label for="ev-sst" style="font-size:13px;cursor:pointer">Aplica al Sistema SST</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarEvento()">Crear evento</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal asistentes -->
+<div id="modal-asist" class="modal-overlay hidden" onclick="if(event.target===this)document.getElementById('modal-asist').classList.add('hidden')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title">👥 Lista de asistentes</div>
+      <button class="modal-close" onclick="document.getElementById('modal-asist').classList.add('hidden')">✕</button>
+    </div>
+    <div class="modal-body">
+      <table style="width:100%;font-size:13px">
+        <thead><tr><th>Empleado</th><th>Asistió</th><th>Firma</th></tr></thead>
+        <tbody>
+          <tr><td>Carlos Rodríguez</td><td><span class="badge badge-ok">Sí</span></td><td><span class="badge badge-ok">Firmado</span></td></tr>
+          <tr><td>María López</td><td><span class="badge badge-ok">Sí</span></td><td><span class="badge badge-ok">Firmado</span></td></tr>
+          <tr><td>Jorge Martínez</td><td><span class="badge badge-ok">Sí</span></td><td><span class="badge badge-ok">Firmado</span></td></tr>
+          <tr><td>Andrea Parra</td><td><span class="badge badge-ok">Sí</span></td><td><span class="badge badge-warn">Pendiente</span></td></tr>
+          <tr><td>Luis García</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-muted">—</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="document.getElementById('modal-asist').classList.add('hidden')">Cerrar</button>
+      <button class="btn-primary" onclick="alert('Lista de asistencia exportada a PDF.')">📄 Exportar lista</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Auth.renderUserBar(session);
+function abrirModal(){ document.getElementById('modal-ev').classList.remove('hidden'); }
+function cerrarModal(){ document.getElementById('modal-ev').classList.add('hidden'); }
+function verAsistentes(id){ document.getElementById('modal-asist').classList.remove('hidden'); }
+function verDocumentos(id){ alert('📁 Documentos del evento — disponible con base de datos.'); }
+function firmarActa(id){ alert('✍ Panel de firma digital — disponible con conexión a base de datos.\n\nEl empleado podrá firmar directamente desde su dispositivo.'); }
+function editarEvento(id){ alert('✏️ Editar evento #'+id); }
+function cancelarEvento(id){ if(confirm('¿Cancelar este evento?')) alert('Evento cancelado.'); }
+function guardarEvento(){
+  var titulo=document.getElementById('ev-titulo').value.trim();
+  var fecha=document.getElementById('ev-fecha').value;
+  if(!titulo||!fecha){alert('Título y fecha son obligatorios');return;}
+  cerrarModal();
+  var tipo=document.getElementById('ev-tipo').value;
+  var fecha2=new Date(fecha).toLocaleDateString('es-CO');
+  var horas=document.getElementById('ev-horas').value||'?';
+  var nueva='<div class="card" style="padding:16px;border-color:rgba(251,191,36,.4)">' +
+    '<div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">' +
+    '<div style="flex:1">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+    '<span class="badge badge-warn">'+tipo+'</span>' +
+    '<span class="badge badge-warn">Programado</span>' +
+    '<span style="font-size:12px;color:var(--color-text-tertiary)">'+fecha2+' · '+horas+' hrs</span></div>' +
+    '<div style="font-size:15px;font-weight:600">'+titulo+'</div>' +
+    '</div>' +
+    '<div><div class="btn-group">' +
+    '<button class="btn-secondary btn-sm" onclick="editarEvento(99)">✏️ Editar</button>' +
+    '<button class="btn-danger btn-sm" onclick="cancelarEvento(99)">🗑 Cancelar</button>' +
+    '</div></div>' +
+    '</div></div>';
+  document.getElementById('eventos-lista').insertAdjacentHTML('afterbegin', nueva);
+  alert('✅ Evento "'+titulo+'" creado exitosamente.');
+}
+</script>
+</body>
+</html>

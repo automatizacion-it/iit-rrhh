@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Permisos — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div>
+    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Empleados</div>
+    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
+    <a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>
+    <a class="nav-item" href="/pages/nuevo-empleado.html"><span class="nav-icon">➕</span> Nuevo empleado</a>
+    <div class="nav-section">Tiempo</div>
+    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
+    <a class="nav-item active" href="/pages/permisos.html"><span class="nav-icon">⏸</span> Permisos</a>
+    <a class="nav-item" href="/pages/ausencias.html"><span class="nav-icon">🚫</span> Ausencias</a>
+    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
+    <div class="nav-section">Formación</div>
+    <a class="nav-item" href="/pages/capacitaciones.html"><span class="nav-icon">🎓</span> Capacitaciones</a>
+    <a class="nav-item" href="/pages/socializacion.html"><span class="nav-icon">📢</span> Socialización</a>
+    <div class="nav-section">Nómina</div>
+    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
+    <div class="nav-section">Reportes</div>
+    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/usuarios.html"><span class="nav-icon">🔐</span> Usuarios</a>
+    <a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>
+    <a class="nav-item" href="/pages/backup.html"><span class="nav-icon">💾</span> Backup</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">⏸ Permisos</div>
+        <div class="page-sub">Solicitudes de permiso — citas médicas, diligencias y calamidades</div>
+      </div>
+      <button class="btn-primary" onclick="abrirModal()">➕ Solicitar permiso</button>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card">
+        <div class="metric-label">Permisos este mes</div>
+        <div class="metric-value" style="color:#0078d4">6</div>
+        <div class="metric-sub">solicitudes</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Pendientes</div>
+        <div class="metric-value" style="color:#797600">2</div>
+        <div class="metric-sub">por aprobar</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Aprobados</div>
+        <div class="metric-value" style="color:#107c10">4</div>
+        <div class="metric-sub">este mes</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Horas totales</div>
+        <div class="metric-value">28</div>
+        <div class="metric-sub">horas de permiso</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Motivo</th>
+            <th>Fecha</th>
+            <th>Horas</th>
+            <th>Tipo</th>
+            <th>Solicitado</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="permisos-tbody">
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td>
+            <td>Cita médica EPS</td><td>20/05/2026</td><td>4 hrs</td>
+            <td><span class="badge badge-info">Médico</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">18/05/2026</td>
+            <td><span class="badge badge-ok">Aprobado</span></td>
+            <td><button class="btn-secondary btn-sm" onclick="verDetalle(1)">Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#107c10">AP</div><div class="cell-name">Andrea Parra</div></div></td>
+            <td>Diligencia personal</td><td>22/05/2026</td><td>4 hrs</td>
+            <td><span class="badge badge-muted">Personal</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">20/05/2026</td>
+            <td><span class="badge badge-warn">Pendiente</span></td>
+            <td>
+              <button class="btn-success btn-sm" onclick="aprobar(this)">✓</button>
+              <button class="btn-danger btn-sm" onclick="rechazar(this)">✗</button>
+            </td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#797600">JM</div><div class="cell-name">Jorge Martínez</div></div></td>
+            <td>Grado universitario hijo</td><td>23/05/2026</td><td>8 hrs</td>
+            <td><span class="badge badge-muted">Familiar</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">21/05/2026</td>
+            <td><span class="badge badge-warn">Pendiente</span></td>
+            <td>
+              <button class="btn-success btn-sm" onclick="aprobar(this)">✓</button>
+              <button class="btn-danger btn-sm" onclick="rechazar(this)">✗</button>
+            </td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#8764b8">ML</div><div class="cell-name">María López</div></div></td>
+            <td>Calamidad doméstica</td><td>15/05/2026</td><td>8 hrs</td>
+            <td><span class="badge badge-danger">Calamidad</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">15/05/2026</td>
+            <td><span class="badge badge-ok">Aprobado</span></td>
+            <td><button class="btn-secondary btn-sm" onclick="verDetalle(4)">Ver</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<div id="modal-perm" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Solicitar permiso</div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="campo-emp-perm"></div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">Tipo de permiso <span class="required">*</span></label>
+          <select class="field-input" id="perm-tipo">
+            <option>Cita médica</option>
+            <option>Diligencia personal</option>
+            <option>Calamidad doméstica</option>
+            <option>Familiar</option>
+            <option>Académico</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fecha <span class="required">*</span></label>
+          <input type="date" class="field-input" id="perm-fecha">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Duración</label>
+          <select class="field-input" id="perm-horas">
+            <option value="2">2 horas</option>
+            <option value="4">Medio día (4 hrs)</option>
+            <option value="8">Día completo (8 hrs)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Horario</label>
+          <select class="field-input" id="perm-horario">
+            <option>Mañana (8:00 AM)</option>
+            <option>Tarde (1:00 PM)</option>
+            <option>Todo el día</option>
+          </select>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Descripción <span class="required">*</span></label>
+          <textarea class="field-input" id="perm-desc" placeholder="Describe el motivo del permiso..."></textarea>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Soporte (opcional)</label>
+          <input type="file" class="field-input" id="perm-doc" accept=".pdf,.jpg,.png">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardar()">Enviar solicitud</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) {
+  Auth.renderUserBar(session);
+  if (Auth.isAdmin()) {
+    document.getElementById('campo-emp-perm').innerHTML =
+      '<div class="field-group"><label class="field-label">Empleado</label>' +
+      '<select class="field-input" id="perm-emp"><option>Carlos Rodríguez</option>' +
+      '<option>María López</option><option>Jorge Martínez</option>' +
+      '<option>Andrea Parra</option><option>Luis García</option></select></div>';
+  }
+}
+function abrirModal(){ document.getElementById('modal-perm').classList.remove('hidden'); }
+function cerrarModal(){ document.getElementById('modal-perm').classList.add('hidden'); }
+function aprobar(btn){ var f=btn.closest('tr'); f.cells[6].innerHTML='<span class="badge badge-ok">Aprobado</span>'; f.cells[7].innerHTML='<button class="btn-secondary btn-sm" onclick="verDetalle(99)">Ver</button>'; }
+function rechazar(btn){ var f=btn.closest('tr'); f.cells[6].innerHTML='<span class="badge badge-danger">Rechazado</span>'; f.cells[7].innerHTML='<button class="btn-secondary btn-sm" onclick="verDetalle(99)">Ver</button>'; }
+function verDetalle(id){ alert('Detalle permiso #'+id+' — disponible con base de datos.'); }
+function guardar(){
+  var fecha=document.getElementById('perm-fecha').value;
+  if(!fecha){alert('La fecha es obligatoria');return;}
+  cerrarModal();
+  alert('✅ Solicitud de permiso enviada. El administrador la revisará.');
+}
+</script>
+</body>
+</html>
