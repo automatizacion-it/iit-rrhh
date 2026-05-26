@@ -42,13 +42,13 @@ var Auth = (function() {
         loginAt:   new Date().toISOString()
       };
       localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-      window.location.href = 'pages/dashboard.html';
+      window.location.href = '/pages/dashboard.html';
     }, 600);
   }
 
   function logout() {
     localStorage.removeItem(SESSION_KEY);
-    window.location.href = '../index.html';
+    window.location.href = '/';
   }
 
   function getSession() {
@@ -57,7 +57,7 @@ var Auth = (function() {
 
   function requireAuth() {
     var s = getSession();
-    if (!s) { window.location.href = '../index.html'; return null; }
+    if (!s) { window.location.href = '/'; return null; }
     return s;
   }
 
