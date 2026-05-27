@@ -669,7 +669,6 @@
 var session = Auth.requireAuth();
 if (session) {
   Auth.renderUserBar(session);
-  initProfileSidebar();
 }
 
 // ── DB empleados ───────────────────────────────────────────────────
@@ -1445,10 +1444,7 @@ function buildProfileSidebar(rol) {
 }
 
 function buildGrupoPerfil(titulo, items, tabsActivos) {
-  // Verificar si algún tab del grupo está activo actualmente
-  var tabActual = document.querySelector('.tp-btn.active');
-  var tabId = tabActual ? tabActual.getAttribute('onclick').match(/'([^']+)'/)?.[1] : '';
-  var abierto = tabsActivos.indexOf(tabId) !== -1;
+  var abierto = false; // cerrado por defecto, el usuario abre
 
   var html = '<div class="nav-grupo">';
   html += '<div class="nav-grupo-header' + (abierto ? ' abierto' : '') + '" onclick="Sidebar.toggleGrupo(this)">';
@@ -1541,12 +1537,24 @@ function initProfileSidebar() {
 }
 
 function cargar(){
-  var ced=qp('cedula');
-  if(!ced&&session)ced=session.cedula;
-  var ced2=ced?(ced+'').replace(/[.\s]/g,''):'';
-  var e=null;
-  if(ced2)e=DB.find(function(x){return x.cedula.replace(/[.\s]/g,'')===ced2;});
-  if(!e&&session&&session.rol==='empleado')e=DB.find(function(x){return x.email_corp===session.email;});
+  // 1. Intentar obtener cédula de la URL (viene de empleados.html)
+  var ced = qp('cedula') || '';
+  // 2. Limpiar puntos y espacios para comparar
+  var ced2 = ced.replace(/[\.\s]/g,'');
+  var e = null;
+  // 3. Buscar por cédula limpia
+  if(ced2) {
+    e = DB.find(function(x){ return x.cedula.replace(/[\.\s]/g,'') === ced2; });
+  }
+  // 4. Si no hay cedula en URL, buscar por email del usuario logueado
+  if(!e && session) {
+    e = DB.find(function(x){ return x.email_corp === session.email; });
+  }
+  // 5. Si es empleado, mostrar su propio perfil
+  if(!e && session && session.cedula) {
+    var ced3aux = (session.cedula+'').replace(/[\.\s]/g,'');
+    e = DB.find(function(x){ return x.cedula.replace(/[\.\s]/g,'') === ced3aux; });
+  }
   if(!e){document.querySelector('.main-content').innerHTML='<div class="alert alert-error" style="margin:40px">⚠️ Empleado no encontrado. <a href="/pages/empleados.html">← Volver</a></div>';return;}
 
   var ini=(e.nombres.split(' ')[0][0]+e.apellidos.split(' ')[0][0]).toUpperCase();
@@ -1654,8 +1662,6 @@ function cargar(){
   // Operaciones
   cargarOperaciones(ced3);
 
-  // Reconstruir sidebar con estado correcto
-  initProfileSidebar();
 
   if(esAdmin){
     document.getElementById('t-he-nom').innerHTML=document.getElementById('t-he').innerHTML;
@@ -1678,6 +1684,7 @@ function previewFoto(input){
 function editarPerfil(){alert('Edición de perfil disponible con API backend conectada.');}
 
 cargar();
+initProfileSidebar();
 </script>
 </body>
 </html>
