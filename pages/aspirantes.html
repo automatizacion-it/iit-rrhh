@@ -678,11 +678,29 @@ function preseleccionar(id) {
 function contratarAspirante(id) {
   var a = ASPIRANTES.find(function(x){return x.id===id;});
   if (!a) return;
-  if (!confirm('¿Contratar a '+a.nombres+' '+a.apellidos+'?\n\nSe creará su registro en el sistema de empleados.')) return;
+  if (!confirm('¿Contratar a '+a.nombres+' '+a.apellidos+'?\n\nSe creará su perfil completo en el sistema.')) return;
+
   a.estado = 'Contratado';
   cerrarModal('modal-det');
   renderAspirantes();
-  alert('🎉 '+a.nombres+' '+a.apellidos+' marcado como contratado.\nCompleta su registro en "Nuevo empleado".');
+
+  // Pasar datos del aspirante al formulario de nuevo empleado via sessionStorage
+  var datosNuevo = {
+    desde_aspirante: true,
+    nombres:    a.nombres,
+    apellidos:  a.apellidos,
+    cedula:     a.cedula,
+    email:      a.email,
+    telefono:   a.tel,
+    cargo:      a.cargo,
+    educacion:  a.edu,
+    exp:        a.exp,
+    salario:    a.salario,
+    aspirante_id: a.id
+  };
+  sessionStorage.setItem('iit_nuevo_empleado', JSON.stringify(datosNuevo));
+
+  alert('🎉 ¡'+a.nombres+' '+a.apellidos+' contratado!\n\nSus datos del proceso de selección ya están precargados en el formulario.');
   window.location.href = '/pages/nuevo-empleado.html';
 }
 

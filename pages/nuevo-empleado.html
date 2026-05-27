@@ -6,7 +6,50 @@
 <title>Nuevo Empleado — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
-<script src="/js/sidebar.js"></script>
+<script src="/js/sidebar.js">
+// ── Precargar datos desde aspirante contratado ────────────────────
+window.addEventListener('load', function() {
+  var datos = sessionStorage.getItem('iit_nuevo_empleado');
+  if (!datos) return;
+
+  try {
+    var d = JSON.parse(datos);
+    if (!d.desde_aspirante) return;
+
+    // Mostrar banner
+    var banner = document.createElement('div');
+    banner.className = 'alert alert-info';
+    banner.style.marginBottom = '14px';
+    banner.innerHTML = '🎉 <strong>Datos precargados desde el proceso de selección</strong> · Aspirante: <strong>'+d.nombres+' '+d.apellidos+'</strong> · Revisa y completa los campos faltantes.';
+    document.querySelector('.main-content').insertBefore(banner, document.querySelector('.page-header').nextSibling);
+
+    // Precargar campos
+    var set = function(id, val) { var el = document.getElementById(id); if(el && val) el.value = val; };
+    set('emp-nombres',   d.nombres);
+    set('emp-apellidos', d.apellidos);
+    set('emp-cedula',    d.cedula);
+    set('emp-email-corp', d.email ? d.email.replace('@gmail.com','@iit.com.co').replace('@hotmail.com','@iit.com.co') : '');
+    set('emp-email-pers', d.email);
+    set('emp-telefono',  d.telefono);
+    set('emp-educacion', d.educacion);
+    set('emp-salario',   d.salario);
+
+    // Limpiar sessionStorage para no precargar en recarga
+    sessionStorage.removeItem('iit_nuevo_empleado');
+
+  } catch(e) {
+    console.error('Error precargando aspirante:', e);
+  }
+});
+
+// Al guardar, redirigir al perfil del nuevo empleado
+function guardarYVerPerfil(cedula) {
+  var cedulaLimpia = (cedula || '').replace(/[.\s]/g, '');
+  alert('✅ Empleado registrado exitosamente.\nRedirigiendo a su perfil completo...');
+  window.location.href = '/pages/mi-perfil.html?cedula=' + cedulaLimpia;
+}
+
+</script>
 <style>
 .wizard-panel { display:none; }
 .wizard-panel.active { display:block; }
