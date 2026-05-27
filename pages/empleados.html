@@ -140,7 +140,7 @@ function renderCards() {
       '</div>' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--color-border-tertiary)">' +
         badgeEstado(e.estado) +
-        '<a href="/pages/mi-perfil.html" class="btn-secondary btn-sm">Ver perfil</a>' +
+        '<a href="/pages/mi-perfil.html?cedula='+e.cedula+'" class="btn-secondary btn-sm">Ver perfil</a>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -156,7 +156,7 @@ function renderLista() {
       '<td style="font-size:12px;color:var(--color-text-secondary)">'+e.cedula+'</td>' +
       '<td>'+e.cargo+'</td><td>'+e.depto+'</td><td>'+e.sede+'</td>' +
       '<td>'+badgeEstado(e.estado)+'</td>' +
-      '<td><a href="/pages/mi-perfil.html" class="btn-secondary btn-sm">Ver</a></td>' +
+      '<td><a href="/pages/mi-perfil.html?cedula='+e.cedula+'" class="btn-secondary btn-sm">Ver</a></td>' +
     '</tr>';
   }).join('');
 }

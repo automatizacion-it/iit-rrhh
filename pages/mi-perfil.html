@@ -3,23 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mi Perfil — IIT RRHH</title>
+<title>Perfil — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
 <script src="/js/sidebar.js"></script>
+<style>
+.foto-perfil{
+  width:100px;height:100px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;font-weight:700;color:#fff;
+  flex-shrink:0;cursor:pointer;position:relative;
+  transition:filter .2s;
+}
+.foto-perfil:hover{filter:brightness(.85);}
+.foto-perfil .cambiar-foto{
+  position:absolute;bottom:0;right:0;
+  background:#0078d4;border-radius:50%;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;border:2px solid #fff;
+}
+.seccion-perfil{
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  overflow:hidden;margin-bottom:12px;
+}
+.seccion-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border);
+  cursor:pointer;
+}
+.seccion-header:hover{background:var(--primary-light);}
+.seccion-body{padding:16px;}
+.campo-label{font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:2px;}
+.campo-valor{font-size:13px;color:var(--text);padding:6px 0;border-bottom:1px solid var(--border);}
+.campo-valor:last-child{border:none;}
+.tab-perfil{
+  display:flex;gap:0;border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;
+}
+.tab-perfil-btn{
+  flex:1;padding:8px;text-align:center;font-size:12px;
+  cursor:pointer;background:var(--bg-card);border:none;
+  border-right:1px solid var(--border);transition:var(--transition);
+}
+.tab-perfil-btn:last-child{border:none;}
+.tab-perfil-btn.active{background:var(--primary);color:#fff;font-weight:600;}
+.tab-perfil-btn:hover:not(.active){background:var(--primary-light);}
+</style>
 </head>
 <body>
 <div class="app-layout">
-
   <header class="topbar">
     <a href="/pages/dashboard.html" class="topbar-logo">
-      <div class="logo-icon">IIT</div>
-      <span class="logo-main">RRHH</span>
+      <div class="logo-icon">IIT</div><span class="logo-main">RRHH</span>
     </a>
+    <div class="topbar-search">
+      <span class="topbar-search-icon">🔍</span>
+      <input type="text" placeholder="Buscar empleado..." id="search-global"
+        onkeydown="if(event.key==='Enter')window.location='/pages/empleados.html'">
+    </div>
     <div class="topbar-right">
       <span class="topbar-badge" id="topbar-badge"></span>
       <span class="topbar-name" id="topbar-name"></span>
-      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
     </div>
   </header>
 
@@ -27,203 +72,274 @@
 
   <main class="main-content">
 
-    <div class="page-header">
-      <div>
-        <div class="page-title">👤 Mi perfil</div>
-        <div class="page-sub" id="perfil-sub">Mis datos personales y laborales</div>
-      </div>
-      <button class="btn-primary" id="btn-editar" onclick="activarEdicion()">✏️ Editar mis datos</button>
+    <!-- Breadcrumb -->
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">
+      <a href="/pages/empleados.html" style="color:var(--primary);text-decoration:none">👥 Empleados</a>
+      <span> › </span>
+      <span id="breadcrumb-nombre">Perfil</span>
     </div>
 
-    <!-- Cabecera perfil -->
+    <!-- Header del perfil -->
     <div class="card" style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-        <div style="position:relative">
-          <div id="foto-perfil" style="width:88px;height:88px;border-radius:50%;background:#0078d4;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:600;color:#fff;border:3px solid var(--border)">CR</div>
-          <button id="btn-foto" onclick="document.getElementById('foto-file').click()"
-            style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--primary);border:2px solid #fff;cursor:pointer;font-size:13px;display:none">📷</button>
-          <input type="file" id="foto-file" accept="image/*" style="display:none" onchange="cambiarFoto(this)">
+      <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+
+        <!-- Foto / Avatar -->
+        <div>
+          <div class="foto-perfil" id="avatar-perfil" onclick="cambiarFoto()"
+               style="background:#0078d4" title="Click para cambiar foto">
+            <span id="avatar-iniciales">??</span>
+            <div class="cambiar-foto">📷</div>
+          </div>
+          <input type="file" id="input-foto" accept="image/*" style="display:none"
+                 onchange="previewFoto(this)">
         </div>
-        <div style="flex:1">
-          <div style="font-size:20px;font-weight:600;color:var(--text)" id="perfil-nombre">Carlos Andrés Rodríguez Gómez</div>
-          <div style="font-size:13px;color:var(--text-muted);margin-top:3px">Técnico en Instalaciones Eléctricas · Departamento de Instalaciones · Sede Bogotá</div>
-          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-            <span class="badge badge-ok">Activo</span>
-            <span class="badge badge-muted">Contrato indefinido</span>
-            <span class="badge badge-muted">Ingreso: 15 Mar 2022</span>
-            <span class="badge badge-info">Cód. EMP-0042</span>
+
+        <!-- Info principal -->
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:20px;font-weight:700;margin-bottom:2px" id="h-nombre-completo">—</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:6px" id="h-cargo">—</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--text-muted)">
+            <span>🏢 <span id="h-depto">—</span></span>
+            <span>📍 <span id="h-ciudad">—</span></span>
+            <span>✉️ <span id="h-email">—</span></span>
+            <span>📱 <span id="h-tel">—</span></span>
           </div>
         </div>
-        <!-- Métricas rápidas -->
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <div style="text-align:center;padding:10px 14px;background:var(--bg);border-radius:var(--radius-lg);border:1px solid var(--border)">
-            <div style="font-size:22px;font-weight:700;color:#107c10">12</div>
-            <div style="font-size:11px;color:var(--text-muted)">Días vacac.</div>
+
+        <!-- Estado y acciones -->
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+          <span class="badge badge-ok" id="h-estado">Activo</span>
+          <div style="font-size:11px;color:var(--text-muted)">
+            Ingreso: <strong id="h-ingreso">—</strong>
           </div>
-          <div style="text-align:center;padding:10px 14px;background:var(--bg);border-radius:var(--radius-lg);border:1px solid var(--border)">
-            <div style="font-size:22px;font-weight:700;color:#797600">3</div>
-            <div style="font-size:11px;color:var(--text-muted)">Permisos</div>
+          <div style="font-size:11px;color:var(--text-muted)">
+            Antigüedad: <strong id="h-antiguedad">—</strong>
           </div>
-          <div style="text-align:center;padding:10px 14px;background:var(--bg);border-radius:var(--radius-lg);border:1px solid var(--border)">
-            <div style="font-size:22px;font-weight:700;color:#0078d4">7</div>
-            <div style="font-size:11px;color:var(--text-muted)">Capacitac.</div>
+          <div class="btn-group" id="acciones-admin" style="display:none">
+            <button class="btn-secondary btn-sm" onclick="editarPerfil()">✏️ Editar</button>
+            <button class="btn-secondary btn-sm" onclick="verContrato()">📄 Contrato</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-perfil" id="tabs-perfil">
+      <button class="tab-perfil-btn active" onclick="activarTab(this,'tab-datos')">👤 Datos personales</button>
+      <button class="tab-perfil-btn" onclick="activarTab(this,'tab-laboral')">💼 Info laboral</button>
+      <button class="tab-perfil-btn" onclick="activarTab(this,'tab-contacto')">📞 Contacto</button>
+      <button class="tab-perfil-btn" onclick="activarTab(this,'tab-docs')">📁 Documentos</button>
+      <button class="tab-perfil-btn" id="tab-btn-nomina" onclick="activarTab(this,'tab-nomina')" style="display:none">💰 Nómina</button>
+    </div>
+
+    <!-- Tab datos personales -->
+    <div id="tab-datos">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">🪪 Identificación</div></div>
+          <div class="form-grid">
+            <div class="field-group">
+              <div class="campo-label">Tipo documento</div>
+              <div class="campo-valor" id="d-tipodoc">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Número</div>
+              <div class="campo-valor" id="d-cedula">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Fecha de nacimiento</div>
+              <div class="campo-valor" id="d-nacimiento">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Lugar de nacimiento</div>
+              <div class="campo-valor" id="d-lugarnac">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Género</div>
+              <div class="campo-valor" id="d-genero">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Estado civil</div>
+              <div class="campo-valor" id="d-estadocivil">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">🎓 Educación</div></div>
+          <div class="form-grid">
+            <div class="field-group span-2">
+              <div class="campo-label">Nivel educativo</div>
+              <div class="campo-valor" id="d-educacion">—</div>
+            </div>
+            <div class="field-group span-2">
+              <div class="campo-label">Título</div>
+              <div class="campo-valor" id="d-titulo">—</div>
+            </div>
+            <div class="field-group span-2">
+              <div class="campo-label">Institución</div>
+              <div class="campo-valor" id="d-institucion">—</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="tabs">
-      <div class="tab active" onclick="activarTab(this,'tab-personal')">Datos personales</div>
-      <div class="tab" onclick="activarTab(this,'tab-laboral')">Datos laborales</div>
-      <div class="tab" onclick="activarTab(this,'tab-ss')">Seguridad social</div>
-      <div class="tab" onclick="activarTab(this,'tab-estudios')">Estudios</div>
-    </div>
+    <!-- Tab laboral -->
+    <div id="tab-laboral" class="hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">💼 Vinculación</div></div>
+          <div class="form-grid">
+            <div class="field-group">
+              <div class="campo-label">Código empleado</div>
+              <div class="campo-valor" id="l-codigo">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Tipo vinculación</div>
+              <div class="campo-valor" id="l-vinculacion">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Cargo</div>
+              <div class="campo-valor" id="l-cargo">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Departamento</div>
+              <div class="campo-valor" id="l-depto">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Sede</div>
+              <div class="campo-valor" id="l-sede">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Fecha ingreso</div>
+              <div class="campo-valor" id="l-ingreso">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Antigüedad</div>
+              <div class="campo-valor" id="l-antiguedad">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Estado</div>
+              <div class="campo-valor" id="l-estado">—</div>
+            </div>
+          </div>
+        </div>
 
-    <!-- Tab personal -->
-    <div id="tab-personal" class="card">
-      <div class="form-grid">
-        <div class="field-group">
-          <label class="field-label">Cédula</label>
-          <input type="text" class="field-input perfil-field" id="p-cedula" value="1.234.567.890" disabled>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Tipo de documento</label>
-          <input type="text" class="field-input perfil-field" id="p-tipodoc" value="Cédula de ciudadanía" disabled>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Nombres</label>
-          <input type="text" class="field-input perfil-field" id="p-nombres" value="Carlos Andrés" disabled>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Apellidos</label>
-          <input type="text" class="field-input perfil-field" id="p-apellidos" value="Rodríguez Gómez" disabled>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Fecha de nacimiento</label>
-          <input type="date" class="field-input perfil-field" id="p-nacimiento" value="1990-06-14" disabled>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Estado civil</label>
-          <select class="field-input perfil-field" id="p-civil" disabled>
-            <option selected>Casado/a</option>
-            <option>Soltero/a</option>
-            <option>Unión libre</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Teléfono <span id="edit-mark-tel" class="required hidden">*</span></label>
-          <input type="tel" class="field-input perfil-field" id="p-tel" value="+57 310 456 7890" disabled>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Email personal</label>
-          <input type="email" class="field-input perfil-field" id="p-email-pers" value="carlosandres90@gmail.com" disabled>
-        </div>
-        <div class="field-group span-2">
-          <label class="field-label">Dirección de residencia</label>
-          <input type="text" class="field-input perfil-field" id="p-dir" value="Cra 7 # 45-23, Chapinero, Bogotá" disabled>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Contacto de emergencia</label>
-          <input type="text" class="field-input perfil-field" id="p-emerg" value="María Rodríguez · 311 234 5678" disabled>
-        </div>
-      </div>
-      <div id="edit-actions" class="hidden" style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
-        <button class="btn-primary" onclick="guardarPerfil()">💾 Guardar cambios</button>
-      </div>
-    </div>
-
-    <!-- Tab laboral (solo lectura para empleado) -->
-    <div id="tab-laboral" class="card hidden">
-      <div class="alert alert-info" style="margin-bottom:16px;font-size:12px">
-        Los datos laborales son gestionados por el área de RRHH. Si necesitas corregir algún dato, contacta a <strong>rrhh@iit.com.co</strong>
-      </div>
-      <div class="form-grid">
-        <div class="field-group"><label class="field-label">Cargo</label><input class="field-input" value="Técnico en Instalaciones Eléctricas" disabled></div>
-        <div class="field-group"><label class="field-label">Departamento</label><input class="field-input" value="Instalaciones" disabled></div>
-        <div class="field-group"><label class="field-label">Sede</label><input class="field-input" value="Bogotá Principal" disabled></div>
-        <div class="field-group"><label class="field-label">Jefe directo</label><input class="field-input" value="Ing. Luis Martínez" disabled></div>
-        <div class="field-group"><label class="field-label">Fecha de ingreso</label><input class="field-input" value="15/03/2022" disabled></div>
-        <div class="field-group"><label class="field-label">Tipo de contrato</label><input class="field-input" value="Indefinido" disabled></div>
-        <div class="field-group"><label class="field-label">Banco</label><input class="field-input" value="Bancolombia" disabled></div>
-        <div class="field-group"><label class="field-label">Tipo de cuenta</label><input class="field-input" value="Ahorros ···· 4521" disabled></div>
-      </div>
-    </div>
-
-    <!-- Tab SS -->
-    <div id="tab-ss" class="card hidden">
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">EPS</div>
-          <div style="font-weight:600">Sanitas</div>
-          <div style="font-size:12px;color:#107c10">Activa · desde 15 Mar 2022</div>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Pensión</div>
-          <div style="font-weight:600">Porvenir</div>
-          <div style="font-size:12px;color:#107c10">Al día · aportes vigentes</div>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">ARL</div>
-          <div style="font-weight:600">Sura · Clase II</div>
-          <div style="font-size:12px;color:#107c10">Activa · tasa 1.044%</div>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Caja de compensación</div>
-          <div style="font-weight:600">Compensar</div>
-          <div style="font-size:12px;color:#107c10">Activa</div>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Cesantías</div>
-          <div style="font-weight:600">Porvenir</div>
-          <div style="font-size:12px;color:#107c10">$ 233.500 provisión mes</div>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Medicina prepagada</div>
-          <div style="font-weight:600">No aplica</div>
-          <div style="font-size:12px;color:var(--text-muted)">Sin beneficio activo</div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">💰 Condiciones salariales</div></div>
+          <div class="form-grid" id="panel-salario">
+            <div class="field-group span-2" style="text-align:center;padding:20px;color:var(--text-muted)">
+              🔒 Solo visible para administradores
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Tab estudios -->
-    <div id="tab-estudios" class="card hidden">
-      <div class="card-header">
-        <div class="card-title">🎓 Mis estudios y certificaciones</div>
-        <button class="btn-primary btn-sm" onclick="abrirModalEstudio()">➕ Agregar</button>
+    <!-- Tab contacto -->
+    <div id="tab-contacto" class="hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📞 Datos de contacto</div></div>
+          <div class="form-grid">
+            <div class="field-group span-2">
+              <div class="campo-label">Email corporativo</div>
+              <div class="campo-valor" id="c-email-corp">—</div>
+            </div>
+            <div class="field-group span-2">
+              <div class="campo-label">Email personal</div>
+              <div class="campo-valor" id="c-email-pers">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Teléfono</div>
+              <div class="campo-valor" id="c-tel">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Dirección residencia</div>
+              <div class="campo-valor" id="c-dir">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Barrio</div>
+              <div class="campo-valor" id="c-barrio">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Ciudad</div>
+              <div class="campo-valor" id="c-ciudad">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">🆘 Contacto de emergencia</div></div>
+          <div class="form-grid">
+            <div class="field-group span-2">
+              <div class="campo-label">Nombre</div>
+              <div class="campo-valor" id="c-emerg-nombre">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Teléfono</div>
+              <div class="campo-valor" id="c-emerg-tel">—</div>
+            </div>
+            <div class="field-group">
+              <div class="campo-label">Parentesco</div>
+              <div class="campo-valor" id="c-emerg-parent">—</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;display:flex;align-items:center;gap:12px">
-          <div style="font-size:24px">🎓</div>
-          <div style="flex:1">
-            <div style="font-weight:600">Tecnólogo en Electrónica</div>
-            <div style="font-size:12px;color:var(--text-muted)">SENA · Bogotá · Graduado 2012</div>
-          </div>
-          <span class="badge badge-ok">Verificado</span>
+    </div>
+
+    <!-- Tab documentos -->
+    <div id="tab-docs" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📁 Documentos del empleado</div>
+          <button class="btn-primary btn-sm" onclick="window.location='/pages/mis-documentos.html'">Ver todos</button>
         </div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;display:flex;align-items:center;gap:12px">
-          <div style="font-size:24px">🏫</div>
-          <div style="flex:1">
-            <div style="font-weight:600">Bachiller Académico</div>
-            <div style="font-size:12px;color:var(--text-muted)">Col. Distrital La Salle · 2008</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px" id="docs-lista">
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center">
+            <span style="font-size:20px">📄</span>
+            <div><div style="font-size:12px;font-weight:500">Cédula de ciudadanía</div><span class="badge badge-ok">Verificado</span></div>
           </div>
-          <span class="badge badge-ok">Verificado</span>
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center">
+            <span style="font-size:20px">📋</span>
+            <div><div style="font-size:12px;font-weight:500">Contrato laboral</div><span class="badge badge-ok">Firmado</span></div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center">
+            <span style="font-size:20px">🎓</span>
+            <div><div style="font-size:12px;font-weight:500">Diploma / Título</div><span class="badge badge-ok">Verificado</span></div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center">
+            <span style="font-size:20px">📜</span>
+            <div><div style="font-size:12px;font-weight:500">Cert. trabajo en alturas</div><span class="badge badge-warn" id="doc-cert-alt">Verificar</span></div>
+          </div>
         </div>
-        <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;display:flex;align-items:center;gap:12px">
-          <div style="font-size:24px">📜</div>
-          <div style="flex:1">
-            <div style="font-weight:600">Certificado Trabajo en Alturas</div>
-            <div style="font-size:12px;color:var(--text-muted)">ARL Sura · 40 hrs · Vence Mar 2027</div>
+      </div>
+    </div>
+
+    <!-- Tab nómina (solo admin) -->
+    <div id="tab-nomina" class="hidden">
+      <div class="card">
+        <div class="card-header"><div class="card-title">💰 Información salarial</div></div>
+        <div class="form-grid">
+          <div class="field-group">
+            <div class="campo-label">Salario básico</div>
+            <div class="campo-valor" id="n-salario">—</div>
           </div>
-          <span class="badge badge-ok">Vigente</span>
-        </div>
-        <div style="border:1px solid #f8e08e;border-radius:var(--radius-lg);padding:12px;display:flex;align-items:center;gap:12px">
-          <div style="font-size:24px">📜</div>
-          <div style="flex:1">
-            <div style="font-weight:600">Manejo Equipo Eléctrico BT</div>
-            <div style="font-size:12px;color:var(--text-muted)">ICONTEC · Vence Jul 2026</div>
+          <div class="field-group">
+            <div class="campo-label">Auxilio de transporte</div>
+            <div class="campo-valor" id="n-aux">—</div>
           </div>
-          <span class="badge badge-warn">⚠ Por vencer</span>
+          <div class="field-group">
+            <div class="campo-label">Banco</div>
+            <div class="campo-valor" id="n-banco">—</div>
+          </div>
+          <div class="field-group">
+            <div class="campo-label">Número de cuenta</div>
+            <div class="campo-valor" id="n-cuenta">—</div>
+          </div>
         </div>
       </div>
     </div>
@@ -234,58 +350,295 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
-if (session) Sidebar.inject('mi-perfil.html');
-var editando = false;
 if (session) {
   Auth.renderUserBar(session);
-  document.getElementById('perfil-sub').textContent = 'Bienvenido, '+session.nombre;
+  Sidebar.inject('mi-perfil.html');
 }
 
-function activarTab(el, tabId) {
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
-  el.classList.add('active');
-  document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden');});
+// ── Base de datos local (sustituir por API cuando esté lista) ──────
+var DB_EMPLEADOS = [
+  {
+    cedula:'1234567890', tipodoc:'CC', codigo:'EMP-0001',
+    nombres:'Carlos Andrés', apellidos:'Rodríguez Gómez',
+    nacimiento:'1990-06-14', lugarnac:'Bogotá', genero:'Masculino', estado_civil:'Casado',
+    educacion:'Tecnólogo', titulo:'Tecnólogo en Electrónica', institucion:'SENA',
+    email_corp:'c.rodriguez@iit.com.co', email_pers:'carlosandres90@gmail.com',
+    telefono:'+57 310 456 7890',
+    direccion:'Cra 7 # 45-23', barrio:'Chapinero', ciudad:'Bogotá',
+    contacto_emerg:'María Rodríguez', tel_emerg:'+57 311 234 5678', parentesco:'Cónyuge',
+    cargo:'Técnico Instalaciones Eléctricas', depto:'Instalaciones', sede:'Bogotá',
+    vinculacion:'Directo', ingreso:'2022-03-15', estado:'activo',
+    salario:2800000, aux_transporte:200000,
+    banco:'Bancolombia', cuenta:'7894521036',
+    color:'#0078d4'
+  },
+  {
+    cedula:'52456789', tipodoc:'CC', codigo:'EMP-0002',
+    nombres:'María Fernanda', apellidos:'López Castillo',
+    nacimiento:'1985-04-15', lugarnac:'Bogotá', genero:'Femenino', estado_civil:'Casada',
+    educacion:'Profesional', titulo:'Administradora de Empresas', institucion:'Universidad Nacional',
+    email_corp:'m.lopez@iit.com.co', email_pers:'mflopez85@gmail.com',
+    telefono:'+57 311 234 5678',
+    direccion:'Calle 72 # 11-25', barrio:'Chapinero', ciudad:'Bogotá',
+    contacto_emerg:'Roberto López', tel_emerg:'+57 312 345 6789', parentesco:'Esposo',
+    cargo:'Coordinadora RRHH', depto:'RRHH', sede:'Bogotá',
+    vinculacion:'Directo', ingreso:'2020-01-02', estado:'activo',
+    salario:4500000, aux_transporte:0,
+    banco:'Davivienda', cuenta:'9874563210',
+    color:'#107c10'
+  },
+  {
+    cedula:'79234567', tipodoc:'CC', codigo:'EMP-0003',
+    nombres:'Jorge Alberto', apellidos:'Martínez Ruiz',
+    nacimiento:'1988-09-20', lugarnac:'Medellín', genero:'Masculino', estado_civil:'Soltero',
+    educacion:'Profesional', titulo:'Ingeniero Eléctrico', institucion:'Universidad de Antioquia',
+    email_corp:'j.martinez@iit.com.co', email_pers:'jorgem88@hotmail.com',
+    telefono:'+57 312 345 6789',
+    direccion:'Calle 50 # 38-15', barrio:'El Poblado', ciudad:'Medellín',
+    contacto_emerg:'Carmen Ruiz', tel_emerg:'+57 313 456 7890', parentesco:'Madre',
+    cargo:'Ingeniero de Proyectos', depto:'Instalaciones', sede:'Medellín',
+    vinculacion:'Directo', ingreso:'2021-06-10', estado:'activo',
+    salario:5200000, aux_transporte:0,
+    banco:'Bancolombia', cuenta:'1234567890',
+    color:'#797600'
+  },
+  {
+    cedula:'1098765432', tipodoc:'CC', codigo:'EMP-0004',
+    nombres:'Andrea Patricia', apellidos:'Parra Vargas',
+    nacimiento:'1995-11-28', lugarnac:'Bogotá', genero:'Femenino', estado_civil:'Soltera',
+    educacion:'Tecnólogo', titulo:'Tecnólogo en RRHH', institucion:'SENA',
+    email_corp:'a.parra@iit.com.co', email_pers:'andreaparra95@gmail.com',
+    telefono:'+57 313 456 7890',
+    direccion:'Av. Suba # 91-32', barrio:'Suba', ciudad:'Bogotá',
+    contacto_emerg:'Claudia Vargas', tel_emerg:'+57 314 567 8901', parentesco:'Madre',
+    cargo:'Asistente Administrativo', depto:'RRHH', sede:'Bogotá',
+    vinculacion:'Directo', ingreso:'2024-02-15', estado:'activo',
+    salario:2200000, aux_transporte:200000,
+    banco:'Nequi', cuenta:'3134567890',
+    color:'#c50f1f'
+  },
+  {
+    cedula:'80123456', tipodoc:'CC', codigo:'EMP-0005',
+    nombres:'Luis Fernando', apellidos:'García Mora',
+    nacimiento:'1987-08-03', lugarnac:'Cali', genero:'Masculino', estado_civil:'Casado',
+    educacion:'Técnico', titulo:'Técnico en Instalaciones Eléctricas', institucion:'SENA',
+    email_corp:'l.garcia@iit.com.co', email_pers:'lfgarcia87@gmail.com',
+    telefono:'+57 314 567 8901',
+    direccion:'Av. 6N # 22-15', barrio:'Ciudad Jardín', ciudad:'Cali',
+    contacto_emerg:'Sandra García', tel_emerg:'+57 315 678 9012', parentesco:'Cónyuge',
+    cargo:'Técnico Solar Fotovoltaico', depto:'Instalaciones', sede:'Cali',
+    vinculacion:'Directo', ingreso:'2022-03-03', estado:'activo',
+    salario:2600000, aux_transporte:200000,
+    banco:'BBVA', cuenta:'4561237890',
+    color:'#8764b8'
+  },
+  {
+    cedula:'1020345678', tipodoc:'CC', codigo:'EMP-0006',
+    nombres:'Diana Carolina', apellidos:'Herrera Díaz',
+    nacimiento:'1992-03-08', lugarnac:'Bogotá', genero:'Femenino', estado_civil:'Unión libre',
+    educacion:'Profesional', titulo:'Administradora Comercial', institucion:'Pontificia Universidad Javeriana',
+    email_corp:'d.herrera@iit.com.co', email_pers:'dianaherrera92@gmail.com',
+    telefono:'+57 315 678 9012',
+    direccion:'Cra 15 # 80-25', barrio:'Cedritos', ciudad:'Bogotá',
+    contacto_emerg:'Andrés Díaz', tel_emerg:'+57 316 789 0123', parentesco:'Compañero',
+    cargo:'Asesor Comercial', depto:'Comercial', sede:'Bogotá',
+    vinculacion:'Directo', ingreso:'2023-08-01', estado:'activo',
+    salario:3100000, aux_transporte:0,
+    banco:'Bancolombia', cuenta:'7412589630',
+    color:'#038387'
+  },
+  {
+    cedula:'79876543', tipodoc:'CC', codigo:'EMP-0007',
+    nombres:'Ricardo Alejandro', apellidos:'Mora Peña',
+    nacimiento:'1991-12-15', lugarnac:'Bogotá', genero:'Masculino', estado_civil:'Soltero',
+    educacion:'Tecnólogo', titulo:'Tecnólogo en Redes', institucion:'SENA',
+    email_corp:'r.mora@iit.com.co', email_pers:'ricardomorap91@gmail.com',
+    telefono:'+57 316 789 0123',
+    direccion:'Calle 100 # 14-52', barrio:'Usaquén', ciudad:'Bogotá',
+    contacto_emerg:'Gloria Peña', tel_emerg:'+57 317 890 1234', parentesco:'Madre',
+    cargo:'Técnico en Redes', depto:'Tecnología', sede:'Bogotá',
+    vinculacion:'Directo', ingreso:'2022-11-15', estado:'activo',
+    salario:2900000, aux_transporte:200000,
+    banco:'Davivienda', cuenta:'3691470258',
+    color:'#ca5010'
+  },
+  {
+    cedula:'52789012', tipodoc:'CC', codigo:'EMP-0008',
+    nombres:'Sandra Milena', apellidos:'Castro Reyes',
+    nacimiento:'1983-07-22', lugarnac:'Medellín', genero:'Femenino', estado_civil:'Casada',
+    educacion:'Profesional', titulo:'Administradora de Empresas', institucion:'EAFIT',
+    email_corp:'s.castro@iit.com.co', email_pers:'sandracastro83@gmail.com',
+    telefono:'+57 317 890 1234',
+    direccion:'Cra 43A # 16-72', barrio:'El Estadio', ciudad:'Medellín',
+    contacto_emerg:'Carlos Castro', tel_emerg:'+57 318 901 2345', parentesco:'Esposo',
+    cargo:'Gerente General', depto:'Administración', sede:'Medellín',
+    vinculacion:'Directo', ingreso:'2019-05-15', estado:'activo',
+    salario:4800000, aux_transporte:0,
+    banco:'Bancolombia', cuenta:'8527419630',
+    color:'#0078d4'
+  }
+];
+
+function getParam(nombre) {
+  var params = new URLSearchParams(window.location.search);
+  return params.get(nombre);
+}
+
+function calcAntiguedad(fechaStr) {
+  var hoy    = new Date();
+  var inicio = new Date(fechaStr);
+  var anos   = hoy.getFullYear() - inicio.getFullYear();
+  var meses  = hoy.getMonth() - inicio.getMonth();
+  if (meses < 0) { anos--; meses += 12; }
+  return anos + ' año' + (anos !== 1 ? 's' : '') + ' ' + meses + ' mes' + (meses !== 1 ? 'es' : '');
+}
+
+function fmtFecha(str) {
+  if (!str) return '—';
+  var d = new Date(str + 'T12:00:00');
+  return d.toLocaleDateString('es-CO', {day:'2-digit', month:'long', year:'numeric'});
+}
+
+function fmtMonto(n) {
+  return '$ ' + (n || 0).toLocaleString('es-CO');
+}
+
+function cargarPerfil() {
+  // 1. Obtener cédula de la URL
+  var cedula = getParam('cedula');
+
+  // 2. Si no hay cédula en URL, usar la del empleado logueado
+  if (!cedula && session) {
+    cedula = session.cedula;
+  }
+
+  // 3. Buscar el empleado
+  var emp = null;
+  if (cedula) {
+    // Normalizar: quitar puntos y espacios
+    var ced = cedula.replace(/[\.\s]/g,'');
+    emp = DB_EMPLEADOS.find(function(e){
+      return e.cedula.replace(/[\.\s]/g,'') === ced;
+    });
+  }
+
+  // 4. Fallback: si es empleado sin parámetro, mostrar el suyo
+  if (!emp && session && session.rol === 'empleado') {
+    emp = DB_EMPLEADOS.find(function(e){
+      return e.email_corp === session.email;
+    });
+  }
+
+  if (!emp) {
+    document.querySelector('.main-content').innerHTML =
+      '<div class="alert alert-error" style="margin:40px">⚠️ Empleado no encontrado. <a href="/pages/empleados.html">← Volver a empleados</a></div>';
+    return;
+  }
+
+  // 5. Calcular datos derivados
+  var iniciales = (emp.nombres.split(' ')[0][0] + emp.apellidos.split(' ')[0][0]).toUpperCase();
+  var antiguedad = calcAntiguedad(emp.ingreso);
+
+  // 6. Header
+  document.getElementById('breadcrumb-nombre').textContent = emp.nombres + ' ' + emp.apellidos;
+  document.getElementById('avatar-iniciales').textContent  = iniciales;
+  document.getElementById('avatar-perfil').style.background = emp.color;
+  document.getElementById('h-nombre-completo').textContent = emp.nombres + ' ' + emp.apellidos;
+  document.getElementById('h-cargo').textContent           = emp.cargo;
+  document.getElementById('h-depto').textContent           = emp.depto + ' · ' + emp.sede;
+  document.getElementById('h-ciudad').textContent          = emp.ciudad;
+  document.getElementById('h-email').textContent           = emp.email_corp;
+  document.getElementById('h-tel').textContent             = emp.telefono;
+  document.getElementById('h-ingreso').textContent         = fmtFecha(emp.ingreso);
+  document.getElementById('h-antiguedad').textContent      = antiguedad;
+  document.getElementById('h-estado').textContent          = emp.estado.charAt(0).toUpperCase() + emp.estado.slice(1);
+  document.title = emp.nombres + ' ' + emp.apellidos + ' — IIT RRHH';
+
+  // 7. Tab datos personales
+  document.getElementById('d-tipodoc').textContent    = emp.tipodoc;
+  document.getElementById('d-cedula').textContent     = emp.cedula;
+  document.getElementById('d-nacimiento').textContent = fmtFecha(emp.nacimiento);
+  document.getElementById('d-lugarnac').textContent   = emp.lugarnac;
+  document.getElementById('d-genero').textContent     = emp.genero;
+  document.getElementById('d-estadocivil').textContent= emp.estado_civil;
+  document.getElementById('d-educacion').textContent  = emp.educacion;
+  document.getElementById('d-titulo').textContent     = emp.titulo;
+  document.getElementById('d-institucion').textContent= emp.institucion;
+
+  // 8. Tab laboral
+  document.getElementById('l-codigo').textContent    = emp.codigo;
+  document.getElementById('l-vinculacion').textContent= emp.vinculacion;
+  document.getElementById('l-cargo').textContent     = emp.cargo;
+  document.getElementById('l-depto').textContent     = emp.depto;
+  document.getElementById('l-sede').textContent      = emp.sede;
+  document.getElementById('l-ingreso').textContent   = fmtFecha(emp.ingreso);
+  document.getElementById('l-antiguedad').textContent= antiguedad;
+  document.getElementById('l-estado').textContent    = emp.estado;
+
+  // 9. Tab contacto
+  document.getElementById('c-email-corp').textContent  = emp.email_corp;
+  document.getElementById('c-email-pers').textContent  = emp.email_pers;
+  document.getElementById('c-tel').textContent         = emp.telefono;
+  document.getElementById('c-dir').textContent         = emp.direccion;
+  document.getElementById('c-barrio').textContent      = emp.barrio;
+  document.getElementById('c-ciudad').textContent      = emp.ciudad;
+  document.getElementById('c-emerg-nombre').textContent= emp.contacto_emerg;
+  document.getElementById('c-emerg-tel').textContent   = emp.tel_emerg;
+  document.getElementById('c-emerg-parent').textContent= emp.parentesco;
+
+  // 10. Tab nómina — solo admins
+  var esAdmin = Auth.isAdmin ? Auth.isAdmin() : false;
+  if (esAdmin) {
+    document.getElementById('tab-btn-nomina').style.display = 'block';
+    document.getElementById('acciones-admin').style.display = 'flex';
+    document.getElementById('n-salario').textContent = fmtMonto(emp.salario);
+    document.getElementById('n-aux').textContent     = emp.aux_transporte > 0 ? fmtMonto(emp.aux_transporte) : 'No aplica';
+    document.getElementById('n-banco').textContent   = emp.banco;
+    document.getElementById('n-cuenta').textContent  = emp.cuenta;
+    document.getElementById('panel-salario').innerHTML =
+      '<div class="field-group"><div class="campo-label">Salario básico</div><div class="campo-valor">'+fmtMonto(emp.salario)+'</div></div>'+
+      '<div class="field-group"><div class="campo-label">Auxilio transporte</div><div class="campo-valor">'+(emp.aux_transporte>0?fmtMonto(emp.aux_transporte):'No aplica')+'</div></div>'+
+      '<div class="field-group"><div class="campo-label">Banco</div><div class="campo-valor">'+emp.banco+'</div></div>'+
+      '<div class="field-group"><div class="campo-label">Cuenta</div><div class="campo-valor">'+emp.cuenta+'</div></div>';
+  }
+}
+
+function activarTab(btn, tabId) {
+  document.querySelectorAll('.tab-perfil-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  ['tab-datos','tab-laboral','tab-contacto','tab-docs','tab-nomina'].forEach(function(t){
+    var el = document.getElementById(t);
+    if (el) el.classList.add('hidden');
+  });
   document.getElementById(tabId).classList.remove('hidden');
 }
 
-function activarEdicion() {
-  editando = true;
-  document.querySelectorAll('.perfil-field').forEach(function(f){ f.disabled = false; });
-  document.getElementById('btn-foto').style.display = 'flex';
-  document.getElementById('edit-actions').classList.remove('hidden');
-  document.getElementById('edit-actions').style.display = 'flex';
-  document.getElementById('btn-editar').style.display = 'none';
-  // Solo los campos editables por el empleado
-  var readonly = ['p-cedula','p-tipodoc','p-nombres','p-apellidos','p-nacimiento'];
-  readonly.forEach(function(id){ document.getElementById(id).disabled = true; });
+function cambiarFoto() {
+  document.getElementById('input-foto').click();
 }
 
-function cancelarEdicion() {
-  editando = false;
-  document.querySelectorAll('.perfil-field').forEach(function(f){ f.disabled = true; });
-  document.getElementById('btn-foto').style.display = 'none';
-  document.getElementById('edit-actions').classList.add('hidden');
-  document.getElementById('btn-editar').style.display = '';
-}
-
-function guardarPerfil() {
-  cancelarEdicion();
-  alert('✅ Datos actualizados correctamente.');
-}
-
-function cambiarFoto(input) {
+function previewFoto(input) {
   if (!input.files || !input.files[0]) return;
   var reader = new FileReader();
   reader.onload = function(e) {
-    var el = document.getElementById('foto-perfil');
-    el.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    var av = document.getElementById('avatar-perfil');
+    av.style.backgroundImage = 'url('+e.target.result+')';
+    av.style.backgroundSize  = 'cover';
+    document.getElementById('avatar-iniciales').style.display = 'none';
   };
   reader.readAsDataURL(input.files[0]);
 }
 
-function abrirModalEstudio() {
-  alert('Formulario para agregar estudio — próximamente con carga de documentos a Azure Blob.');
+function editarPerfil() {
+  alert('Módulo de edición de perfil — disponible con API backend conectada.');
 }
+
+function verContrato() {
+  window.location = '/pages/contratos.html';
+}
+
+// Iniciar
+cargarPerfil();
 </script>
 </body>
 </html>
