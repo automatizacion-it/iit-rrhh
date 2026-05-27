@@ -14,7 +14,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'Empleados', icono: null, desplegable: false,
+      seccion: 'Empleados', icono: null, desplegable: true,
       roles: ['empresa','administrador','usuario'],
       items: [
         { label:'Empleados',      icon:'👥', href:'/pages/empleados.html',      roles:['empresa','administrador','usuario'] },
@@ -23,7 +23,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'Mi información', icono: null, desplegable: false,
+      seccion: 'Mi información', icono: null, desplegable: true,
       roles: ['empleado','usuario','administrador','empresa'],
       items: [
         { label:'Mi perfil',      icon:'👤', href:'/pages/mi-perfil.html',      roles:['empleado','usuario','administrador','empresa'] },
@@ -44,7 +44,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'Nómina', icono: null, desplegable: false,
+      seccion: 'Nómina', icono: null, desplegable: true,
       roles: ['empresa','administrador'],
       items: [
         { label:'Nómina',       icon:'💰', href:'/pages/nomina.html',           roles:['empresa','administrador'] },
@@ -55,7 +55,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'SST', icono: null, desplegable: false,
+      seccion: 'SST', icono: null, desplegable: true,
       roles: ['empresa','administrador','usuario'],
       items: [
         { label:'ARL · Accidentes', icon:'🦺', href:'/pages/arl.html',             roles:['empresa','administrador','usuario'] },
@@ -63,7 +63,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'Bienestar', icono: null, desplegable: false,
+      seccion: 'Bienestar', icono: null, desplegable: true,
       roles: ['empresa','administrador','usuario','empleado'],
       items: [
         { label:'Incentivos',    icon:'🎁', href:'/pages/incentivos.html',    roles:['empresa','administrador'] },
@@ -72,7 +72,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'IA · Selección', icono: null, desplegable: false,
+      seccion: 'IA · Selección', icono: null, desplegable: true,
       roles: ['empresa','administrador'],
       items: [
         { label:'Asistente IA',        icon:'🤖', href:'/pages/asistente-ia.html', roles:['empresa','administrador'] },
@@ -81,7 +81,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'Formación', icono: null, desplegable: false,
+      seccion: 'Formación', icono: null, desplegable: true,
       roles: ['empresa','administrador','usuario','empleado'],
       items: [
         { label:'Capacitaciones', icon:'🎓', href:'/pages/capacitaciones.html', roles:['empresa','administrador','usuario','empleado'] },
@@ -89,7 +89,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'Operaciones', icono: null, desplegable: false,
+      seccion: 'Operaciones', icono: null, desplegable: true,
       roles: ['empresa','administrador','usuario','empleado'],
       items: [
         { label:'Proyectos',        icon:'🏗️', href:'/pages/proyectos.html',       roles:['empresa','administrador','usuario'] },
@@ -98,7 +98,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'Seguridad', icono: null, desplegable: false,
+      seccion: 'Seguridad', icono: null, desplegable: true,
       roles: ['empresa','administrador'],
       items: [
         { label:'Est. seguridad', icon:'🔒', href:'/pages/seguridad.html',            roles:['empresa'] },
@@ -106,7 +106,7 @@ var Sidebar = (function () {
       ]
     },
     {
-      seccion: 'Sistema', icono: null, desplegable: false,
+      seccion: 'Sistema', icono: null, desplegable: true,
       roles: ['empresa','administrador'],
       items: [
         { label:'Informes',      icon:'📈', href:'/pages/informes.html',      roles:['empresa','administrador'] },
