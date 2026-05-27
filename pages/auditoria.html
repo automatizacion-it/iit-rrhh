@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoría — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css"></head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
+  </header>
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div><a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/usuarios.html"><span class="nav-icon">🔐</span> Usuarios</a>
+    <a class="nav-item active" href="/pages/auditoria.html"><span class="nav-icon">📜</span> Auditoría</a>
+    <a class="nav-item" href="/pages/backup.html"><span class="nav-icon">💾</span> Backup</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">📜 Log de auditoría</div>
+      <div class="page-sub">Registro inmutable de todas las acciones · Solo lectura · Solo Empresa</div></div>
+      <div class="btn-group">
+        <button class="btn-secondary btn-sm" onclick="exportarLog()">📊 Exportar</button>
+        <button class="btn-secondary btn-sm" onclick="aplicarFiltros()">🔍 Filtrar</button>
+      </div>
+    </div>
+
+    <div class="alert alert-warning" style="margin-bottom:16px;font-size:12px">
+      🔒 <strong>Log de auditoría inmutable.</strong> Ningún usuario puede modificar o eliminar estos registros. Cumple con los requisitos de trazabilidad y control interno.
+    </div>
+
+    <!-- Filtros -->
+    <div class="card" style="padding:12px 20px;margin-bottom:12px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div class="filter-group"><div class="field-label">Acción</div><select class="field-input" style="width:130px" id="f-accion"><option value="">Todas</option><option>LOGIN</option><option>INSERT</option><option>UPDATE</option><option>DELETE</option><option>EXPORT</option><option>VIEW</option></select></div>
+        <div class="filter-group"><div class="field-label">Usuario</div><select class="field-input" style="width:130px" id="f-usuario"><option value="">Todos</option><option>empresa</option><option>administrador</option><option>usuario</option></select></div>
+        <div class="filter-group"><div class="field-label">Tabla</div><select class="field-input" style="width:130px" id="f-tabla"><option value="">Todas</option><option>Empleados</option><option>Nomina</option><option>Usuarios</option><option>Contratos</option></select></div>
+        <div class="filter-group"><div class="field-label">Desde</div><input type="date" class="field-input" style="width:130px" id="f-desde"></div>
+        <div class="filter-group"><div class="field-label">Hasta</div><input type="date" class="field-input" style="width:130px" id="f-hasta"></div>
+        <button class="btn-primary btn-sm" onclick="aplicarFiltros()" style="align-self:flex-end">Aplicar</button>
+      </div>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:12px">
+      <div class="metric-card"><div class="metric-label">Total registros</div><div class="metric-value" style="color:#0078d4">2.847</div><div class="metric-sub">en el log</div></div>
+      <div class="metric-card"><div class="metric-label">Hoy</div><div class="metric-value" style="color:#107c10">48</div><div class="metric-sub">acciones</div></div>
+      <div class="metric-card"><div class="metric-label">Alertas</div><div class="metric-value" style="color:#c50f1f">2</div><div class="metric-sub">accesos fallidos</div></div>
+      <div class="metric-card"><div class="metric-label">Exportaciones</div><div class="metric-value" style="color:#797600">5</div><div class="metric-sub">este mes</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Rol</th><th>Acción</th><th>Tabla</th><th>Registro ID</th><th>IP</th><th>Resultado</th></tr></thead>
+        <tbody id="audit-tbody">
+          <tr><td style="font-size:11px;font-family:monospace">26/05/2026 21:45:32</td><td>empresa</td><td><span class="badge badge-danger">Empresa</span></td><td><span class="badge badge-info">VIEW</span></td><td>Auditoria_Log</td><td>—</td><td>192.168.1.10</td><td><span class="badge badge-ok">✓ Exitoso</span></td></tr>
+          <tr><td style="font-size:11px;font-family:monospace">26/05/2026 21:30:15</td><td>administrador</td><td><span class="badge badge-warn">Admin</span></td><td><span class="badge badge-ok">INSERT</span></td><td>Horas_Extras</td><td>47</td><td>192.168.1.12</td><td><span class="badge badge-ok">✓ Exitoso</span></td></tr>
+          <tr><td style="font-size:11px;font-family:monospace">26/05/2026 21:15:08</td><td>administrador</td><td><span class="badge badge-warn">Admin</span></td><td><span class="badge badge-warn">UPDATE</span></td><td>Empleados</td><td>5</td><td>192.168.1.12</td><td><span class="badge badge-ok">✓ Exitoso</span></td></tr>
+          <tr><td style="font-size:11px;font-family:monospace">26/05/2026 20:58:44</td><td>usuario</td><td><span class="badge badge-info">Usuario</span></td><td><span class="badge badge-info">LOGIN</span></td><td>Usuarios</td><td>3</td><td>192.168.1.15</td><td><span class="badge badge-ok">✓ Exitoso</span></td></tr>
+          <tr><td style="font-size:11px;font-family:monospace">26/05/2026 20:45:22</td><td>desconocido</td><td><span class="badge badge-muted">—</span></td><td><span class="badge badge-info">LOGIN</span></td><td>Usuarios</td><td>—</td><td>190.25.x.x</td><td><span class="badge badge-danger">✗ Fallido</span></td></tr>
+          <tr><td style="font-size:11px;font-family:monospace">26/05/2026 20:30:11</td><td>empresa</td><td><span class="badge badge-danger">Empresa</span></td><td><span class="badge badge-warn">EXPORT</span></td><td>Nomina</td><td>—</td><td>192.168.1.10</td><td><span class="badge badge-ok">✓ Exitoso</span></td></tr>
+          <tr><td style="font-size:11px;font-family:monospace">26/05/2026 19:15:33</td><td>administrador</td><td><span class="badge badge-warn">Admin</span></td><td><span class="badge badge-ok">INSERT</span></td><td>Contratos</td><td>28</td><td>192.168.1.12</td><td><span class="badge badge-ok">✓ Exitoso</span></td></tr>
+          <tr><td style="font-size:11px;font-family:monospace">26/05/2026 18:50:20</td><td>empleado</td><td><span class="badge badge-ok">Empleado</span></td><td><span class="badge badge-info">LOGIN</span></td><td>Usuarios</td><td>4</td><td>181.x.x.x</td><td><span class="badge badge-ok">✓ Exitoso</span></td></tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>Mostrando 1–8 de 2.847 registros</span>
+        <div class="page-btns">
+          <button class="page-btn">‹</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">›</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if(session){
+  Auth.renderUserBar(session);
+  if(!Auth.isEmpresa()){
+    document.querySelector('.main-content').innerHTML=
+      '<div class="alert alert-error" style="margin:40px">⛔ Solo el rol Empresa puede acceder al log de auditoría.</div>';
+  }
+}
+function aplicarFiltros(){alert('Filtros aplicados — disponible con BD conectada.');}
+function exportarLog(){alert('📊 Log de auditoría exportado. Disponible con BD conectada.');}
+</script>
+</body>
+</html>

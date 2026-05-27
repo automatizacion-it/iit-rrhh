@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Préstamos y Libranzas — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css"></head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
+  </header>
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div><a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Nómina</div>
+    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
+    <a class="nav-item active" href="/pages/prestamos.html"><span class="nav-icon">🏦</span> Préstamos</a>
+    <a class="nav-item" href="/pages/horas-extras.html"><span class="nav-icon">⏰</span> Horas extras</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">🏦 Préstamos y libranzas</div>
+      <div class="page-sub">Préstamos empresa · Libranzas banco · Cooperativa · Descuento automático nómina</div></div>
+      <button class="btn-primary" onclick="abrirModal()">➕ Nuevo préstamo</button>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card"><div class="metric-label">Préstamos activos</div><div class="metric-value" style="color:#0078d4">5</div><div class="metric-sub">en cartera</div></div>
+      <div class="metric-card"><div class="metric-label">Saldo total</div><div class="metric-value" style="font-size:16px;color:#c50f1f">$8.450.000</div><div class="metric-sub">pendiente</div></div>
+      <div class="metric-card"><div class="metric-label">Cuota mes</div><div class="metric-value" style="font-size:16px;color:#797600">$1.250.000</div><div class="metric-sub">descuento nómina</div></div>
+      <div class="metric-card"><div class="metric-label">Al día</div><div class="metric-value" style="color:#107c10">5</div><div class="metric-sub">sin mora</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Empleado</th><th>Tipo</th><th>Entidad</th><th>Valor total</th><th>Cuotas</th><th>Pagadas</th><th>Saldo</th><th>Cuota/mes</th><th>Estado</th><th>Docs</th></tr></thead>
+        <tbody id="prest-tbody">
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td>
+            <td><span class="badge badge-info">Empresa</span></td><td>IIT</td>
+            <td>$1.500.000</td><td>12</td><td>4</td><td style="color:#c50f1f">$1.000.000</td><td>$125.000</td>
+            <td><span class="badge badge-ok">Al día</span></td>
+            <td><button class="btn-secondary btn-sm">📄 Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#107c10">ML</div><div class="cell-name">María López</div></div></td>
+            <td><span class="badge badge-warn">Libranza</span></td><td>Bancolombia</td>
+            <td>$5.000.000</td><td>24</td><td>8</td><td style="color:#c50f1f">$3.450.000</td><td>$208.333</td>
+            <td><span class="badge badge-ok">Al día</span></td>
+            <td><button class="btn-secondary btn-sm">📄 Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#797600">JM</div><div class="cell-name">Jorge Martínez</div></div></td>
+            <td><span class="badge badge-muted">Cooperativa</span></td><td>Compensar</td>
+            <td>$3.000.000</td><td>18</td><td>10</td><td style="color:#c50f1f">$1.500.000</td><td>$166.667</td>
+            <td><span class="badge badge-ok">Al día</span></td>
+            <td><button class="btn-secondary btn-sm">📄 Ver</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Simulador -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-header"><div class="card-title">🧮 Simulador de préstamo</div></div>
+      <div class="form-grid">
+        <div class="field-group"><label class="field-label">Valor del préstamo</label><input type="number" class="field-input" id="sim-valor" value="1000000" oninput="simular()"></div>
+        <div class="field-group"><label class="field-label">Número de cuotas</label><select class="field-input" id="sim-cuotas" onchange="simular()"><option value="6">6 meses</option><option value="12" selected>12 meses</option><option value="18">18 meses</option><option value="24">24 meses</option></select></div>
+        <div class="field-group"><label class="field-label">Tasa mensual (%)</label><input type="number" class="field-input" id="sim-tasa" value="0" step="0.1" oninput="simular()"><div style="font-size:10px;color:var(--text-muted)">0% para préstamo empresa sin interés</div></div>
+        <div class="field-group"><label class="field-label">Cuota mensual estimada</label><input type="text" class="field-input" id="sim-cuota" readonly style="background:var(--bg);font-weight:600;color:#107c10"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-prest" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">➕ Registrar préstamo / libranza</div><button class="modal-close" onclick="cerrarModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group span-2"><label class="field-label">Empleado <span class="required">*</span></label><select class="field-input" id="p-emp"><option>Carlos Rodríguez</option><option>María López</option><option>Jorge Martínez</option></select></div>
+        <div class="field-group"><label class="field-label">Tipo <span class="required">*</span></label><select class="field-input" id="p-tipo"><option>Empresa</option><option>Libranza banco</option><option>Cooperativa</option><option>Fondo empleados</option></select></div>
+        <div class="field-group"><label class="field-label">Entidad</label><input type="text" class="field-input" id="p-entidad" placeholder="IIT / Bancolombia..."></div>
+        <div class="field-group"><label class="field-label">Valor total <span class="required">*</span></label><input type="number" class="field-input" id="p-valor" placeholder="1000000" oninput="calcCuota()"></div>
+        <div class="field-group"><label class="field-label">Número de cuotas</label><select class="field-input" id="p-cuotas" onchange="calcCuota()"><option value="6">6</option><option value="12" selected>12</option><option value="18">18</option><option value="24">24</option></select></div>
+        <div class="field-group"><label class="field-label">Tasa mensual (%)</label><input type="number" class="field-input" id="p-tasa" value="0" step="0.1" oninput="calcCuota()"></div>
+        <div class="field-group"><label class="field-label">Cuota mensual</label><input type="text" class="field-input" id="p-cuota" readonly style="background:var(--bg);font-weight:600;color:#107c10"></div>
+        <div class="field-group"><label class="field-label">Fecha inicio descuento</label><input type="date" class="field-input" id="p-inicio"></div>
+        <div class="field-group span-2"><label class="field-label">Documento soporte</label><input type="file" class="field-input" accept=".pdf,.jpg"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardar()">💾 Registrar préstamo</button>
+    </div>
+  </div>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if(session) Auth.renderUserBar(session);
+var fmt=function(n){return '$'+Math.round(n).toLocaleString('es-CO');};
+function calcCuotaBase(valor,cuotas,tasa){if(!tasa||tasa===0)return valor/cuotas;var r=tasa/100;return valor*r*Math.pow(1+r,cuotas)/(Math.pow(1+r,cuotas)-1);}
+function simular(){var v=parseFloat(document.getElementById('sim-valor').value)||0;var c=parseInt(document.getElementById('sim-cuotas').value)||12;var t=parseFloat(document.getElementById('sim-tasa').value)||0;document.getElementById('sim-cuota').value=fmt(calcCuotaBase(v,c,t));}
+function calcCuota(){var v=parseFloat(document.getElementById('p-valor').value)||0;var c=parseInt(document.getElementById('p-cuotas').value)||12;var t=parseFloat(document.getElementById('p-tasa').value)||0;document.getElementById('p-cuota').value=fmt(calcCuotaBase(v,c,t));}
+function abrirModal(){document.getElementById('modal-prest').classList.remove('hidden');document.getElementById('p-inicio').value=new Date().toISOString().slice(0,10);}
+function cerrarModal(){document.getElementById('modal-prest').classList.add('hidden');}
+function guardar(){
+  var emp=document.getElementById('p-emp').value;
+  var ini=emp.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+  var tipo=document.getElementById('p-tipo').value;
+  var valor=fmt(parseFloat(document.getElementById('p-valor').value)||0);
+  var cuotas=document.getElementById('p-cuotas').value;
+  var cuota=document.getElementById('p-cuota').value;
+  var bc={Empresa:'badge-info',Libranza:'badge-warn',Cooperativa:'badge-muted'};
+  document.getElementById('prest-tbody').insertAdjacentHTML('afterbegin',
+    '<tr><td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini+'</div><div class="cell-name">'+emp+'</div></div></td>'+
+    '<td><span class="badge '+(bc[tipo]||'badge-muted')+'">'+tipo+'</span></td>'+
+    '<td>'+document.getElementById('p-entidad').value+'</td>'+
+    '<td>'+valor+'</td><td>'+cuotas+'</td><td>0</td><td style="color:#c50f1f">'+valor+'</td>'+
+    '<td>'+cuota+'</td><td><span class="badge badge-ok">Al día</span></td>'+
+    '<td><button class="btn-secondary btn-sm">📄 Ver</button></td></tr>');
+  cerrarModal();alert('✅ Préstamo registrado. Se descontará automáticamente en nómina.');
+}
+simular();
+</script>
+</body>
+</html>

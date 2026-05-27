@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sugerencias del Jefe — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css"></head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
+  </header>
+  <nav class="sidebar">
+    <div class="nav-section">Principal</div><a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Empleados</div>
+    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
+    <a class="nav-item active" href="/pages/sugerencias-jefe.html"><span class="nav-icon">💬</span> Sugerencias jefe</a>
+    <div class="nav-section">Sistema</div>
+    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
+    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
+  </nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">💬 Sugerencias del jefe inmediato</div>
+      <div class="page-sub" id="sug-sub">Retroalimentación · Desempeño · Reconocimiento · Mejora continua</div></div>
+      <button class="btn-primary" id="btn-nueva" onclick="abrirModal()">✏️ Nueva sugerencia</button>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="activarTab(this,'tab-recibidas')">📨 Recibidas</div>
+      <div class="tab" id="tab-enviadas-btn" onclick="activarTab(this,'tab-enviadas')">📤 Enviadas</div>
+    </div>
+
+    <!-- Recibidas (vista empleado) -->
+    <div id="tab-recibidas">
+      <div id="lista-recibidas" style="display:flex;flex-direction:column;gap:10px">
+        <div style="border:1px solid rgba(16,185,129,.3);border-radius:var(--radius-lg);padding:16px;background:#f0fff8">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+            <div>
+              <div style="font-weight:600;color:#107c10">⭐ Reconocimiento — Excelente desempeño</div>
+              <div style="font-size:12px;color:var(--text-muted)">De: Ing. Luis Martínez · Mayo 2026</div>
+            </div>
+            <span class="badge badge-ok">Reconocimiento</span>
+          </div>
+          <div style="font-size:13px;line-height:1.7">Carlos ha demostrado un desempeño excepcional en el proyecto Parque Solar Norte. Su puntualidad, actitud proactiva y dominio técnico han sido clave para cumplir los plazos del proyecto. Se recomienda para futuras responsabilidades de liderazgo técnico.</div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text-muted)">¿Tienes algún comentario? <button class="btn-secondary btn-sm" onclick="responder(1)">💬 Responder</button></div>
+        </div>
+        <div style="border:1px solid rgba(251,191,36,.3);border-radius:var(--radius-lg);padding:16px;background:#fffdf0">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+            <div>
+              <div style="font-weight:600;color:#797600">📈 Oportunidad de mejora — Puntualidad</div>
+              <div style="font-size:12px;color:var(--text-muted)">De: Ing. Luis Martínez · Marzo 2026</div>
+            </div>
+            <span class="badge badge-warn">Mejora</span>
+          </div>
+          <div style="font-size:13px;line-height:1.7">Se han registrado 3 tardanzas en el mes de marzo. Es importante mantener la puntualidad acordada en el contrato laboral. Se sugiere revisar el transporte y planear el desplazamiento con mayor anticipación. Cuenta con todo el apoyo del equipo.</div>
+          <div style="margin-top:10px;font-size:12px"><span class="badge badge-ok">Leída</span> <button class="btn-secondary btn-sm" onclick="responder(2)">💬 Responder</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enviadas (vista jefe) -->
+    <div id="tab-enviadas" class="hidden">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📤 Sugerencias enviadas a empleados</div></div>
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>Empleado</th><th>Categoría</th><th>Título</th><th>Período</th><th>Tipo</th><th>Leída</th><th>Respuesta</th></tr></thead>
+            <tbody id="enviadas-tbody">
+              <tr><td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td><td>Desempeño</td><td>Excelente trabajo Parque Solar</td><td>May 2026</td><td><span class="badge badge-ok">Reconocimiento</span></td><td><span class="badge badge-ok">✓ Leída</span></td><td><span class="badge badge-muted">Sin respuesta</span></td></tr>
+              <tr><td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td><td>Puntualidad</td><td>Tardanzas marzo</td><td>Mar 2026</td><td><span class="badge badge-warn">Mejora</span></td><td><span class="badge badge-ok">✓ Leída</span></td><td><span class="badge badge-info">Respondida</span></td></tr>
+              <tr><td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">LG</div><div class="cell-name">Luis García</div></div></td><td>SST</td><td>Uso obligatorio EPP en obra</td><td>Feb 2026</td><td><span class="badge badge-danger">Urgente</span></td><td><span class="badge badge-warn">Pendiente</span></td><td><span class="badge badge-muted">Sin respuesta</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-sug" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">✏️ Nueva sugerencia al empleado</div><button class="modal-close" onclick="cerrarModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group span-2"><label class="field-label">Empleado <span class="required">*</span></label><select class="field-input" id="s-emp"><option>Carlos Rodríguez</option><option>Luis García</option><option>Jorge Martínez</option><option>Andrea Parra</option></select></div>
+        <div class="field-group"><label class="field-label">Categoría</label><select class="field-input" id="s-cat"><option>Desempeño</option><option>Actitud</option><option>Puntualidad</option><option>Trabajo en equipo</option><option>Mejora técnica</option><option>SST</option><option>Reconocimiento</option></select></div>
+        <div class="field-group"><label class="field-label">Tipo</label><select class="field-input" id="s-tipo"><option value="pos">⭐ Reconocimiento</option><option value="neg">📈 Oportunidad de mejora</option><option value="urg">🚨 Urgente</option></select></div>
+        <div class="field-group"><label class="field-label">Período</label><select class="field-input" id="s-periodo"><option>Mayo 2026</option><option>Abril 2026</option><option>Marzo 2026</option></select></div>
+        <div class="field-group"><label class="field-label">Prioridad</label><select class="field-input" id="s-prio"><option>Baja</option><option>Media</option><option>Alta</option></select></div>
+        <div class="field-group span-2"><label class="field-label">Título <span class="required">*</span></label><input type="text" class="field-input" id="s-titulo" placeholder="Resumen de la sugerencia"></div>
+        <div class="field-group span-2"><label class="field-label">Descripción <span class="required">*</span></label><textarea class="field-input" id="s-desc" rows="4" placeholder="Escribe la retroalimentación detallada para el empleado..."></textarea></div>
+        <div class="field-group span-2"><div style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="s-req-resp" style="width:16px;height:16px"><label for="s-req-resp" style="font-size:13px;cursor:pointer">El empleado debe responder esta sugerencia</label></div></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardar()">📤 Enviar sugerencia</button>
+    </div>
+  </div>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if(session){
+  Auth.renderUserBar(session);
+  var esAdmin=Auth.isAdmin();
+  if(!esAdmin){
+    document.getElementById('btn-nueva').style.display='none';
+    document.getElementById('tab-enviadas-btn').style.display='none';
+    document.getElementById('sug-sub').textContent='Feedback de tu jefe inmediato · '+session.nombre;
+  } else {
+    document.getElementById('sug-sub').textContent='Gestión de retroalimentación a empleados';
+  }
+}
+function activarTab(el,id){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('tab-recibidas').classList.add('hidden');
+  document.getElementById('tab-enviadas').classList.add('hidden');
+  document.getElementById(id).classList.remove('hidden');
+}
+function abrirModal(){document.getElementById('modal-sug').classList.remove('hidden');}
+function cerrarModal(){document.getElementById('modal-sug').classList.add('hidden');}
+function responder(id){var r=prompt('Tu respuesta al jefe:');if(r)alert('✅ Respuesta enviada.');}
+function guardar(){
+  if(!document.getElementById('s-titulo').value||!document.getElementById('s-desc').value){alert('Título y descripción obligatorios');return;}
+  var emp=document.getElementById('s-emp').value;
+  var ini=emp.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+  var tipo=document.getElementById('s-tipo').value;
+  var bc={pos:'badge-ok',neg:'badge-warn',urg:'badge-danger'};
+  var label={pos:'Reconocimiento',neg:'Mejora',urg:'Urgente'};
+  document.getElementById('enviadas-tbody').insertAdjacentHTML('afterbegin',
+    '<tr><td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini+'</div><div class="cell-name">'+emp+'</div></div></td>'+
+    '<td>'+document.getElementById('s-cat').value+'</td>'+
+    '<td>'+document.getElementById('s-titulo').value+'</td>'+
+    '<td>'+document.getElementById('s-periodo').value+'</td>'+
+    '<td><span class="badge '+bc[tipo]+'">'+label[tipo]+'</span></td>'+
+    '<td><span class="badge badge-warn">Pendiente</span></td>'+
+    '<td><span class="badge badge-muted">Sin respuesta</span></td></tr>');
+  cerrarModal();alert('✅ Sugerencia enviada a '+emp+'.');
+}
+</script>
+</body>
+</html>
