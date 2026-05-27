@@ -1,65 +1,162 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Procesos disciplinarios — IIT RRHH</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Procesos Disciplinarios — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="stylesheet" href="/css/styles.css">
-</head>
+<link rel="stylesheet" href="/css/styles.css"></head>
 <body>
 <div class="app-layout">
   <header class="topbar">
     <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
-    <div class="topbar-right">
-      <span class="topbar-badge" id="topbar-badge"></span>
-      <span class="topbar-name" id="topbar-name"></span>
-      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
-    </div>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
   </header>
   <nav class="sidebar">
-    <div class="nav-section">Principal</div>
-    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-    <div class="nav-section">Empleados</div>
-    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
-    <div class="nav-section">Nómina</div>
-    <a class="nav-item" href="/pages/horas-extras.html"><span class="nav-icon">⏰</span> Horas extras</a>
-    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
-    <a class="nav-item" href="/pages/liquidacion.html"><span class="nav-icon">💼</span> Liquidación</a>
-    <div class="nav-section">Tiempo</div>
-    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
-    <a class="nav-item" href="/pages/permisos-remunerados.html"><span class="nav-icon">⏸</span> Permisos remunerados</a>
-    <a class="nav-item" href="/pages/licencias.html"><span class="nav-icon">📋</span> Licencias</a>
-    <div class="nav-section">SST</div>
-    <a class="nav-item" href="/pages/arl.html"><span class="nav-icon">🦺</span> ARL</a>
-    <a class="nav-item" href="/pages/examenes-medicos.html"><span class="nav-icon">🩺</span> Exámenes médicos</a>
+    <div class="nav-section">Principal</div><a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
     <div class="nav-section">Bienestar</div>
-    <a class="nav-item" href="/pages/incentivos.html"><span class="nav-icon">🎁</span> Incentivos</a>
     <a class="nav-item" href="/pages/convivencia.html"><span class="nav-icon">⚖️</span> Convivencia</a>
-    <a class="nav-item" href="/pages/disciplinario.html"><span class="nav-icon">📜</span> Disciplinario</a>
-    <div class="nav-section">Sistema</div>
-    <a class="nav-item" href="/pages/validacion-identidad.html"><span class="nav-icon">🔐</span> Validación ID</a>
-    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
+    <a class="nav-item active" href="/pages/disciplinario.html"><span class="nav-icon">📜</span> Disciplinario</a>
     <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
   </nav>
   <main class="main-content">
     <div class="page-header">
-      <div>
-        <div class="page-title">📜 Procesos disciplinarios</div>
-        <div class="page-sub" id="page-sub">Cargando módulo...</div>
-      </div>
-      <button class="btn-primary" id="btn-nuevo" onclick="abrirModal()">➕ Nuevo registro</button>
+      <div><div class="page-title">📜 Procesos disciplinarios</div>
+      <div class="page-sub">Ley 2466/2025 · Reglamento Interno de Trabajo · Debido proceso garantizado</div></div>
+      <button class="btn-primary" onclick="abrirModal()">➕ Iniciar proceso</button>
     </div>
-    <div id="contenido-principal">
-      <div class="alert alert-info">⏳ Módulo en construcción — disponible en la próxima actualización.</div>
+
+    <!-- Tipos de falta y sanciones -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title">📋 Clasificación de faltas — Reglamento IIT · Ley 2466/2025</div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <div style="border:1px solid rgba(251,191,36,.3);border-radius:var(--radius-lg);padding:12px">
+          <div style="font-weight:600;color:#797600;margin-bottom:6px">⚠️ Falta leve</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.7">Tardanzas reiteradas · Incumplimiento menor · Descuido en funciones<br><strong>Sanción:</strong> Amonestación verbal o escrita</div>
+        </div>
+        <div style="border:1px solid rgba(239,68,68,.3);border-radius:var(--radius-lg);padding:12px">
+          <div style="font-weight:600;color:#c50f1f;margin-bottom:6px">🔴 Falta grave</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.7">Abandono de puesto · Daño a bienes · Insubordinación · Acoso<br><strong>Sanción:</strong> Suspensión 1–30 días sin sueldo</div>
+        </div>
+        <div style="border:1px solid rgba(27,27,27,.5);border-radius:var(--radius-lg);padding:12px">
+          <div style="font-weight:600;color:#1b1b1b;margin-bottom:6px">⛔ Falta gravísima</div>
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.7">Robo · Fraude · Violencia · Presentarse bajo efectos alcohol/drogas<br><strong>Sanción:</strong> Terminación con justa causa (Art. 62 CST)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card"><div class="metric-label">Procesos activos</div><div class="metric-value" style="color:#c50f1f">2</div><div class="metric-sub">en curso</div></div>
+      <div class="metric-card"><div class="metric-label">Resueltos 2026</div><div class="metric-value" style="color:#107c10">3</div><div class="metric-sub">procesos</div></div>
+      <div class="metric-card"><div class="metric-label">Archivados</div><div class="metric-value" style="color:#605e5c">1</div><div class="metric-sub">sin sanción</div></div>
+      <div class="metric-card"><div class="metric-label">Apelaciones</div><div class="metric-value" style="color:#797600">0</div><div class="metric-sub">pendientes</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Proceso</th><th>Empleado</th><th>Tipo falta</th><th>Fecha inicio</th><th>Estado</th><th>Sanción</th><th>Acciones</th></tr></thead>
+        <tbody id="disc-tbody">
+          <tr>
+            <td style="font-family:monospace;font-size:12px">PD-2026-001</td>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">LG</div><div class="cell-name">Luis García</div></div></td>
+            <td><span class="badge badge-warn">Grave</span></td><td>10/03/2026</td>
+            <td><span class="badge badge-ok">Resuelto</span></td>
+            <td style="font-size:12px">Suspensión 3 días</td>
+            <td><button class="btn-secondary btn-sm">👁 Ver</button></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;font-size:12px">PD-2026-002</td>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#797600">RM</div><div class="cell-name">Ricardo Mora</div></div></td>
+            <td><span class="badge badge-muted">Leve</span></td><td>15/05/2026</td>
+            <td><span class="badge badge-warn">Descargos pendientes</span></td>
+            <td style="font-size:12px">Por definir</td>
+            <td>
+              <button class="btn-secondary btn-sm">👁 Ver</button>
+              <button class="btn-primary btn-sm" onclick="verEtapas(2)">📋 Etapas</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Etapas del proceso -->
+    <div id="panel-etapas" class="card hidden" style="margin-top:16px">
+      <div class="card-header"><div class="card-title">📋 Etapas proceso PD-2026-002 — Ricardo Mora</div></div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="width:28px;height:28px;border-radius:50%;background:#107c10;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</div>
+          <div><div style="font-weight:500">Inicio del proceso</div><div style="font-size:12px;color:var(--text-muted)">Falta identificada y documentada · 15/05/2026</div><span class="badge badge-ok">Completado</span></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="width:28px;height:28px;border-radius:50%;background:#107c10;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</div>
+          <div><div style="font-weight:500">Citación al empleado</div><div style="font-size:12px;color:var(--text-muted)">Comunicado enviado · Fecha descargos: 22/05/2026</div><span class="badge badge-ok">Completado</span></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="width:28px;height:28px;border-radius:50%;background:#0078d4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">3</div>
+          <div style="flex:1"><div style="font-weight:500">Descargos del empleado</div><div style="font-size:12px;color:var(--text-muted)">El empleado puede presentar descargos escritos</div>
+            <div style="margin-top:8px"><button class="btn-secondary btn-sm" onclick="alert('Formulario para cargar descargos del empleado.')">📎 Cargar descargos</button></div>
+          </div>
+          <span class="badge badge-warn">Pendiente</span>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--border-dark);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">4</div>
+          <div><div style="font-weight:500;color:var(--text-muted)">Evaluación y decisión</div><div style="font-size:12px;color:var(--text-muted)">Análisis de descargos y determinación de sanción</div></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px 0">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--border-dark);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">5</div>
+          <div><div style="font-weight:500;color:var(--text-muted)">Notificación de la decisión</div><div style="font-size:12px;color:var(--text-muted)">Comunicar sanción o archivo del proceso</div></div>
+        </div>
+      </div>
     </div>
   </main>
+</div>
+
+<div id="modal-disc" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">📜 Iniciar proceso disciplinario</div><button class="modal-close" onclick="cerrarModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-info" style="margin-bottom:12px;font-size:12px">⚖️ <strong>Debido proceso:</strong> El empleado tiene derecho a conocer los cargos, presentar descargos y tener un apoderado. Ley 2466/2025.</div>
+      <div class="form-grid">
+        <div class="field-group span-2"><label class="field-label">Empleado <span class="required">*</span></label><select class="field-input" id="d-emp"><option>Carlos Rodríguez</option><option>Luis García</option><option>Ricardo Mora</option></select></div>
+        <div class="field-group"><label class="field-label">Tipo de falta</label><select class="field-input" id="d-tipo"><option>Leve</option><option>Grave</option><option>Gravísima</option></select></div>
+        <div class="field-group"><label class="field-label">Artículo reglamento</label><input type="text" class="field-input" id="d-art" placeholder="Art. 45 RIT"></div>
+        <div class="field-group"><label class="field-label">Fecha de la falta</label><input type="date" class="field-input" id="d-fecha-falta"></div>
+        <div class="field-group"><label class="field-label">Fecha citación descargos</label><input type="date" class="field-input" id="d-fecha-cit"></div>
+        <div class="field-group span-2"><label class="field-label">Descripción de la falta <span class="required">*</span></label><textarea class="field-input" id="d-desc" rows="4" placeholder="Describa detalladamente la falta cometida..."></textarea></div>
+        <div class="field-group span-2"><label class="field-label">Evidencias / Documentos</label><input type="file" class="field-input" accept=".pdf,.jpg,.png" multiple></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardar()">📜 Iniciar proceso</button>
+    </div>
+  </div>
 </div>
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
 if (session) Auth.renderUserBar(session);
-function abrirModal() { alert('Módulo Procesos disciplinarios — formulario en construcción'); }
+var numProceso = 2;
+function abrirModal(){document.getElementById('modal-disc').classList.remove('hidden');}
+function cerrarModal(){document.getElementById('modal-disc').classList.add('hidden');}
+function verEtapas(id){var p=document.getElementById('panel-etapas');p.classList.toggle('hidden');}
+function guardar(){
+  if(!document.getElementById('d-desc').value.trim()){alert('La descripción es obligatoria');return;}
+  numProceso++;
+  var emp=document.getElementById('d-emp').value;
+  var ini=emp.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+  var tipo=document.getElementById('d-tipo').value;
+  var bc={Leve:'badge-muted',Grave:'badge-warn',Gravísima:'badge-danger'};
+  var num='PD-2026-00'+numProceso;
+  document.getElementById('disc-tbody').insertAdjacentHTML('afterbegin',
+    '<tr><td style="font-family:monospace;font-size:12px">'+num+'</td>'+
+    '<td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini+'</div><div class="cell-name">'+emp+'</div></div></td>'+
+    '<td><span class="badge '+bc[tipo]+'">'+tipo+'</span></td>'+
+    '<td>'+new Date().toLocaleDateString('es-CO')+'</td>'+
+    '<td><span class="badge badge-info">Iniciado</span></td>'+
+    '<td style="font-size:12px">Por definir</td>'+
+    '<td><button class="btn-secondary btn-sm">👁 Ver</button></td></tr>');
+  cerrarModal();
+  alert('✅ Proceso disciplinario '+num+' iniciado.\nSe generará la citación para descargos.');
+}
 </script>
 </body>
 </html>

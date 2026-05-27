@@ -3,63 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARL · Accidentes de trabajo — IIT RRHH</title>
+<title>ARL · Accidentes — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
+<style>
+.gravedad-leve{background:#dff6dd;color:#107c10;border:1px solid #9fd89f;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.gravedad-moderado{background:#fff4ce;color:#797600;border:1px solid #f8e08e;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.gravedad-grave{background:#fde7e9;color:#c50f1f;border:1px solid #f1bcbe;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.gravedad-fatal{background:#1b1b1b;color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+</style>
 </head>
 <body>
 <div class="app-layout">
   <header class="topbar">
     <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
-    <div class="topbar-right">
-      <span class="topbar-badge" id="topbar-badge"></span>
-      <span class="topbar-name" id="topbar-name"></span>
-      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
-    </div>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
   </header>
   <nav class="sidebar">
-    <div class="nav-section">Principal</div>
-    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">Principal</div><a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <div class="nav-section">SST</div>
+    <a class="nav-item active" href="/pages/arl.html"><span class="nav-icon">🦺</span> ARL · Accidentes</a>
+    <a class="nav-item" href="/pages/examenes-medicos.html"><span class="nav-icon">🩺</span> Exámenes médicos</a>
     <div class="nav-section">Empleados</div>
     <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
-    <div class="nav-section">Nómina</div>
-    <a class="nav-item" href="/pages/horas-extras.html"><span class="nav-icon">⏰</span> Horas extras</a>
-    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
-    <a class="nav-item" href="/pages/liquidacion.html"><span class="nav-icon">💼</span> Liquidación</a>
-    <div class="nav-section">Tiempo</div>
-    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
-    <a class="nav-item" href="/pages/permisos-remunerados.html"><span class="nav-icon">⏸</span> Permisos remunerados</a>
-    <a class="nav-item" href="/pages/licencias.html"><span class="nav-icon">📋</span> Licencias</a>
-    <div class="nav-section">SST</div>
-    <a class="nav-item" href="/pages/arl.html"><span class="nav-icon">🦺</span> ARL</a>
-    <a class="nav-item" href="/pages/examenes-medicos.html"><span class="nav-icon">🩺</span> Exámenes médicos</a>
-    <div class="nav-section">Bienestar</div>
-    <a class="nav-item" href="/pages/incentivos.html"><span class="nav-icon">🎁</span> Incentivos</a>
-    <a class="nav-item" href="/pages/convivencia.html"><span class="nav-icon">⚖️</span> Convivencia</a>
-    <a class="nav-item" href="/pages/disciplinario.html"><span class="nav-icon">📜</span> Disciplinario</a>
+    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
     <div class="nav-section">Sistema</div>
-    <a class="nav-item" href="/pages/validacion-identidad.html"><span class="nav-icon">🔐</span> Validación ID</a>
     <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
     <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
   </nav>
   <main class="main-content">
     <div class="page-header">
-      <div>
-        <div class="page-title">🦺 ARL · Accidentes de trabajo</div>
-        <div class="page-sub" id="page-sub">Cargando módulo...</div>
+      <div><div class="page-title">🦺 ARL · Accidentes de trabajo</div>
+      <div class="page-sub">Ley 1562/2012 · FURAT · Investigación · Clases de riesgo I–V</div></div>
+      <div class="btn-group">
+        <button class="btn-secondary btn-sm" onclick="alert('FURAT: Formulario Único Reporte Accidente Trabajo\nReporte a ARL: 2 días hábiles\nBase legal: Decreto 1295/1994 · Ley 1562/2012')">📋 Guía FURAT</button>
+        <button class="btn-primary" onclick="abrirModal()">🚨 Reportar accidente</button>
       </div>
-      <button class="btn-primary" id="btn-nuevo" onclick="abrirModal()">➕ Nuevo registro</button>
     </div>
-    <div id="contenido-principal">
-      <div class="alert alert-info">⏳ Módulo en construcción — disponible en la próxima actualización.</div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card"><div class="metric-label">Accidentes 2026</div><div class="metric-value" style="color:#c50f1f">3</div><div class="metric-sub">reportados</div></div>
+      <div class="metric-card"><div class="metric-label">FURAT enviados</div><div class="metric-value" style="color:#107c10">3</div><div class="metric-sub">a ARL Sura</div></div>
+      <div class="metric-card"><div class="metric-label">Días perdidos</div><div class="metric-value" style="color:#797600">12</div><div class="metric-sub">por accidentes</div></div>
+      <div class="metric-card"><div class="metric-label">Investigados</div><div class="metric-value" style="color:#0078d4">2</div><div class="metric-sub">de 3 accidentes</div></div>
+      <div class="metric-card"><div class="metric-label">Sin accidentes</div><div class="metric-value" style="color:#107c10">47</div><div class="metric-sub">días consecutivos</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title">⚠️ Clases de riesgo ARL — IIT</div></div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+        <div style="text-align:center;padding:10px;background:#dff6dd;border-radius:var(--radius);border:1px solid #9fd89f"><div style="font-weight:700;color:#107c10">Clase I</div><div style="font-size:10px;color:#107c10">0.522%</div><div style="font-size:10px;margin-top:4px">Administrativo</div></div>
+        <div style="text-align:center;padding:10px;background:#fff4ce;border-radius:var(--radius);border:1px solid #f8e08e"><div style="font-weight:700;color:#797600">Clase II</div><div style="font-size:10px;color:#797600">1.044%</div><div style="font-size:10px;margin-top:4px">Técnicos redes</div></div>
+        <div style="text-align:center;padding:10px;background:#fde7e9;border-radius:var(--radius);border:1px solid #f1bcbe"><div style="font-weight:700;color:#c50f1f">Clase III</div><div style="font-size:10px;color:#c50f1f">2.436%</div><div style="font-size:10px;margin-top:4px">Téc. eléctrico</div></div>
+        <div style="text-align:center;padding:10px;background:#fde7e9;border-radius:var(--radius);border:1px solid #c50f1f"><div style="font-weight:700;color:#a00">Clase IV</div><div style="font-size:10px;color:#a00">4.350%</div><div style="font-size:10px;margin-top:4px">Téc. solar</div></div>
+        <div style="text-align:center;padding:10px;background:#1b1b1b;border-radius:var(--radius)"><div style="font-weight:700;color:#fff">Clase V</div><div style="font-size:10px;color:#aaa">6.960%</div><div style="font-size:10px;margin-top:4px;color:#ccc">Alto riesgo</div></div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="activarTab(this,'tab-acc')">🚨 Accidentes</div>
+      <div class="tab" onclick="activarTab(this,'tab-inv')">🔍 Investigación</div>
+      <div class="tab" onclick="activarTab(this,'tab-est')">📊 Indicadores SST</div>
+    </div>
+
+    <div id="tab-acc" class="card">
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Empleado</th><th>Fecha</th><th>Tipo</th><th>Lesión</th><th>Gravedad</th><th>Días</th><th>FURAT</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="arl-tbody">
+            <tr>
+              <td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">LG</div><div class="cell-name">Luis García</div></div></td>
+              <td>02/04/2026</td><td><span class="badge badge-warn">Trabajo</span></td><td>Contusión mano</td>
+              <td><span class="gravedad-moderado">Moderado</span></td><td>4</td>
+              <td><span class="badge badge-ok">✓ Enviado</span></td><td><span class="badge badge-ok">Investigado</span></td>
+              <td><button class="btn-secondary btn-sm" onclick="verAcc(1)">👁 Ver</button></td>
+            </tr>
+            <tr>
+              <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td>
+              <td>15/03/2026</td><td><span class="badge badge-warn">Trabajo</span></td><td>Esguince espalda</td>
+              <td><span class="gravedad-leve">Leve</span></td><td>2</td>
+              <td><span class="badge badge-ok">✓ Enviado</span></td><td><span class="badge badge-ok">Investigado</span></td>
+              <td><button class="btn-secondary btn-sm" onclick="verAcc(2)">👁 Ver</button></td>
+            </tr>
+            <tr>
+              <td><div class="cell-avatar"><div class="avatar" style="background:#797600">JM</div><div class="cell-name">Jorge Martínez</div></div></td>
+              <td>10/01/2026</td><td><span class="badge badge-info">Trayecto</span></td><td>Esguince tobillo</td>
+              <td><span class="gravedad-leve">Leve</span></td><td>6</td>
+              <td><span class="badge badge-ok">✓ Enviado</span></td><td><span class="badge badge-warn">Pendiente</span></td>
+              <td><button class="btn-primary btn-sm" onclick="activarTab(document.querySelectorAll('.tab')[1],'tab-inv')">🔍 Investigar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-inv" class="card hidden">
+      <div class="card-header"><div class="card-title">🔍 Investigación — Metodología causa raíz</div></div>
+      <div class="alert alert-info" style="margin-bottom:14px;font-size:12px">📋 Todo accidente que genere incapacidad debe investigarse en <strong>15 días calendario</strong>. Decreto 1072/2015 Art. 2.2.4.1.7.</div>
+      <div class="form-grid">
+        <div class="field-group"><label class="field-label">Accidente</label><select class="field-input"><option>Jorge Martínez · 10/01/2026</option></select></div>
+        <div class="field-group"><label class="field-label">Investigadores</label><input type="text" class="field-input" placeholder="Nombres"></div>
+        <div class="field-group span-2"><label class="field-label">Causa inmediata (¿Qué pasó?)</label><textarea class="field-input" rows="2" placeholder="Acto o condición insegura..."></textarea></div>
+        <div class="field-group span-2"><label class="field-label">Causa básica (¿Por qué pasó?)</label><textarea class="field-input" rows="2" placeholder="Factor personal o de trabajo..."></textarea></div>
+        <div class="field-group span-2"><label class="field-label">Medidas correctivas</label><textarea class="field-input" rows="2" placeholder="Acciones para evitar repetición..."></textarea></div>
+        <div class="field-group"><label class="field-label">Responsable</label><input type="text" class="field-input" placeholder="Nombre responsable"></div>
+        <div class="field-group"><label class="field-label">Fecha límite</label><input type="date" class="field-input"></div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn-primary" onclick="alert('✅ Investigación guardada.')">💾 Guardar</button>
+        <button class="btn-secondary" onclick="alert('📄 Informe PDF generado.')">📄 Generar PDF</button>
+      </div>
+    </div>
+
+    <div id="tab-est" class="card hidden">
+      <div class="card-header"><div class="card-title">📊 Indicadores SST 2026</div></div>
+      <div class="form-grid">
+        <div style="background:var(--bg);border-radius:var(--radius-lg);padding:16px;border:1px solid var(--border)"><div style="font-size:11px;color:var(--text-muted)">Índice de Frecuencia (IF)</div><div style="font-size:28px;font-weight:700;color:#c50f1f">4.2</div><div style="font-size:10px;color:var(--text-muted)">accidentes × 200.000 / horas trabajadas</div></div>
+        <div style="background:var(--bg);border-radius:var(--radius-lg);padding:16px;border:1px solid var(--border)"><div style="font-size:11px;color:var(--text-muted)">Índice de Severidad (IS)</div><div style="font-size:28px;font-weight:700;color:#797600">16.8</div><div style="font-size:10px;color:var(--text-muted)">días perdidos × 200.000 / horas trabajadas</div></div>
+        <div style="background:var(--bg);border-radius:var(--radius-lg);padding:16px;border:1px solid var(--border)"><div style="font-size:11px;color:var(--text-muted)">Índice ILI</div><div style="font-size:28px;font-weight:700;color:#0078d4">0.07</div><div style="font-size:10px;color:var(--text-muted)">IF × IS / 1000</div></div>
+        <div style="background:#dff6dd;border-radius:var(--radius-lg);padding:16px;border:1px solid #9fd89f"><div style="font-size:11px;color:#107c10">Días sin accidentes</div><div style="font-size:28px;font-weight:700;color:#107c10">47</div><div style="font-size:10px;color:#107c10">desde el último accidente</div></div>
+      </div>
     </div>
   </main>
+</div>
+
+<div id="modal-arl" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">🚨 Reportar accidente de trabajo</div><button class="modal-close" onclick="cerrarModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-error" style="margin-bottom:12px;font-size:12px">⏰ Reporte a ARL dentro de <strong>2 días hábiles</strong>. Ley 1562/2012 Art. 4.</div>
+      <div class="form-grid">
+        <div class="field-group span-2"><label class="field-label">Empleado <span class="required">*</span></label><select class="field-input" id="acc-emp"><option>Carlos Rodríguez</option><option>Luis García</option><option>Jorge Martínez</option></select></div>
+        <div class="field-group"><label class="field-label">Fecha <span class="required">*</span></label><input type="date" class="field-input" id="acc-fecha"></div>
+        <div class="field-group"><label class="field-label">Hora</label><input type="time" class="field-input" id="acc-hora"></div>
+        <div class="field-group"><label class="field-label">Tipo</label><select class="field-input" id="acc-tipo"><option>Trabajo</option><option>Trayecto</option><option>Enfermedad profesional</option></select></div>
+        <div class="field-group"><label class="field-label">Gravedad</label><select class="field-input" id="acc-grav"><option>Leve</option><option>Moderado</option><option>Grave</option><option>Fatal</option></select></div>
+        <div class="field-group"><label class="field-label">Parte afectada</label><input type="text" class="field-input" id="acc-parte" placeholder="Mano, espalda..."></div>
+        <div class="field-group"><label class="field-label">Naturaleza lesión</label><select class="field-input"><option>Contusión</option><option>Fractura</option><option>Herida</option><option>Quemadura</option><option>Esguince</option></select></div>
+        <div class="field-group"><label class="field-label">Días incapacidad</label><input type="number" class="field-input" id="acc-dias" value="0" min="0"></div>
+        <div class="field-group"><label class="field-label">ARL</label><select class="field-input"><option>Sura</option><option>Positiva</option><option>Colmena</option></select></div>
+        <div class="field-group span-2"><label class="field-label">Descripción <span class="required">*</span></label><textarea class="field-input" id="acc-desc" rows="3" placeholder="Cómo ocurrió el accidente..."></textarea></div>
+        <div class="field-group span-2"><label class="field-label">Fotos / Evidencias</label><input type="file" class="field-input" accept=".jpg,.png,.pdf" multiple></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardar()">🚨 Reportar y generar FURAT</button>
+    </div>
+  </div>
 </div>
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
 if (session) Auth.renderUserBar(session);
-function abrirModal() { alert('Módulo ARL · Accidentes de trabajo — formulario en construcción'); }
+function activarTab(el,id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden');});document.getElementById(id).classList.remove('hidden');}
+function abrirModal(){document.getElementById('modal-arl').classList.remove('hidden');document.getElementById('acc-fecha').value=new Date().toISOString().slice(0,10);}
+function cerrarModal(){document.getElementById('modal-arl').classList.add('hidden');}
+function verAcc(id){alert('Detalle accidente #'+id+' — disponible con BD conectada.');}
+function guardar(){
+  if(!document.getElementById('acc-fecha').value||!document.getElementById('acc-desc').value.trim()){alert('Fecha y descripción obligatorias');return;}
+  var emp=document.getElementById('acc-emp').value;
+  var ini=emp.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+  var grav=document.getElementById('acc-grav').value;
+  var clases={Leve:'gravedad-leve',Moderado:'gravedad-moderado',Grave:'gravedad-grave',Fatal:'gravedad-fatal'};
+  var fecha=new Date(document.getElementById('acc-fecha').value+'T12:00').toLocaleDateString('es-CO');
+  document.getElementById('arl-tbody').insertAdjacentHTML('afterbegin',
+    '<tr><td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini+'</div><div class="cell-name">'+emp+'</div></div></td>'+
+    '<td>'+fecha+'</td><td><span class="badge badge-warn">'+document.getElementById('acc-tipo').value+'</span></td>'+
+    '<td>'+document.getElementById('acc-parte').value+'</td><td><span class="'+clases[grav]+'">'+grav+'</span></td>'+
+    '<td>'+document.getElementById('acc-dias').value+'</td><td><span class="badge badge-warn">⏳ Pendiente</span></td>'+
+    '<td><span class="badge badge-warn">Sin investigar</span></td><td><button class="btn-secondary btn-sm">👁 Ver</button></td></tr>');
+  cerrarModal();
+  alert('✅ Accidente reportado. FURAT generado.\nEnviar a ARL dentro de 2 días hábiles.');
+}
 </script>
 </body>
 </html>
