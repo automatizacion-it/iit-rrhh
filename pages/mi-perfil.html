@@ -130,6 +130,12 @@
       <button class="tab-perfil-btn" onclick="activarTab(this,'tab-laboral')">💼 Info laboral</button>
       <button class="tab-perfil-btn" onclick="activarTab(this,'tab-contacto')">📞 Contacto</button>
       <button class="tab-perfil-btn" onclick="activarTab(this,'tab-docs')">📁 Documentos</button>
+      <button class="tab-perfil-btn" onclick="activarTab(this,'tab-vacaciones')">🏖 Vacaciones</button>
+      <button class="tab-perfil-btn" onclick="activarTab(this,'tab-permisos')">⏸ Permisos</button>
+      <button class="tab-perfil-btn" onclick="activarTab(this,'tab-incapacidades')">🏥 Incapacidades</button>
+      <button class="tab-perfil-btn" onclick="activarTab(this,'tab-hextras')">⏰ H. extras</button>
+      <button class="tab-perfil-btn" onclick="activarTab(this,'tab-capacitaciones')">🎓 Capacitaciones</button>
+    </div>
       <button class="tab-perfil-btn" id="tab-btn-nomina" onclick="activarTab(this,'tab-nomina')" style="display:none">💰 Nómina</button>
     </div>
 
@@ -344,6 +350,82 @@
       </div>
     </div>
 
+
+    <!-- Tab vacaciones -->
+    <div id="tab-vacaciones" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏖 Mis vacaciones</div>
+          <button class="btn-primary btn-sm" onclick="window.location='/pages/vacaciones.html'">Ver todo</button>
+        </div>
+        <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+          <div class="metric-card"><div class="metric-label">Días disponibles</div><div class="metric-value" style="color:#107c10" id="vac-disp">—</div></div>
+          <div class="metric-card"><div class="metric-label">Días disfrutados</div><div class="metric-value" id="vac-dis">—</div></div>
+          <div class="metric-card"><div class="metric-label">Pendiente aprobar</div><div class="metric-value" style="color:#797600" id="vac-pend">—</div></div>
+        </div>
+        <div class="table-wrap" style="margin:0"><table>
+          <thead><tr><th>Período</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Estado</th></tr></thead>
+          <tbody id="tbody-vacaciones"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Tab permisos -->
+    <div id="tab-permisos" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⏸ Mis permisos</div>
+          <button class="btn-primary btn-sm" onclick="window.location='/pages/permisos.html'">Ver todo</button>
+        </div>
+        <div class="table-wrap" style="margin:0"><table>
+          <thead><tr><th>Tipo</th><th>Fecha</th><th>Horas</th><th>Motivo</th><th>Estado</th></tr></thead>
+          <tbody id="tbody-permisos"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Tab incapacidades -->
+    <div id="tab-incapacidades" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏥 Mis incapacidades</div>
+          <button class="btn-primary btn-sm" onclick="window.location='/pages/incapacidades.html'">Ver todo</button>
+        </div>
+        <div class="table-wrap" style="margin:0"><table>
+          <thead><tr><th>Diagnóstico</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Entidad</th></tr></thead>
+          <tbody id="tbody-incapacidades"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Tab horas extras -->
+    <div id="tab-hextras" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⏰ Mis horas extras</div>
+          <button class="btn-primary btn-sm" onclick="window.location='/pages/horas-extras.html'">Ver todo</button>
+        </div>
+        <div class="table-wrap" style="margin:0"><table>
+          <thead><tr><th>Fecha</th><th>Tipo</th><th>Horas</th><th>Valor</th><th>Estado</th></tr></thead>
+          <tbody id="tbody-hextras"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Tab capacitaciones -->
+    <div id="tab-capacitaciones" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🎓 Mis capacitaciones</div>
+          <button class="btn-primary btn-sm" onclick="window.location='/pages/capacitaciones.html'">Ver todo</button>
+        </div>
+        <div class="table-wrap" style="margin:0"><table>
+          <thead><tr><th>Curso</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>Certificado</th></tr></thead>
+          <tbody id="tbody-caps"></tbody>
+        </table></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -355,7 +437,95 @@ if (session) {
   Sidebar.inject('mi-perfil.html');
 }
 
-// ── Base de datos local (sustituir por API cuando esté lista) ──────
+
+  var DB_REGISTROS = {
+    '1234567890': {
+      vac_disp:12, vac_dis:5, vac_pend:1,
+      vacaciones:[
+        {periodo:'2026',inicio:'12/06/2026',fin:'18/06/2026',dias:5,estado:'pendiente'},
+      ],
+      permisos:[
+        {tipo:'Cita médica',fecha:'20/05/2026',horas:4,motivo:'Control EPS Sanitas',estado:'aprobado'},
+      ],
+      incapacidades:[
+        {diagnostico:'Faringitis aguda',inicio:'08/05/2026',fin:'10/05/2026',dias:3,entidad:'EPS'},
+        {diagnostico:'Lumbalgia',inicio:'10/02/2026',fin:'14/02/2026',dias:5,entidad:'EPS'},
+      ],
+      hextras:[
+        {fecha:'20/05/2026',tipo:'Extra diurna (125%)',horas:2,valor:'$29.167',estado:'aprobada'},
+        {fecha:'14/05/2026',tipo:'Extra diurna (125%)',horas:2,valor:'$29.167',estado:'pendiente'},
+      ],
+      capacitaciones:[
+        {curso:'Trabajo en alturas avanzado',entidad:'ARL Sura',fecha:'10/03/2024',horas:40,cert:'SA-2024-001'},
+        {curso:'Primeros auxilios básico',entidad:'Cruz Roja',fecha:'05/06/2024',horas:16,cert:'CR-2024-123'},
+      ]
+    },
+    '52456789': {
+      vac_disp:15,vac_dis:10,vac_pend:0,
+      vacaciones:[{periodo:'2026',inicio:'03/03/2026',fin:'14/03/2026',dias:10,estado:'disfrutado'}],
+      permisos:[],incapacidades:[],hextras:[],capacitaciones:[]
+    },
+    '79234567': {
+      vac_disp:18,vac_dis:8,vac_pend:0,
+      vacaciones:[{periodo:'2026',inicio:'15/01/2026',fin:'26/01/2026',dias:8,estado:'disfrutado'}],
+      permisos:[{tipo:'Calamidad doméstica',fecha:'15/05/2026',horas:8,motivo:'Fallecimiento familiar',estado:'aprobado'}],
+      incapacidades:[],
+      hextras:[{fecha:'17/05/2026',tipo:'Extra dominical diurna (200%)',horas:6,valor:'$260.000',estado:'aprobada'}],
+      capacitaciones:[{curso:'PMP Gestión de Proyectos',entidad:'PMI',fecha:'15/06/2023',horas:120,cert:'PMP-2023-789'}]
+    },
+    '1098765432': {
+      vac_disp:8,vac_dis:0,vac_pend:0,vacaciones:[],
+      permisos:[{tipo:'Apoyo hijos Ley 2466',fecha:'22/05/2026',horas:6,motivo:'Urgencia médica hijo',estado:'pendiente'}],
+      incapacidades:[],hextras:[],capacitaciones:[]
+    },
+    '80123456': {
+      vac_disp:10,vac_dis:0,vac_pend:0,vacaciones:[],permisos:[],
+      incapacidades:[
+        {diagnostico:'Contusión mano',inicio:'02/04/2026',fin:'06/04/2026',dias:4,entidad:'ARL'},
+        {diagnostico:'Lumbalgia crónica',inicio:'22/05/2026',fin:'28/05/2026',dias:6,entidad:'EPS'},
+      ],
+      hextras:[{fecha:'18/05/2026',tipo:'Extra nocturna (175%)',horas:3,valor:'$56.875',estado:'aprobada'}],
+      capacitaciones:[{curso:'Trabajo en alturas avanzado',entidad:'ARL Sura',fecha:'20/08/2023',horas:40,cert:'SA-2023-456'}]
+    },
+    '1020345678': {vac_disp:12,vac_dis:0,vac_pend:0,vacaciones:[],permisos:[],incapacidades:[],hextras:[],capacitaciones:[]},
+    '79876543': {
+      vac_disp:10,vac_dis:0,vac_pend:1,
+      vacaciones:[{periodo:'2026',inicio:'26/05/2026',fin:'06/06/2026',dias:10,estado:'aprobado'}],
+      permisos:[],incapacidades:[],
+      hextras:[{fecha:'10/05/2026',tipo:'Extra diurna (125%)',horas:4,valor:'$60.417',estado:'aprobada'}],
+      capacitaciones:[{curso:'CCNA Redes Cisco',entidad:'Cisco',fecha:'30/05/2024',horas:160,cert:'CCNA-2024-321'}]
+    },
+    '52789012': {vac_disp:20,vac_dis:0,vac_pend:0,vacaciones:[],permisos:[],incapacidades:[],hextras:[],capacitaciones:[]}
+  };
+
+  function cargarRegistros(cedula) {
+    var ced = cedula.replace(/[\. ]/g,'');
+    var d = DB_REGISTROS[ced];
+    if (!d) return;
+    var bE = {aprobado:'badge-ok',disfrutado:'badge-ok',aprobada:'badge-ok',pendiente:'badge-warn',rechazado:'badge-danger'};
+    var vacio = function(n){return '<tr><td colspan="'+n+'" style="text-align:center;color:var(--text-muted);padding:12px">Sin registros</td></tr>';};
+
+    document.getElementById('vac-disp').textContent = d.vac_disp||0;
+    document.getElementById('vac-dis').textContent  = d.vac_dis||0;
+    document.getElementById('vac-pend').textContent = d.vac_pend||0;
+
+    document.getElementById('tbody-vacaciones').innerHTML = d.vacaciones.length ?
+      d.vacaciones.map(function(v){return '<tr><td>'+v.periodo+'</td><td>'+v.inicio+'</td><td>'+v.fin+'</td><td>'+v.dias+'</td><td><span class="badge '+(bE[v.estado]||'badge-muted')+'">'+v.estado+'</span></td></tr>';}).join('') : vacio(5);
+
+    document.getElementById('tbody-permisos').innerHTML = d.permisos.length ?
+      d.permisos.map(function(p){return '<tr><td>'+p.tipo+'</td><td>'+p.fecha+'</td><td>'+p.horas+'h</td><td>'+p.motivo+'</td><td><span class="badge '+(bE[p.estado]||'badge-muted')+'">'+p.estado+'</span></td></tr>';}).join('') : vacio(5);
+
+    document.getElementById('tbody-incapacidades').innerHTML = d.incapacidades.length ?
+      d.incapacidades.map(function(i){return '<tr><td>'+i.diagnostico+'</td><td>'+i.inicio+'</td><td>'+i.fin+'</td><td>'+i.dias+'</td><td>'+i.entidad+'</td></tr>';}).join('') : vacio(5);
+
+    document.getElementById('tbody-hextras').innerHTML = d.hextras.length ?
+      d.hextras.map(function(h){return '<tr><td>'+h.fecha+'</td><td>'+h.tipo+'</td><td>'+h.horas+'h</td><td style="color:#107c10;font-weight:500">'+h.valor+'</td><td><span class="badge '+(bE[h.estado]||'badge-muted')+'">'+h.estado+'</span></td></tr>';}).join('') : vacio(5);
+
+    document.getElementById('tbody-caps').innerHTML = d.capacitaciones.length ?
+      d.capacitaciones.map(function(c){return '<tr><td>'+c.curso+'</td><td>'+c.entidad+'</td><td>'+c.fecha+'</td><td>'+c.horas+'h</td><td style="font-family:monospace;font-size:11px">'+c.cert+'</td></tr>';}).join('') : vacio(5);
+  }
+
+  // ── Base de datos local (sustituir por API cuando esté lista) ──────
 var DB_EMPLEADOS = [
   {
     cedula:'1234567890', tipodoc:'CC', codigo:'EMP-0001',
@@ -554,6 +724,9 @@ function cargarPerfil() {
   document.getElementById('h-estado').textContent          = emp.estado.charAt(0).toUpperCase() + emp.estado.slice(1);
   document.title = emp.nombres + ' ' + emp.apellidos + ' — IIT RRHH';
 
+  // Cargar registros propios del empleado
+  cargarRegistros(emp.cedula);
+
   // 7. Tab datos personales
   document.getElementById('d-tipodoc').textContent    = emp.tipodoc;
   document.getElementById('d-cedula').textContent     = emp.cedula;
@@ -606,7 +779,7 @@ function cargarPerfil() {
 function activarTab(btn, tabId) {
   document.querySelectorAll('.tab-perfil-btn').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
-  ['tab-datos','tab-laboral','tab-contacto','tab-docs','tab-nomina'].forEach(function(t){
+  ['tab-datos','tab-laboral','tab-contacto','tab-docs','tab-nomina','tab-vacaciones','tab-permisos','tab-incapacidades','tab-hextras','tab-capacitaciones'].forEach(function(t){
     var el = document.getElementById(t);
     if (el) el.classList.add('hidden');
   });
