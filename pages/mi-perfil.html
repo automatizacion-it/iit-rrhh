@@ -376,8 +376,6 @@
         <button class="nom-tab active" onclick="aBienTab(this,'bien-incentivos')">🎁 Incentivos</button>
         <button class="nom-tab" onclick="aBienTab(this,'bien-convivencia')">⚖️ Convivencia</button>
         <button class="nom-tab" onclick="aBienTab(this,'bien-disciplinario')">📜 Disciplinario</button>
-        <button class="nom-tab" onclick="aBienTab(this,'bien-seguridad')">🔒 Est. seguridad</button>
-        <button class="nom-tab" onclick="aBienTab(this,'bien-validacion')">🔐 Validación ID</button>
       </div>
 
       <!-- Incentivos -->
@@ -432,41 +430,6 @@
           <div class="table-wrap" style="margin:0"><table>
             <thead><tr><th>Proceso</th><th>Tipo falta</th><th>Fecha</th><th>Estado</th><th>Sanción</th></tr></thead>
             <tbody id="t-disciplinario"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Estudio de seguridad -->
-      <div id="bien-seguridad" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🔒 Estudio de seguridad</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/seguridad.html'">Ver módulo</button>
-          </div>
-          <div class="alert alert-warning" style="margin-bottom:12px;font-size:11px">
-            🔒 Información confidencial · Solo rol Empresa.
-          </div>
-          <div class="ficha-grid" id="seg-ficha">
-            <div class="ficha-item"><div class="ficha-label">Tipo de estudio</div><div class="ficha-valor" id="seg-tipo">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Empresa realizó</div><div class="ficha-valor" id="seg-empresa">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Fecha</div><div class="ficha-valor" id="seg-fecha">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Resultado</div><div class="ficha-valor" id="seg-resultado">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Nivel de riesgo</div><div class="ficha-valor" id="seg-riesgo">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Próxima revisión</div><div class="ficha-valor" id="seg-prox">—</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Validación de identidad -->
-      <div id="bien-validacion" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🔐 Validaciones de identidad</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/validacion-identidad.html'">Ver módulo</button>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Tipo</th><th>Fecha</th><th>Doc. válido</th><th>Biométrico</th><th>Score</th><th>Resultado</th></tr></thead>
-            <tbody id="t-validacion"></tbody>
           </table></div>
         </div>
       </div>
@@ -898,7 +861,7 @@ function cargarFormacion(ced) {
 }
 
 // ── Sub-tabs Bienestar ────────────────────────────────────────────
-var ALL_BIEN=['bien-incentivos','bien-convivencia','bien-disciplinario','bien-seguridad','bien-validacion'];
+var ALL_BIEN=['bien-incentivos','bien-convivencia','bien-disciplinario'];
 function aBienTab(btn,id){
   // Buscar el contenedor .nom-tabs padre de este botón
   var container = btn.closest('.nom-tabs') || btn.parentElement;
@@ -1056,31 +1019,6 @@ function cargarBienestar(ced) {
         '<td style="font-size:11px">'+d.sancion+'</td></tr>';
     }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:12px">✅ Sin procesos disciplinarios</td></tr>';
 
-  // Estudio de seguridad (solo admin/empresa)
-  var esAdmin = Auth.isAdmin && Auth.isAdmin();
-  var esEmp   = Auth.isEmpresa && Auth.isEmpresa();
-  if (esAdmin || esEmp) {
-    var s = b.seguridad;
-    var rCol = {Apto:'color:#107c10;font-weight:600',Condicionado:'color:#797600;font-weight:600','No apto':'color:#c50f1f;font-weight:600'};
-    document.getElementById('seg-tipo').textContent     = s.tipo;
-    document.getElementById('seg-empresa').textContent  = s.empresa;
-    document.getElementById('seg-fecha').textContent    = s.fecha;
-    document.getElementById('seg-resultado').innerHTML  = '<span style="'+( rCol[s.resultado]||'')+'">'+s.resultado+'</span>';
-    document.getElementById('seg-riesgo').textContent   = s.riesgo;
-    document.getElementById('seg-prox').textContent     = s.prox;
-  } else {
-    document.getElementById('seg-ficha').innerHTML = '<div class="alert alert-info" style="grid-column:span 2;font-size:11px">🔒 Solo el rol Empresa puede ver el estudio de seguridad.</div>';
-  }
-
-  // Validaciones
-  var bV={Validado:'badge-ok','No validado':'badge-danger',Pendiente:'badge-warn'};
-  document.getElementById('t-validacion').innerHTML = b.validacion.length ?
-    b.validacion.map(function(v){
-      return '<tr><td><span class="badge badge-info">'+v.t+'</span></td><td>'+v.f+'</td>'+
-        '<td>'+v.doc+'</td><td>'+v.bio+'</td>'+
-        '<td><strong>'+v.score+'/100</strong></td>'+
-        '<td><span class="badge '+(bV[v.r]||'badge-muted')+'">'+v.r+'</span></td></tr>';
-    }).join('') : vacio(6);
 }
 
 // ── Sub-tabs SST ─────────────────────────────────────────────────
