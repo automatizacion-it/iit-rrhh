@@ -153,6 +153,7 @@
       <button class="tp-btn" onclick="aTab(this,'tp-hextras')">⏰ H. extras</button>
       <button class="tp-btn" onclick="aTab(this,'tp-caps')">🎓 Capacitaciones</button>
       <button class="tp-btn" onclick="aTab(this,'tp-sst')">🦺 SST</button>
+      <button class="tp-btn" onclick="aTab(this,'tp-bienestar')">🎁 Bienestar</button>
       <button class="tp-btn" id="tb-nomina" onclick="aTab(this,'tp-nomina')" style="display:none">💰 Nómina</button>
     </div>
 
@@ -365,6 +366,112 @@
 
     </div><!-- /tp-sst -->
 
+
+    <!-- ══ TAB BIENESTAR ══ -->
+    <div id="tp-bienestar" class="hidden">
+
+      <!-- Sub-tabs Bienestar -->
+      <div class="nom-tabs">
+        <button class="nom-tab active" onclick="aBienTab(this,'bien-incentivos')">🎁 Incentivos</button>
+        <button class="nom-tab" onclick="aBienTab(this,'bien-convivencia')">⚖️ Convivencia</button>
+        <button class="nom-tab" onclick="aBienTab(this,'bien-disciplinario')">📜 Disciplinario</button>
+        <button class="nom-tab" onclick="aBienTab(this,'bien-seguridad')">🔒 Est. seguridad</button>
+        <button class="nom-tab" onclick="aBienTab(this,'bien-validacion')">🔐 Validación ID</button>
+      </div>
+
+      <!-- Incentivos -->
+      <div id="bien-incentivos">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🎁 Incentivos recibidos</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/incentivos.html'">Ver módulo</button>
+          </div>
+          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+            <div class="metric-card"><div class="metric-label">Incentivos 2026</div><div class="metric-value" style="color:#107c10" id="bi-total">—</div></div>
+            <div class="metric-card"><div class="metric-label">Valor total recibido</div><div class="metric-value" style="font-size:14px;color:#0078d4" id="bi-valor">—</div></div>
+            <div class="metric-card"><div class="metric-label">Próximo incentivo</div><div class="metric-value" style="font-size:13px" id="bi-prox">—</div></div>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Tipo</th><th>Fecha</th><th>Descripción</th><th>Valor</th><th>Estado</th></tr></thead>
+            <tbody id="t-incentivos"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Convivencia -->
+      <div id="bien-convivencia" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">⚖️ Quejas y convivencia</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/convivencia.html'">Ver módulo</button>
+          </div>
+          <div class="alert alert-info" style="margin-bottom:12px;font-size:11px">
+            🔒 Información confidencial. Solo visible para el rol Empresa y el empleado relacionado.
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Radicado</th><th>Tipo</th><th>Fecha</th><th>Rol</th><th>Estado</th><th>Resolución</th></tr></thead>
+            <tbody id="t-convivencia"></tbody>
+          </table></div>
+          <div id="bien-manual" style="margin-top:12px;padding:10px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border);font-size:12px">
+            <span id="bien-manual-txt">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disciplinario -->
+      <div id="bien-disciplinario" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📜 Procesos disciplinarios</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/disciplinario.html'">Ver módulo</button>
+          </div>
+          <div class="alert alert-warning" style="margin-bottom:12px;font-size:11px">
+            ⚖️ Información confidencial · Ley 2466/2025 · Debido proceso garantizado.
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Proceso</th><th>Tipo falta</th><th>Fecha</th><th>Estado</th><th>Sanción</th></tr></thead>
+            <tbody id="t-disciplinario"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Estudio de seguridad -->
+      <div id="bien-seguridad" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔒 Estudio de seguridad</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/seguridad.html'">Ver módulo</button>
+          </div>
+          <div class="alert alert-warning" style="margin-bottom:12px;font-size:11px">
+            🔒 Información confidencial · Solo rol Empresa.
+          </div>
+          <div class="ficha-grid" id="seg-ficha">
+            <div class="ficha-item"><div class="ficha-label">Tipo de estudio</div><div class="ficha-valor" id="seg-tipo">—</div></div>
+            <div class="ficha-item"><div class="ficha-label">Empresa realizó</div><div class="ficha-valor" id="seg-empresa">—</div></div>
+            <div class="ficha-item"><div class="ficha-label">Fecha</div><div class="ficha-valor" id="seg-fecha">—</div></div>
+            <div class="ficha-item"><div class="ficha-label">Resultado</div><div class="ficha-valor" id="seg-resultado">—</div></div>
+            <div class="ficha-item"><div class="ficha-label">Nivel de riesgo</div><div class="ficha-valor" id="seg-riesgo">—</div></div>
+            <div class="ficha-item"><div class="ficha-label">Próxima revisión</div><div class="ficha-valor" id="seg-prox">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validación de identidad -->
+      <div id="bien-validacion" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔐 Validaciones de identidad</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/validacion-identidad.html'">Ver módulo</button>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Tipo</th><th>Fecha</th><th>Doc. válido</th><th>Biométrico</th><th>Score</th><th>Resultado</th></tr></thead>
+            <tbody id="t-validacion"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+    </div><!-- /tp-bienestar -->
+
     <!-- ══ TAB NÓMINA — solo admins ══ -->
     <div id="tp-nomina" class="hidden">
 
@@ -503,7 +610,7 @@ function vacio(n){return '<tr><td colspan="'+n+'" style="text-align:center;color
 var bE={aprobado:'badge-ok',disfrutado:'badge-ok',aprobada:'badge-ok',pendiente:'badge-warn',rechazado:'badge-danger'};
 
 // ── Tabs ──────────────────────────────────────────────────────────
-var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-sst','tp-nomina'];
+var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-sst','tp-bienestar','tp-nomina'];
 function aTab(btn,id){
   document.querySelectorAll('.tp-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
@@ -519,6 +626,193 @@ function aNomTab(btn,id){
 }
 
 // ── Carga principal ───────────────────────────────────────────────
+
+
+// ── Sub-tabs Bienestar ────────────────────────────────────────────
+var ALL_BIEN=['bien-incentivos','bien-convivencia','bien-disciplinario','bien-seguridad','bien-validacion'];
+function aBienTab(btn,id){
+  // Buscar el contenedor .nom-tabs padre de este botón
+  var container = btn.closest('.nom-tabs') || btn.parentElement;
+  container.querySelectorAll('.nom-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  ALL_BIEN.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ── DB Bienestar por empleado ─────────────────────────────────────
+var DR_BIEN = {
+  '1234567890':{
+    incentivos:[
+      {t:'🎂 Cumpleaños',f:'14/06/2025',d:'Gift card',v:'$50.000',e:'entregado'},
+      {t:'⭐ Mejor empleado',f:'30/04/2026',d:'Bono almuerzo equipo',v:'$150.000',e:'entregado'},
+    ],
+    bi_total:2, bi_valor:'$200.000', bi_prox:'🎂 Jun 14',
+    convivencia:[],
+    manual_firmado: true,
+    disciplinario:[
+    ],
+    seguridad:{tipo:'Ingreso',empresa:'Seguridad Total SAS',fecha:'10/03/2022',resultado:'Apto',riesgo:'Bajo',prox:'Mar 2024'},
+    validacion:[
+      {t:'Ingreso',f:'15/03/2022',doc:'✅',bio:'✅',score:'96.5',r:'Validado'},
+    ]
+  },
+  '52456789':{
+    incentivos:[
+      {t:'💐 Día Mujer',f:'08/03/2026',d:'Detalle especial + jornada',v:'$80.000',e:'entregado'},
+      {t:'🏆 Aniversario 6 años',f:'02/01/2026',d:'Gift card',v:'$100.000',e:'entregado'},
+    ],
+    bi_total:2, bi_valor:'$180.000', bi_prox:'💐 Mar 8/2027',
+    convivencia:[],
+    manual_firmado: true,
+    disciplinario:[],
+    seguridad:{tipo:'Ingreso',empresa:'Risk & Security Ltda.',fecha:'02/01/2020',resultado:'Apto',riesgo:'Bajo',prox:'Ene 2022'},
+    validacion:[{t:'Ingreso',f:'02/01/2020',doc:'✅',bio:'✅',score:'94.2',r:'Validado'}]
+  },
+  '79234567':{
+    incentivos:[
+      {t:'⭐ Mejor empleado',f:'30/04/2026',d:'Bono almuerzo equipo',v:'$150.000',e:'entregado'},
+    ],
+    bi_total:1, bi_valor:'$150.000', bi_prox:'💪 Nov 19',
+    convivencia:[],
+    manual_firmado: true,
+    disciplinario:[],
+    seguridad:{tipo:'Ingreso',empresa:'Seguridad Total SAS',fecha:'05/06/2021',resultado:'Apto',riesgo:'Medio',prox:'Jun 2023'},
+    validacion:[{t:'Ingreso',f:'10/06/2021',doc:'✅',bio:'✅',score:'91.8',r:'Validado'}]
+  },
+  '1098765432':{
+    incentivos:[
+      {t:'💐 Día Mujer',f:'08/03/2026',d:'Detalle especial',v:'$80.000',e:'entregado'},
+    ],
+    bi_total:1, bi_valor:'$80.000', bi_prox:'🎂 Nov 28',
+    convivencia:[],
+    manual_firmado: false,
+    disciplinario:[],
+    seguridad:{tipo:'Ingreso',empresa:'Risk & Security Ltda.',fecha:'10/02/2024',resultado:'Apto',riesgo:'Bajo',prox:'Feb 2026'},
+    validacion:[{t:'Ingreso',f:'15/02/2024',doc:'✅',bio:'✅',score:'97.1',r:'Validado'}]
+  },
+  '80123456':{
+    incentivos:[],
+    bi_total:0, bi_valor:'$0', bi_prox:'🎂 Ago 3',
+    convivencia:[],
+    manual_firmado: true,
+    disciplinario:[
+      {num:'PD-2026-001',tipo:'Grave',fecha:'15/02/2026',estado:'Resuelto',sancion:'Amonestación escrita'},
+    ],
+    seguridad:{tipo:'Especial',empresa:'Colombia Segura SAS',fecha:'01/03/2026',resultado:'Condicionado',riesgo:'Medio',prox:'Sep 2026'},
+    validacion:[{t:'Especial',f:'01/03/2026',doc:'✅',bio:'✅',score:'88.3',r:'Validado'}]
+  },
+  '1020345678':{
+    incentivos:[
+      {t:'💐 Día Mujer',f:'08/03/2026',d:'Detalle especial + jornada',v:'$80.000',e:'entregado'},
+    ],
+    bi_total:1, bi_valor:'$80.000', bi_prox:'💐 Mar 8/2027',
+    convivencia:[
+      {rad:'QC-2026-002',tipo:'Discriminación',fecha:'02/05/2026',rol:'Quejosa',estado:'En investigación',res:'Pendiente'},
+    ],
+    manual_firmado: true,
+    disciplinario:[],
+    seguridad:{tipo:'Ingreso',empresa:'Seguridad Total SAS',fecha:'25/07/2023',resultado:'Apto',riesgo:'Bajo',prox:'Jul 2025'},
+    validacion:[{t:'Ingreso',f:'01/08/2023',doc:'✅',bio:'✅',score:'95.7',r:'Validado'}]
+  },
+  '79876543':{
+    incentivos:[
+      {t:'⭐ Mejor empleado',f:'30/04/2026',d:'Reconocimiento',v:'$150.000',e:'entregado'},
+    ],
+    bi_total:1, bi_valor:'$150.000', bi_prox:'🎂 Dic 15',
+    convivencia:[],
+    manual_firmado: true,
+    disciplinario:[
+      {num:'PD-2026-002',tipo:'Leve',fecha:'01/05/2026',estado:'Descargos pendientes',sancion:'Por definir'},
+    ],
+    seguridad:{tipo:'Periódico',empresa:'Risk & Security Ltda.',fecha:'10/11/2024',resultado:'Apto',riesgo:'Bajo',prox:'Nov 2026'},
+    validacion:[{t:'Periódico',f:'15/11/2024',doc:'✅',bio:'✅',score:'93.4',r:'Validado'}]
+  },
+  '52789012':{
+    incentivos:[
+      {t:'💐 Día Mujer',f:'08/03/2026',d:'Detalle especial + jornada',v:'$80.000',e:'entregado'},
+      {t:'🏆 Aniversario 7 años',f:'15/05/2026',d:'Gift card premium',v:'$100.000',e:'entregado'},
+    ],
+    bi_total:2, bi_valor:'$180.000', bi_prox:'💐 Mar 8/2027',
+    convivencia:[],
+    manual_firmado: true,
+    disciplinario:[],
+    seguridad:{tipo:'Ingreso',empresa:'Seguridad Total SAS',fecha:'10/05/2019',resultado:'Apto',riesgo:'Bajo',prox:'May 2021'},
+    validacion:[{t:'Periódico',f:'15/01/2026',doc:'✅',bio:'✅',score:'93.4',r:'Validado'}]
+  }
+};
+
+function cargarBienestar(ced) {
+  var b = DR_BIEN[ced];
+  if (!b) return;
+
+  // Métricas incentivos
+  document.getElementById('bi-total').textContent = b.bi_total;
+  document.getElementById('bi-valor').textContent = b.bi_valor;
+  document.getElementById('bi-prox').textContent  = b.bi_prox;
+
+  var bE2={entregado:'badge-ok',pendiente:'badge-warn',cancelado:'badge-danger'};
+  var bD={Resuelto:'badge-ok','En investigación':'badge-warn','Descargos pendientes':'badge-warn',Archivado:'badge-muted'};
+  var bConv={Resuelta:'badge-ok','En investigación':'badge-warn',Recibida:'badge-info',Archivada:'badge-muted'};
+
+  // Incentivos
+  document.getElementById('t-incentivos').innerHTML = b.incentivos.length ?
+    b.incentivos.map(function(i){
+      return '<tr><td>'+i.t+'</td><td>'+i.f+'</td><td>'+i.d+'</td>'+
+        '<td style="font-weight:500;color:#107c10">'+i.v+'</td>'+
+        '<td><span class="badge '+(bE2[i.e]||'badge-muted')+'">'+i.e+'</span></td></tr>';
+    }).join('') : vacio(5);
+
+  // Convivencia
+  document.getElementById('t-convivencia').innerHTML = b.convivencia.length ?
+    b.convivencia.map(function(q){
+      return '<tr><td style="font-family:monospace;font-size:11px">'+q.rad+'</td>'+
+        '<td><span class="badge badge-danger">'+q.tipo+'</span></td>'+
+        '<td>'+q.fecha+'</td><td><span class="badge badge-info">'+q.rol+'</span></td>'+
+        '<td><span class="badge '+(bConv[q.estado]||'badge-muted')+'">'+q.estado+'</span></td>'+
+        '<td style="font-size:11px">'+q.res+'</td></tr>';
+    }).join('') : vacio(6);
+
+  // Manual firmado
+  document.getElementById('bien-manual-txt').innerHTML = b.manual_firmado
+    ? '✅ <strong>Manual de convivencia firmado</strong> · Versión v1.0 · Enero 2026'
+    : '⚠️ <strong>Manual de convivencia pendiente de firma</strong> · <a href="/pages/convivencia.html" style="color:var(--primary)">Ir a firmar →</a>';
+
+  // Disciplinario
+  document.getElementById('t-disciplinario').innerHTML = b.disciplinario.length ?
+    b.disciplinario.map(function(d){
+      return '<tr><td style="font-family:monospace;font-size:11px">'+d.num+'</td>'+
+        '<td><span class="badge badge-warn">'+d.tipo+'</span></td>'+
+        '<td>'+d.fecha+'</td>'+
+        '<td><span class="badge '+(bD[d.estado]||'badge-muted')+'">'+d.estado+'</span></td>'+
+        '<td style="font-size:11px">'+d.sancion+'</td></tr>';
+    }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:12px">✅ Sin procesos disciplinarios</td></tr>';
+
+  // Estudio de seguridad (solo admin/empresa)
+  var esAdmin = Auth.isAdmin && Auth.isAdmin();
+  var esEmp   = Auth.isEmpresa && Auth.isEmpresa();
+  if (esAdmin || esEmp) {
+    var s = b.seguridad;
+    var rCol = {Apto:'color:#107c10;font-weight:600',Condicionado:'color:#797600;font-weight:600','No apto':'color:#c50f1f;font-weight:600'};
+    document.getElementById('seg-tipo').textContent     = s.tipo;
+    document.getElementById('seg-empresa').textContent  = s.empresa;
+    document.getElementById('seg-fecha').textContent    = s.fecha;
+    document.getElementById('seg-resultado').innerHTML  = '<span style="'+( rCol[s.resultado]||'')+'">'+s.resultado+'</span>';
+    document.getElementById('seg-riesgo').textContent   = s.riesgo;
+    document.getElementById('seg-prox').textContent     = s.prox;
+  } else {
+    document.getElementById('seg-ficha').innerHTML = '<div class="alert alert-info" style="grid-column:span 2;font-size:11px">🔒 Solo el rol Empresa puede ver el estudio de seguridad.</div>';
+  }
+
+  // Validaciones
+  var bV={Validado:'badge-ok','No validado':'badge-danger',Pendiente:'badge-warn'};
+  document.getElementById('t-validacion').innerHTML = b.validacion.length ?
+    b.validacion.map(function(v){
+      return '<tr><td><span class="badge badge-info">'+v.t+'</span></td><td>'+v.f+'</td>'+
+        '<td>'+v.doc+'</td><td>'+v.bio+'</td>'+
+        '<td><strong>'+v.score+'/100</strong></td>'+
+        '<td><span class="badge '+(bV[v.r]||'badge-muted')+'">'+v.r+'</span></td></tr>';
+    }).join('') : vacio(6);
+}
 
 // ── Sub-tabs SST ─────────────────────────────────────────────────
 var ALL_SST=['sst-arl','sst-examenes','sst-cursos'];
@@ -730,6 +1024,9 @@ function cargar(){
 
   // SST
   cargarSST(ced3);
+
+  // Bienestar
+  cargarBienestar(ced3);
 
   if(esAdmin){
     document.getElementById('t-he-nom').innerHTML=document.getElementById('t-he').innerHTML;
