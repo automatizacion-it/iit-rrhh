@@ -155,6 +155,7 @@
       <button class="tp-btn" onclick="aTab(this,'tp-sst')">🦺 SST</button>
       <button class="tp-btn" onclick="aTab(this,'tp-bienestar')">🎁 Bienestar</button>
       <button class="tp-btn" onclick="aTab(this,'tp-formacion')">🎓 Formación</button>
+      <button class="tp-btn" onclick="aTab(this,'tp-operaciones')">🏗️ Operaciones</button>
       <button class="tp-btn" id="tb-nomina" onclick="aTab(this,'tp-nomina')" style="display:none">💰 Nómina</button>
     </div>
 
@@ -506,6 +507,66 @@
 
     </div><!-- /tp-formacion -->
 
+
+    <!-- ══ TAB OPERACIONES ══ -->
+    <div id="tp-operaciones" class="hidden">
+
+      <div class="nom-tabs">
+        <button class="nom-tab active" onclick="aOpsTab(this,'ops-proyectos')">🏗️ Proyectos</button>
+        <button class="nom-tab" onclick="aOpsTab(this,'ops-clausulas')">📋 Cláusulas</button>
+        <button class="nom-tab" onclick="aOpsTab(this,'ops-sugerencias')">💬 Sugerencias</button>
+      </div>
+
+      <!-- Proyectos asignados -->
+      <div id="ops-proyectos">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🏗️ Proyectos asignados</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/proyectos.html'">Ver todos</button>
+          </div>
+          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+            <div class="metric-card"><div class="metric-label">Proyectos activos</div><div class="metric-value" style="color:#0078d4" id="ops-activos">—</div></div>
+            <div class="metric-card"><div class="metric-label">Completados</div><div class="metric-value" style="color:#107c10" id="ops-completados">—</div></div>
+            <div class="metric-card"><div class="metric-label">Dedicación actual</div><div class="metric-value" id="ops-dedicacion">—</div></div>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Proyecto</th><th>Tipo</th><th>Rol</th><th>Desde</th><th>Dedicación</th><th>Estado</th></tr></thead>
+            <tbody id="t-proyectos-emp"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Cláusulas firmadas -->
+      <div id="ops-clausulas" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 Cláusulas firmadas</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/clausulas.html'">Ver módulo</button>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Tipo de cláusula</th><th>Versión</th><th>Fecha firma</th><th>Estado</th></tr></thead>
+            <tbody id="t-clausulas-emp"></tbody>
+          </table></div>
+          <div id="ops-manual-estado" style="margin-top:8px;font-size:12px"></div>
+        </div>
+      </div>
+
+      <!-- Sugerencias del jefe -->
+      <div id="ops-sugerencias" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">💬 Sugerencias del jefe inmediato</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/sugerencias-jefe.html'">Ver módulo</button>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Período</th><th>Categoría</th><th>Título</th><th>Tipo</th><th>Leída</th></tr></thead>
+            <tbody id="t-sugerencias-emp"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+    </div><!-- /tp-operaciones -->
+
     <!-- ══ TAB NÓMINA — solo admins ══ -->
     <div id="tp-nomina" class="hidden">
 
@@ -644,7 +705,7 @@ function vacio(n){return '<tr><td colspan="'+n+'" style="text-align:center;color
 var bE={aprobado:'badge-ok',disfrutado:'badge-ok',aprobada:'badge-ok',pendiente:'badge-warn',rechazado:'badge-danger'};
 
 // ── Tabs ──────────────────────────────────────────────────────────
-var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-sst','tp-bienestar','tp-formacion','tp-nomina'];
+var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-sst','tp-bienestar','tp-formacion','tp-operaciones','tp-nomina'];
 function aTab(btn,id){
   document.querySelectorAll('.tp-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
@@ -662,6 +723,165 @@ function aNomTab(btn,id){
 // ── Carga principal ───────────────────────────────────────────────
 
 
+
+
+// ── Sub-tabs Operaciones ──────────────────────────────────────────
+var ALL_OPS=['ops-proyectos','ops-clausulas','ops-sugerencias'];
+function aOpsTab(btn,id){
+  var container=btn.closest('.nom-tabs')||btn.parentElement;
+  container.querySelectorAll('.nom-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  ALL_OPS.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ── DB Operaciones por empleado ───────────────────────────────────
+var DR_OPS = {
+  '1234567890':{
+    ops_activos:1, ops_completados:1, ops_dedicacion:'100%',
+    proyectos:[
+      {n:'Parque Solar Norte',t:'☀️ Solar',rol:'Técnico eléctrico',desde:'01/02/2026',ded:'100%',e:'activo'},
+      {n:'Red Empresarial ACME',t:'🔗 Networking',rol:'Técnico',desde:'01/10/2025',ded:'100%',e:'terminado'},
+    ],
+    clausulas:[
+      {t:'Confidencialidad',v:'v1.0',f:'15/03/2022',ok:true},
+      {t:'Compromisos empresa',v:'v1.0',f:'15/03/2022',ok:true},
+      {t:'Política de datos',v:'v1.0',f:'15/03/2022',ok:true},
+      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
+    ],
+    manual_ok: true,
+    sugerencias:[
+      {p:'Mayo 2026',cat:'Desempeño',t:'Excelente trabajo Parque Solar Norte',tipo:'pos',leida:true},
+      {p:'Marzo 2026',cat:'Puntualidad',t:'Tardanzas registradas en marzo',tipo:'neg',leida:true},
+    ]
+  },
+  '52456789':{
+    ops_activos:0, ops_completados:0, ops_dedicacion:'—',
+    proyectos:[],
+    clausulas:[
+      {t:'Confidencialidad',v:'v1.0',f:'02/01/2020',ok:true},
+      {t:'Compromisos empresa',v:'v1.0',f:'02/01/2020',ok:true},
+      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
+    ],
+    manual_ok: true,
+    sugerencias:[]
+  },
+  '79234567':{
+    ops_activos:2, ops_completados:1, ops_dedicacion:'100%',
+    proyectos:[
+      {n:'Parque Solar Norte',t:'☀️ Solar',rol:'Líder técnico',desde:'01/02/2026',ded:'100%',e:'activo'},
+      {n:'Data Center Bancorp',t:'💾 Data Center',rol:'Líder técnico',desde:'15/03/2026',ded:'100%',e:'activo'},
+      {n:'Inst. Eléctrica CC',t:'⚡ Eléctrico',rol:'Ingeniero',desde:'01/08/2025',ded:'100%',e:'terminado'},
+    ],
+    clausulas:[
+      {t:'Confidencialidad',v:'v1.0',f:'10/06/2021',ok:true},
+      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
+    ],
+    manual_ok: true,
+    sugerencias:[]
+  },
+  '1098765432':{
+    ops_activos:0, ops_completados:0, ops_dedicacion:'—',
+    proyectos:[],
+    clausulas:[
+      {t:'Confidencialidad',v:'v1.0',f:'15/02/2024',ok:true},
+    ],
+    manual_ok: false,
+    sugerencias:[]
+  },
+  '80123456':{
+    ops_activos:1, ops_completados:0, ops_dedicacion:'50%',
+    proyectos:[
+      {n:'Parque Solar Norte',t:'☀️ Solar',rol:'Técnico solar',desde:'01/02/2026',ded:'50%',e:'activo'},
+    ],
+    clausulas:[
+      {t:'Confidencialidad',v:'v1.0',f:'03/03/2022',ok:true},
+      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
+    ],
+    manual_ok: true,
+    sugerencias:[
+      {p:'Febrero 2026',cat:'SST',t:'Uso obligatorio EPP en obra',tipo:'neg',leida:false},
+    ]
+  },
+  '1020345678':{
+    ops_activos:0, ops_completados:0, ops_dedicacion:'—',
+    proyectos:[],
+    clausulas:[
+      {t:'Confidencialidad',v:'v1.0',f:'01/08/2023',ok:true},
+      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
+    ],
+    manual_ok: true,
+    sugerencias:[]
+  },
+  '79876543':{
+    ops_activos:1, ops_completados:1, ops_dedicacion:'100%',
+    proyectos:[
+      {n:'IoT Bodega Logística',t:'📡 IoT',rol:'Téc. redes',desde:'01/04/2026',ded:'100%',e:'activo'},
+      {n:'Red Empresarial ACME',t:'🔗 Networking',rol:'Téc. redes',desde:'01/10/2025',ded:'100%',e:'terminado'},
+    ],
+    clausulas:[
+      {t:'Confidencialidad',v:'v1.0',f:'15/11/2022',ok:true},
+      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
+    ],
+    manual_ok: true,
+    sugerencias:[
+      {p:'Abril 2026',cat:'Trabajo en equipo',t:'Excelente colaboración Data Center',tipo:'pos',leida:false},
+    ]
+  },
+  '52789012':{
+    ops_activos:0, ops_completados:0, ops_dedicacion:'—',
+    proyectos:[],
+    clausulas:[
+      {t:'Confidencialidad',v:'v1.0',f:'15/05/2019',ok:true},
+      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
+    ],
+    manual_ok: true,
+    sugerencias:[]
+  }
+};
+
+function cargarOperaciones(ced) {
+  var o = DR_OPS[ced];
+  if (!o) return;
+
+  document.getElementById('ops-activos').textContent     = o.ops_activos;
+  document.getElementById('ops-completados').textContent = o.ops_completados;
+  document.getElementById('ops-dedicacion').textContent  = o.ops_dedicacion;
+
+  var bE4 = {activo:'badge-ok',terminado:'badge-muted','en pausa':'badge-warn'};
+
+  // Proyectos
+  document.getElementById('t-proyectos-emp').innerHTML = o.proyectos.length ?
+    o.proyectos.map(function(p){
+      return '<tr><td style="font-weight:500">'+p.n+'</td>'+
+        '<td><span class="badge badge-info">'+p.t+'</span></td>'+
+        '<td>'+p.rol+'</td><td>'+p.desde+'</td>'+
+        '<td><span class="badge '+(p.ded==='100%'?'badge-ok':'badge-warn')+'">'+p.ded+'</span></td>'+
+        '<td><span class="badge '+(bE4[p.e]||'badge-muted')+'">'+p.e+'</span></td></tr>';
+    }).join('') : vacio(6);
+
+  // Cláusulas
+  document.getElementById('t-clausulas-emp').innerHTML = o.clausulas.length ?
+    o.clausulas.map(function(cl){
+      return '<tr><td>'+cl.t+'</td><td style="font-family:monospace;font-size:11px">'+cl.v+'</td>'+
+        '<td>'+cl.f+'</td>'+
+        '<td><span class="badge '+(cl.ok?'badge-ok':'badge-danger')+'">'+(cl.ok?'✓ Firmada':'Pendiente')+'</span></td></tr>';
+    }).join('') : vacio(4);
+
+  document.getElementById('ops-manual-estado').innerHTML = o.manual_ok
+    ? '✅ <strong>Manual de convivencia firmado</strong> · v1.0 · Enero 2026'
+    : '⚠️ <strong>Manual pendiente de firma</strong> · <a href="/pages/convivencia.html" style="color:var(--primary)">Ir a firmar →</a>';
+
+  // Sugerencias
+  var iconTipo = {pos:'⭐',neg:'📈',urg:'🚨'};
+  document.getElementById('t-sugerencias-emp').innerHTML = o.sugerencias.length ?
+    o.sugerencias.map(function(s){
+      return '<tr><td>'+s.p+'</td><td>'+s.cat+'</td>'+
+        '<td style="font-weight:500">'+iconTipo[s.tipo]+' '+s.t+'</td>'+
+        '<td><span class="badge '+(s.tipo==='pos'?'badge-ok':s.tipo==='urg'?'badge-danger':'badge-warn')+'">'+(s.tipo==='pos'?'Reconocimiento':s.tipo==='urg'?'Urgente':'Mejora')+'</span></td>'+
+        '<td>'+(s.leida?'<span class="badge badge-ok">✓ Leída</span>':'<span class="badge badge-warn">No leída</span>')+'</td></tr>';
+    }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:12px">Sin sugerencias registradas</td></tr>';
+}
 
 // ── Sub-tabs Formación ────────────────────────────────────────────
 var ALL_FORM=['form-capacitaciones','form-cursos','form-socializacion','form-estudios'];
@@ -1237,6 +1457,9 @@ function cargar(){
 
   // Formación
   cargarFormacion(ced3);
+
+  // Operaciones
+  cargarOperaciones(ced3);
 
   if(esAdmin){
     document.getElementById('t-he-nom').innerHTML=document.getElementById('t-he').innerHTML;

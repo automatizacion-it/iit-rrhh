@@ -211,12 +211,26 @@ var Sidebar = (function () {
     var session = Auth.getSession ? Auth.getSession() : null;
     var rol = session ? session.rol : 'empleado';
     nav.innerHTML = render(paginaActual, rol);
+    // Calcular alturas reales para los grupos ya abiertos
+    setTimeout(function() {
+      nav.querySelectorAll('.nav-grupo-items.abierto').forEach(function(el) {
+        el.style.maxHeight = el.scrollHeight + 'px';
+      });
+    }, 10);
   }
 
   function toggleGrupo(header) {
     header.classList.toggle('abierto');
     var items = header.nextElementSibling;
-    if (items) items.classList.toggle('abierto');
+    if (items) {
+      items.classList.toggle('abierto');
+      // Calcular altura real para animación suave
+      if (items.classList.contains('abierto')) {
+        items.style.maxHeight = items.scrollHeight + 'px';
+      } else {
+        items.style.maxHeight = '0';
+      }
+    }
   }
 
   return { render:render, inject:inject, toggleGrupo:toggleGrupo, MENU:MENU };
