@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convivencia — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script></head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
+  </header>
+  <nav class="sidebar" id="main-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">⚖️ Convivencia laboral</div>
+      <div class="page-sub">Ley 1010/2006 · Ley 1257/2008 · Comité de Convivencia · Quejas · Manual</div></div>
+      <button class="btn-primary" onclick="abrirModalQueja()">📝 Radicar queja</button>
+    </div>
+
+    <div class="alert alert-info" style="margin-bottom:16px;font-size:12px">
+      🔒 <strong>Confidencialidad garantizada.</strong> Todas las quejas se manejan con reserva absoluta. El comité de convivencia debe reunirse mínimo <strong>una vez al mes</strong> según la Ley 1010/2006.
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="activarTab(this,'tab-quejas')">📝 Quejas</div>
+      <div class="tab" onclick="activarTab(this,'tab-comite')">👥 Comité</div>
+      <div class="tab" onclick="activarTab(this,'tab-actas')">📋 Actas</div>
+      <div class="tab" onclick="activarTab(this,'tab-manual')">📖 Manual</div>
+    </div>
+
+    <!-- Quejas -->
+    <div id="tab-quejas" class="card">
+      <div class="card-header"><div class="card-title">📝 Registro de quejas</div><span class="badge badge-danger">Confidencial</span></div>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Radicado</th><th>Tipo</th><th>Fecha</th><th>Gravedad</th><th>Estado</th><th>Asignado a</th><th>Acciones</th></tr></thead>
+          <tbody id="quejas-tbody">
+            <tr>
+              <td style="font-family:monospace;font-size:12px">QC-2026-001</td>
+              <td><span class="badge badge-danger">Acoso laboral</span></td><td>15/03/2026</td>
+              <td><span class="badge badge-warn">Media</span></td>
+              <td><span class="badge badge-ok">Resuelta</span></td>
+              <td style="font-size:12px">Comité convivencia</td>
+              <td><button class="btn-secondary btn-sm">👁 Ver</button></td>
+            </tr>
+            <tr>
+              <td style="font-family:monospace;font-size:12px">QC-2026-002</td>
+              <td><span class="badge badge-danger">Discriminación</span></td><td>02/05/2026</td>
+              <td><span class="badge badge-warn">Media</span></td>
+              <td><span class="badge badge-warn">En investigación</span></td>
+              <td style="font-size:12px">Comité convivencia</td>
+              <td><button class="btn-secondary btn-sm">👁 Ver</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Comité -->
+    <div id="tab-comite" class="card hidden">
+      <div class="card-header"><div class="card-title">👥 Comité de Convivencia Laboral IIT</div><button class="btn-primary btn-sm" onclick="agregarMiembro()">➕ Agregar miembro</button></div>
+      <div class="alert alert-info" style="margin-bottom:12px;font-size:12px">
+        📋 Art. 9 Ley 1010/2006 — El comité debe tener igual número de representantes del empleador y de los trabajadores. Período: <strong>2 años</strong>. Reunión mínima: mensual.
+      </div>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Miembro</th><th>Cargo empresa</th><th>Rol comité</th><th>Elegido por</th><th>Desde</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">ML</div><div class="cell-name">María López</div></div></td><td>Coordinadora RRHH</td><td><span class="badge badge-info">Presidenta</span></td><td>Empleador</td><td>Ene 2026</td><td><span class="badge badge-ok">Activo</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#107c10">AP</div><div class="cell-name">Andrea Parra</div></div></td><td>Asistente RRHH</td><td><span class="badge badge-info">Secretaria</span></td><td>Empleador</td><td>Ene 2026</td><td><span class="badge badge-ok">Activo</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#797600">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td><td>Téc. Eléctrico</td><td><span class="badge badge-warn">Rep. Trabajadores</span></td><td>Votación</td><td>Ene 2026</td><td><span class="badge badge-ok">Activo</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#8764b8">DH</div><div class="cell-name">Diana Herrera</div></div></td><td>Asesor Comercial</td><td><span class="badge badge-warn">Rep. Trabajadores</span></td><td>Votación</td><td>Ene 2026</td><td><span class="badge badge-ok">Activo</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Actas -->
+    <div id="tab-actas" class="card hidden">
+      <div class="card-header"><div class="card-title">📋 Actas del comité</div><button class="btn-primary btn-sm" onclick="nuevaActa()">➕ Nueva acta</button></div>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Número</th><th>Tipo</th><th>Fecha</th><th>Asistentes</th><th>Temas tratados</th><th>Firmada</th><th>Acción</th></tr></thead>
+          <tbody>
+            <tr><td style="font-family:monospace">Acta-001-2026</td><td><span class="badge badge-info">Ordinaria</span></td><td>15/01/2026</td><td>4 miembros</td><td>Elección, reglamento</td><td><span class="badge badge-ok">✓ Firmada</span></td><td><button class="btn-secondary btn-sm">📄 Ver</button></td></tr>
+            <tr><td style="font-family:monospace">Acta-002-2026</td><td><span class="badge badge-info">Ordinaria</span></td><td>12/02/2026</td><td>4 miembros</td><td>Queja QC-001</td><td><span class="badge badge-ok">✓ Firmada</span></td><td><button class="btn-secondary btn-sm">📄 Ver</button></td></tr>
+            <tr><td style="font-family:monospace">Acta-003-2026</td><td><span class="badge badge-warn">Extraordinaria</span></td><td>20/05/2026</td><td>3 miembros</td><td>Queja QC-002</td><td><span class="badge badge-warn">Pendiente</span></td><td><button class="btn-primary btn-sm">✍️ Firmar</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Manual -->
+    <div id="tab-manual" class="card hidden">
+      <div class="card-header"><div class="card-title">📖 Manual de convivencia laboral IIT</div><button class="btn-primary btn-sm" onclick="subirManual()">📎 Actualizar versión</button></div>
+      <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:16px;font-weight:600">Manual de Convivencia Laboral IIT v1.0</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Aprobado: Enero 2026 · Gerencia IIT InfraestructuraIT SAS</div>
+            <div style="font-size:12px;color:var(--text-muted)">Basado en: Ley 1010/2006 · Ley 1257/2008 · Resolución 652/2012</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-secondary btn-sm">👁 Ver PDF</button>
+            <button class="btn-secondary btn-sm">⬇ Descargar</button>
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-info" style="font-size:12px">
+        📊 <strong>Empleados que han firmado el manual:</strong> 35 de 38 (92%)<br>
+        <span style="color:#c50f1f">⚠ Pendientes de firma: Luis García · Ricardo Mora · Andrea Parra</span>
+      </div>
+      <button class="btn-secondary btn-sm" style="margin-top:8px" onclick="alert('Lista de empleados con firma pendiente generada.')">📋 Ver pendientes de firma</button>
+    </div>
+  </main>
+</div>
+
+<!-- Modal queja -->
+<div id="modal-queja" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">📝 Radicar queja de convivencia</div><button class="modal-close" onclick="cerrarModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-info" style="margin-bottom:12px;font-size:12px">🔒 Esta queja es completamente confidencial. Solo el comité de convivencia tendrá acceso.</div>
+      <div class="form-grid">
+        <div class="field-group span-2">
+          <label class="field-label">Tipo de queja</label>
+          <select class="field-input" id="q-tipo">
+            <option>Acoso laboral — Ley 1010/2006</option>
+            <option>Acoso sexual — Ley 1257/2008</option>
+            <option>Discriminación</option>
+            <option>Maltrato verbal/físico</option>
+            <option>Conflicto laboral</option>
+            <option>Otra situación de convivencia</option>
+          </select>
+        </div>
+        <div class="field-group"><label class="field-label">Gravedad</label><select class="field-input" id="q-grav"><option>Leve</option><option>Media</option><option>Grave</option></select></div>
+        <div class="field-group"><label class="field-label">¿Queja anónima?</label><select class="field-input" id="q-anon"><option value="0">No — Quejoso identificado</option><option value="1">Sí — Anónima</option></select></div>
+        <div class="field-group span-2"><label class="field-label">Quejoso (si no es anónima)</label><select class="field-input" id="q-quejoso"><option>Carlos Rodríguez</option><option>María López</option><option>Luis García</option><option>— Anónimo —</option></select></div>
+        <div class="field-group span-2"><label class="field-label">Persona acusada</label><input type="text" class="field-input" id="q-acusado" placeholder="Nombre del acusado"></div>
+        <div class="field-group"><label class="field-label">Fecha de los hechos</label><input type="date" class="field-input" id="q-fecha-hechos"></div>
+        <div class="field-group"><label class="field-label">Lugar</label><input type="text" class="field-input" id="q-lugar" placeholder="Instalaciones IIT, virtual..."></div>
+        <div class="field-group span-2"><label class="field-label">Descripción de los hechos <span class="required">*</span></label><textarea class="field-input" id="q-desc" rows="4" placeholder="Describa con detalle lo ocurrido..."></textarea></div>
+        <div class="field-group span-2"><label class="field-label">Testigos</label><input type="text" class="field-input" id="q-testigos" placeholder="Nombres de testigos (opcional)"></div>
+        <div class="field-group span-2"><label class="field-label">Documentos / Evidencias</label><input type="file" class="field-input" accept=".pdf,.jpg,.png,.docx" multiple></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarQueja()">📝 Radicar queja</button>
+    </div>
+  </div>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('convivencia.html');
+if (session) Auth.renderUserBar(session);
+var numRadicado = 3;
+function activarTab(el,id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden');});document.getElementById(id).classList.remove('hidden');}
+function abrirModalQueja(){document.getElementById('modal-queja').classList.remove('hidden');}
+function cerrarModal(){document.getElementById('modal-queja').classList.add('hidden');}
+function guardarQueja(){
+  if(!document.getElementById('q-desc').value.trim()){alert('La descripción es obligatoria');return;}
+  numRadicado++;
+  var num='QC-2026-00'+numRadicado;
+  var tipo=document.getElementById('q-tipo').value.split('—')[0].trim();
+  var grav=document.getElementById('q-grav').value;
+  var gc={Leve:'badge-muted',Media:'badge-warn',Grave:'badge-danger'};
+  document.getElementById('quejas-tbody').insertAdjacentHTML('afterbegin',
+    '<tr><td style="font-family:monospace;font-size:12px">'+num+'</td>'+
+    '<td><span class="badge badge-danger">'+tipo+'</span></td>'+
+    '<td>'+new Date().toLocaleDateString('es-CO')+'</td>'+
+    '<td><span class="badge '+gc[grav]+'">'+grav+'</span></td>'+
+    '<td><span class="badge badge-info">Recibida</span></td>'+
+    '<td style="font-size:12px">Comité convivencia</td>'+
+    '<td><button class="btn-secondary btn-sm">👁 Ver</button></td></tr>');
+  cerrarModal();
+  alert('✅ Queja radicada con número '+num+'.\nEl comité de convivencia la atenderá en un plazo de 5 días hábiles.');
+}
+function agregarMiembro(){alert('Formulario para agregar miembro al comité.');}
+function nuevaActa(){alert('Formulario para crear nueva acta del comité.');}
+function subirManual(){alert('Formulario para subir nueva versión del manual.');}
+</script>
+</body>
+</html>

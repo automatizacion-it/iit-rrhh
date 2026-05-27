@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backup — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="main-sidebar"></nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">💾 Backup de datos</div>
+        <div class="page-sub">Respaldo y restauración de la base de datos IIT RRHH · Solo rol Empresa</div>
+      </div>
+      <button class="btn-primary" onclick="iniciarBackup()">💾 Generar backup ahora</button>
+    </div>
+
+    <div class="alert alert-warning" style="margin-bottom:16px">
+      ⚠️ Los backups contienen información confidencial de empleados. Guárdalos en un lugar seguro y con acceso restringido.
+    </div>
+
+    <!-- Estado del sistema -->
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card">
+        <div class="metric-label">Último backup</div>
+        <div class="metric-value" style="font-size:16px;color:#107c10">Hace 2 días</div>
+        <div class="metric-sub">23/05/2026 · 02:00 AM</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Tamaño BD</div>
+        <div class="metric-value" style="font-size:18px">128 MB</div>
+        <div class="metric-sub">de 10 GB disponibles</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Total backups</div>
+        <div class="metric-value">12</div>
+        <div class="metric-sub">guardados en Azure</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Próximo automático</div>
+        <div class="metric-value" style="font-size:16px;color:#0078d4">Mañana</div>
+        <div class="metric-sub">26/05/2026 · 02:00 AM</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+      <!-- Backup manual -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">💾 Backup manual</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Tipo de backup</label>
+          <select class="field-input" id="tipo-backup">
+            <option value="completo">Completo — BD + documentos Azure Blob</option>
+            <option value="bd">Solo base de datos SQL</option>
+            <option value="docs">Solo documentos y archivos</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Descripción</label>
+          <input type="text" class="field-input" id="desc-backup" placeholder="Ej: Backup previo a actualización">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Destino</label>
+          <select class="field-input" id="dest-backup">
+            <option>Azure Blob Storage</option>
+            <option>Descarga local ZIP</option>
+            <option>Ambos</option>
+          </select>
+        </div>
+        <button class="btn-primary btn-full" onclick="iniciarBackup()" style="margin-top:8px">
+          💾 Iniciar backup
+        </button>
+      </div>
+
+      <!-- Backup automático -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚙️ Backup automático</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Frecuencia</label>
+          <select class="field-input" id="freq-backup">
+            <option>Diario — 2:00 AM</option>
+            <option>Semanal — Lunes 2:00 AM</option>
+            <option>Mensual — Día 1 · 2:00 AM</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Retención</label>
+          <select class="field-input" id="ret-backup">
+            <option>30 días</option>
+            <option>60 días</option>
+            <option>90 días</option>
+            <option>1 año</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Notificar al correo</label>
+          <input type="email" class="field-input" id="email-backup" value="empresa@iit.com.co">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <input type="checkbox" id="auto-backup" checked style="width:16px;height:16px">
+          <label for="auto-backup" style="font-size:13px;cursor:pointer">Activar backup automático</label>
+        </div>
+        <button class="btn-secondary btn-full" onclick="guardarAutoBackup()" style="margin-top:12px">
+          Guardar configuración
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Historial de backups -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-header">
+        <div class="card-title">📋 Historial de backups</div>
+      </div>
+      <div class="table-wrap">
+        <table id="backup-tabla">
+          <thead>
+            <tr>
+              <th>Fecha y hora</th>
+              <th>Tipo</th>
+              <th>Descripción</th>
+              <th>Tamaño</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>23/05/2026 02:00</td>
+              <td><span class="badge badge-info">Automático</span></td>
+              <td>Backup diario programado</td>
+              <td>128 MB</td>
+              <td><span class="badge badge-ok">✓ Completado</span></td>
+              <td>
+                <button class="btn-secondary btn-sm" onclick="descargarBackup(1)">⬇ Descargar</button>
+                <button class="btn-danger btn-sm" onclick="confirmarEliminar(1)">🗑</button>
+              </td>
+            </tr>
+            <tr>
+              <td>20/05/2026 09:15</td>
+              <td><span class="badge badge-muted">Manual</span></td>
+              <td>Backup previo a migración</td>
+              <td>125 MB</td>
+              <td><span class="badge badge-ok">✓ Completado</span></td>
+              <td>
+                <button class="btn-secondary btn-sm" onclick="descargarBackup(2)">⬇ Descargar</button>
+                <button class="btn-danger btn-sm" onclick="confirmarEliminar(2)">🗑</button>
+              </td>
+            </tr>
+            <tr>
+              <td>15/05/2026 02:00</td>
+              <td><span class="badge badge-info">Automático</span></td>
+              <td>Backup diario programado</td>
+              <td>122 MB</td>
+              <td><span class="badge badge-ok">✓ Completado</span></td>
+              <td>
+                <button class="btn-secondary btn-sm" onclick="descargarBackup(3)">⬇ Descargar</button>
+                <button class="btn-danger btn-sm" onclick="confirmarEliminar(3)">🗑</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal progreso -->
+<div id="modal-backup" class="modal-overlay hidden">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <div class="modal-body" style="padding:40px">
+      <div style="font-size:48px;margin-bottom:16px" id="backup-icon">⏳</div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:8px" id="backup-titulo">Generando backup...</div>
+      <div style="font-size:13px;color:var(--text-muted)" id="backup-sub">Exportando base de datos IIT_RRHH</div>
+      <div style="margin-top:16px;background:var(--bg);border-radius:var(--radius);height:8px;overflow:hidden">
+        <div id="backup-progreso" style="height:100%;background:var(--primary);width:0;transition:width .3s;border-radius:var(--radius)"></div>
+      </div>
+      <div id="backup-pct" style="font-size:12px;color:var(--text-muted);margin-top:6px">0%</div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('backup.html');
+if (session) {
+  Auth.renderUserBar(session);
+  if (!Auth.isEmpresa()) {
+    document.querySelector('.main-content').innerHTML =
+      '<div class="alert alert-error" style="margin:40px">⛔ Solo el rol Empresa puede acceder a los backups.</div>';
+  }
+}
+
+function iniciarBackup() {
+  var modal = document.getElementById('modal-backup');
+  var prog  = document.getElementById('backup-progreso');
+  var pct   = document.getElementById('backup-pct');
+  modal.classList.remove('hidden');
+  var p = 0;
+  var iv = setInterval(function() {
+    p += Math.random()*15;
+    if (p >= 100) { p = 100; clearInterval(iv);
+      document.getElementById('backup-icon').textContent = '✅';
+      document.getElementById('backup-titulo').textContent = 'Backup completado';
+      document.getElementById('backup-sub').textContent = 'Guardado en Azure Blob Storage';
+      setTimeout(function() {
+        modal.classList.add('hidden');
+        agregarFilaHistorial();
+      }, 1500);
+    }
+    prog.style.width = p+'%';
+    pct.textContent = Math.round(p)+'%';
+  }, 300);
+}
+
+function agregarFilaHistorial() {
+  var ahora = new Date().toLocaleDateString('es-CO')+' '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  var tbody = document.querySelector('#backup-tabla tbody');
+  var row = '<tr>' +
+    '<td>'+ahora+'</td>' +
+    '<td><span class="badge badge-muted">Manual</span></td>' +
+    '<td>'+(document.getElementById('desc-backup').value||'Backup manual')+'</td>' +
+    '<td>~128 MB</td>' +
+    '<td><span class="badge badge-ok">✓ Completado</span></td>' +
+    '<td><button class="btn-secondary btn-sm">⬇ Descargar</button></td>' +
+  '</tr>';
+  tbody.insertAdjacentHTML('afterbegin', row);
+  alert('✅ Backup generado exitosamente y guardado en Azure Blob Storage.');
+}
+
+function descargarBackup(id) {
+  alert('Descarga del backup #'+id+' — disponible con conexión a Azure Blob Storage.');
+}
+
+function confirmarEliminar(id) {
+  if (confirm('¿Eliminar el backup #'+id+'? Esta acción no se puede deshacer.')) {
+    alert('Backup eliminado.');
+  }
+}
+
+function guardarAutoBackup() {
+  localStorage.setItem('iit_auto_backup', JSON.stringify({
+    freq: document.getElementById('freq-backup').value,
+    ret:  document.getElementById('ret-backup').value,
+    email:document.getElementById('email-backup').value,
+    activo: document.getElementById('auto-backup').checked
+  }));
+  alert('✅ Configuración de backup automático guardada.');
+}
+</script>
+</body>
+</html>

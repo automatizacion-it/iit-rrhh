@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Licencias — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script></head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
+  </header>
+  <nav class="sidebar" id="main-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">📋 Licencias</div>
+      <div class="page-sub">Remuneradas · No remuneradas · Maternidad · Paternidad · Luto · Art. 51 CST</div></div>
+      <button class="btn-primary" onclick="abrirModal()">➕ Registrar licencia</button>
+    </div>
+
+    <!-- Marco legal -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title">📋 Tipos de licencia — Marco legal Colombia</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+        <div style="border:1px solid rgba(0,120,212,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#0078d4">🍼 Maternidad</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px"><strong>18 semanas</strong> — Ley 2114/2021. Paga EPS. Protección especial embarazo.</div>
+        </div>
+        <div style="border:1px solid rgba(16,185,129,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#107c10">👨 Paternidad</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px"><strong>2 semanas</strong> — Ley 2114/2021. Paga EPS. Al nacer el hijo.</div>
+        </div>
+        <div style="border:1px solid rgba(239,68,68,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#c50f1f">🕊️ Luto</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px"><strong>5 días hábiles</strong> — Art. 57 num. 10 CST. Fallecimiento cónyuge, compañero o familiar hasta 2° grado.</div>
+        </div>
+        <div style="border:1px solid rgba(251,191,36,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#797600">💍 Matrimonio</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px"><strong>Según conv. colectivo</strong> — Generalmente 5 días. Remunerada. Con registro civil.</div>
+        </div>
+        <div style="border:1px solid rgba(100,116,139,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#605e5c">📝 No remunerada</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px"><strong>Art. 51 CST</strong> — Por mutuo acuerdo. Sin salario. Empleo se suspende. Máx. 6 meses.</div>
+        </div>
+        <div style="border:1px solid rgba(139,92,246,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#8764b8">🎓 Estudio</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Convenio empresa-empleado. Puede ser remunerada o no. Requiere acuerdo escrito.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card"><div class="metric-label">Licencias activas</div><div class="metric-value" style="color:#0078d4">2</div><div class="metric-sub">en curso</div></div>
+      <div class="metric-card"><div class="metric-label">Maternidad 2026</div><div class="metric-value" style="color:#107c10">1</div><div class="metric-sub">18 semanas Ley 2114</div></div>
+      <div class="metric-card"><div class="metric-label">Paternidad 2026</div><div class="metric-value" style="color:#0078d4">2</div><div class="metric-sub">2 semanas</div></div>
+      <div class="metric-card"><div class="metric-label">No remuneradas</div><div class="metric-value" style="color:#605e5c">1</div><div class="metric-sub">activa</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Empleado</th><th>Tipo licencia</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Remunerada</th><th>Soporte</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="lic-tbody">
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#8764b8">SC</div><div class="cell-name">Sandra Castro</div></div></td>
+            <td><span class="badge" style="background:#e6d0ff;color:#8764b8">🍼 Maternidad</span></td>
+            <td>01/03/2026</td><td>18/07/2026</td><td>126</td>
+            <td><span class="badge badge-ok">Sí — EPS</span></td><td><span class="badge badge-ok">Cert. médico</span></td>
+            <td><span class="badge badge-ok">Activa</span></td>
+            <td><button class="btn-secondary btn-sm">Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td>
+            <td><span class="badge badge-info">🕊️ Luto</span></td>
+            <td>10/02/2026</td><td>14/02/2026</td><td>5</td>
+            <td><span class="badge badge-ok">Sí</span></td><td><span class="badge badge-ok">Acta defunción</span></td>
+            <td><span class="badge badge-muted">Terminada</span></td>
+            <td><button class="btn-secondary btn-sm">Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">RM</div><div class="cell-name">Ricardo Mora</div></div></td>
+            <td><span class="badge badge-muted">📝 No remunerada</span></td>
+            <td>01/05/2026</td><td>31/07/2026</td><td>90</td>
+            <td><span class="badge badge-danger">No</span></td><td><span class="badge badge-ok">Acuerdo escrito</span></td>
+            <td><span class="badge badge-ok">Activa</span></td>
+            <td><button class="btn-secondary btn-sm">Ver</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div id="modal-lic" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📋 Registrar licencia</div><button class="modal-close" onclick="cerrarModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group span-2"><label class="field-label">Empleado <span class="required">*</span></label><select class="field-input" id="lic-emp"><option>Carlos Rodríguez</option><option>María López</option><option>Sandra Castro</option><option>Ricardo Mora</option></select></div>
+        <div class="field-group span-2">
+          <label class="field-label">Tipo de licencia <span class="required">*</span></label>
+          <select class="field-input" id="lic-tipo" onchange="mostrarInfo()">
+            <option value="maternidad">🍼 Maternidad — 18 semanas (Ley 2114/2021)</option>
+            <option value="paternidad">👨 Paternidad — 2 semanas (Ley 2114/2021)</option>
+            <option value="luto">🕊️ Luto — 5 días hábiles (Art. 57 CST)</option>
+            <option value="matrimonio">💍 Matrimonio — 5 días</option>
+            <option value="no-remunerada">📝 No remunerada (Art. 51 CST)</option>
+            <option value="estudio">🎓 Estudio</option>
+            <option value="sindical">✊ Sindical</option>
+          </select>
+        </div>
+        <div class="alert alert-info" id="lic-info" style="grid-column:span 2;font-size:11px"></div>
+        <div class="field-group"><label class="field-label">Fecha inicio <span class="required">*</span></label><input type="date" class="field-input" id="lic-inicio" onchange="calcDias()"></div>
+        <div class="field-group"><label class="field-label">Fecha fin</label><input type="date" class="field-input" id="lic-fin" onchange="calcDias()"></div>
+        <div class="field-group"><label class="field-label">Días</label><input type="number" class="field-input" id="lic-dias" readonly style="background:var(--bg)"></div>
+        <div class="field-group"><label class="field-label">¿Remunerada?</label><select class="field-input" id="lic-remun"><option>Sí</option><option>No</option></select></div>
+        <div class="field-group span-2"><label class="field-label">Motivo</label><textarea class="field-input" id="lic-motivo" rows="2" placeholder="Descripción del motivo..."></textarea></div>
+        <div class="field-group span-2"><label class="field-label">Documento soporte <span class="required">*</span></label><input type="file" class="field-input" accept=".pdf,.jpg,.png"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardar()">💾 Registrar licencia</button>
+    </div>
+  </div>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('licencias.html');
+if (session) Auth.renderUserBar(session);
+var INFO={'maternidad':'🍼 18 semanas remuneradas. Paga la EPS. Protección reforzada embarazo.',
+  'paternidad':'👨 2 semanas remuneradas. Paga la EPS. Al nacer o adoptar el hijo.',
+  'luto':'🕊️ 5 días hábiles remunerados. Requiere acta de defunción. Familiar hasta 2° grado.',
+  'matrimonio':'💍 5 días remunerados. Requiere registro civil de matrimonio.',
+  'no-remunerada':'📝 Art. 51 CST. Sin salario. Suspende el contrato. Máximo 6 meses.',
+  'estudio':'🎓 Según acuerdo empresa-empleado. Puede ser remunerada o no.',
+  'sindical':'✊ Permiso sindical. Según convención colectiva.'};
+function mostrarInfo(){var t=document.getElementById('lic-tipo').value;document.getElementById('lic-info').textContent=INFO[t]||'';}
+function abrirModal(){document.getElementById('modal-lic').classList.remove('hidden');mostrarInfo();}
+function cerrarModal(){document.getElementById('modal-lic').classList.add('hidden');}
+function calcDias(){var i=new Date(document.getElementById('lic-inicio').value+'T12:00');var f=new Date(document.getElementById('lic-fin').value+'T12:00');if(i&&f&&f>=i)document.getElementById('lic-dias').value=Math.round((f-i)/(1000*60*60*24))+1;}
+function guardar(){
+  if(!document.getElementById('lic-inicio').value){alert('La fecha de inicio es obligatoria');return;}
+  var emp=document.getElementById('lic-emp').value;
+  var ini=emp.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+  var tipo=document.getElementById('lic-tipo').options[document.getElementById('lic-tipo').selectedIndex].text;
+  var remun=document.getElementById('lic-remun').value;
+  var inicio=new Date(document.getElementById('lic-inicio').value+'T12:00').toLocaleDateString('es-CO');
+  var fin=document.getElementById('lic-fin').value?new Date(document.getElementById('lic-fin').value+'T12:00').toLocaleDateString('es-CO'):'—';
+  var dias=document.getElementById('lic-dias').value||'—';
+  document.getElementById('lic-tbody').insertAdjacentHTML('afterbegin',
+    '<tr><td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini+'</div><div class="cell-name">'+emp+'</div></div></td>'+
+    '<td><span class="badge badge-info">'+tipo.split('—')[0].trim()+'</span></td>'+
+    '<td>'+inicio+'</td><td>'+fin+'</td><td>'+dias+'</td>'+
+    '<td><span class="badge '+(remun==='Sí'?'badge-ok':'badge-danger')+'">'+remun+'</span></td>'+
+    '<td><span class="badge badge-ok">Cargado</span></td>'+
+    '<td><span class="badge badge-warn">Pendiente</span></td>'+
+    '<td><button class="btn-secondary btn-sm">Ver</button></td></tr>');
+  cerrarModal();alert('✅ Licencia registrada exitosamente.');
+}
+</script>
+</body>
+</html>

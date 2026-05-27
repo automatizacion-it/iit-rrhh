@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exámenes Médicos — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script></head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
+  </header>
+  <nav class="sidebar" id="main-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">🩺 Exámenes médicos ocupacionales</div>
+      <div class="page-sub">Resolución 2346/2007 · Preocupacional · Periódico · Post-incapacidad · Retiro</div></div>
+      <button class="btn-primary" onclick="abrirModal()">➕ Registrar examen</button>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card"><div class="metric-label">Total exámenes</div><div class="metric-value" style="color:#0078d4">42</div><div class="metric-sub">registrados</div></div>
+      <div class="metric-card"><div class="metric-label">Aptos</div><div class="metric-value" style="color:#107c10">38</div><div class="metric-sub">empleados</div></div>
+      <div class="metric-card"><div class="metric-label">Con restricciones</div><div class="metric-value" style="color:#797600">3</div><div class="metric-sub">empleados</div></div>
+      <div class="metric-card"><div class="metric-label">Por vencer</div><div class="metric-value" style="color:#c50f1f">5</div><div class="metric-sub">próximos 30 días</div></div>
+    </div>
+
+    <!-- Tipos -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><div class="card-title">📋 Tipos de examen — Resolución 2346/2007</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+        <div style="border:1px solid rgba(0,120,212,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#0078d4">🔍 Preocupacional</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Antes de vinculación. Define aptitud para el cargo. Obligatorio.</div>
+        </div>
+        <div style="border:1px solid rgba(16,185,129,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#107c10">🔄 Periódico</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Durante la vinculación. Frecuencia según clase de riesgo ARL.</div>
+        </div>
+        <div style="border:1px solid rgba(251,191,36,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#797600">🏥 Post-incapacidad</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Regreso tras incapacidad. Valida aptitud para retomar funciones.</div>
+        </div>
+        <div style="border:1px solid rgba(239,68,68,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#c50f1f">🚪 Retiro</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Al finalizar el contrato. Determina estado de salud al salir.</div>
+        </div>
+        <div style="border:1px solid rgba(139,92,246,.3);border-radius:var(--radius-lg);padding:10px">
+          <div style="font-weight:600;font-size:12px;color:#8764b8">🔀 Reubicación</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Cambio de cargo o área. Valida aptitud para nuevas funciones.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Empleado</th><th>Tipo</th><th>Fecha</th><th>Empresa médica</th><th>Resultado</th><th>Restricciones</th><th>Próxima</th><th>Certificado</th></tr></thead>
+        <tbody id="exam-tbody">
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td>
+            <td><span class="badge badge-info">Preocupacional</span></td><td>15/03/2022</td><td>Salud Ocupacional SAS</td>
+            <td><span class="badge badge-ok">✅ Apto</span></td><td>Ninguna</td><td style="color:#797600">Mar 2024 ⚠</td>
+            <td><button class="btn-secondary btn-sm">📄 Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">LG</div><div class="cell-name">Luis García</div></div></td>
+            <td><span class="badge badge-warn">Post-incapacidad</span></td><td>05/05/2026</td><td>Salud Ocupacional SAS</td>
+            <td><span class="badge badge-warn">⚠ Apto con restricciones</span></td><td>No levantar > 5kg</td><td>Nov 2026</td>
+            <td><button class="btn-secondary btn-sm">📄 Ver</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#107c10">ML</div><div class="cell-name">María López</div></div></td>
+            <td><span class="badge badge-info">Periódico</span></td><td>02/01/2026</td><td>Clínica del Trabajo</td>
+            <td><span class="badge badge-ok">✅ Apto</span></td><td>Ninguna</td><td>Ene 2027</td>
+            <td><button class="btn-secondary btn-sm">📄 Ver</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div id="modal-exam" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🩺 Registrar examen médico</div><button class="modal-close" onclick="cerrarModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group span-2"><label class="field-label">Empleado <span class="required">*</span></label><select class="field-input" id="ex-emp"><option>Carlos Rodríguez</option><option>María López</option><option>Luis García</option></select></div>
+        <div class="field-group"><label class="field-label">Tipo de examen</label><select class="field-input" id="ex-tipo"><option>Preocupacional</option><option>Periódico</option><option>Post-incapacidad</option><option>Retiro</option><option>Reubicación</option></select></div>
+        <div class="field-group"><label class="field-label">Fecha <span class="required">*</span></label><input type="date" class="field-input" id="ex-fecha"></div>
+        <div class="field-group"><label class="field-label">Empresa médica</label><input type="text" class="field-input" id="ex-empresa" placeholder="Nombre IPS/clínica ocupacional"></div>
+        <div class="field-group"><label class="field-label">Médico ocupacional</label><input type="text" class="field-input" id="ex-medico" placeholder="Dr. Nombre Apellido"></div>
+        <div class="field-group"><label class="field-label">Resultado <span class="required">*</span></label><select class="field-input" id="ex-resultado"><option>Apto</option><option>Apto con restricciones</option><option>No apto</option></select></div>
+        <div class="field-group"><label class="field-label">Próxima evaluación</label><input type="date" class="field-input" id="ex-proxima"></div>
+        <div class="field-group span-2"><label class="field-label">Restricciones / Recomendaciones</label><textarea class="field-input" id="ex-restricciones" rows="2" placeholder="Ninguna / Descripción de restricciones médicas..."></textarea></div>
+        <div class="field-group"><label class="field-label">Costo (COP)</label><input type="number" class="field-input" id="ex-costo" value="0"></div>
+        <div class="field-group"><label class="field-label">Certificado médico</label><input type="file" class="field-input" accept=".pdf,.jpg,.png"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardar()">💾 Guardar examen</button>
+    </div>
+  </div>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('examenes-medicos.html');
+if (session) Auth.renderUserBar(session);
+function abrirModal(){document.getElementById('modal-exam').classList.remove('hidden');document.getElementById('ex-fecha').value=new Date().toISOString().slice(0,10);}
+function cerrarModal(){document.getElementById('modal-exam').classList.add('hidden');}
+function guardar(){
+  var emp=document.getElementById('ex-emp').value;
+  var ini=emp.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+  var tipo=document.getElementById('ex-tipo').value;
+  var res=document.getElementById('ex-resultado').value;
+  var fecha=new Date(document.getElementById('ex-fecha').value+'T12:00').toLocaleDateString('es-CO');
+  var badgeRes=res==='Apto'?'badge-ok':res==='No apto'?'badge-danger':'badge-warn';
+  var iconRes=res==='Apto'?'✅':'⚠️';
+  document.getElementById('exam-tbody').insertAdjacentHTML('afterbegin',
+    '<tr><td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini+'</div><div class="cell-name">'+emp+'</div></div></td>'+
+    '<td><span class="badge badge-info">'+tipo+'</span></td><td>'+fecha+'</td>'+
+    '<td>'+document.getElementById('ex-empresa').value+'</td>'+
+    '<td><span class="badge '+badgeRes+'">'+iconRes+' '+res+'</span></td>'+
+    '<td>'+(document.getElementById('ex-restricciones').value||'Ninguna')+'</td>'+
+    '<td>'+(document.getElementById('ex-proxima').value?new Date(document.getElementById('ex-proxima').value+'T12:00').toLocaleDateString('es-CO'):'—')+'</td>'+
+    '<td><button class="btn-secondary btn-sm">📄 Ver</button></td></tr>');
+  cerrarModal();
+  alert('✅ Examen médico registrado.');
+}
+</script>
+</body>
+</html>

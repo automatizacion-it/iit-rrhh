@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistencia — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+<style>
+.reloj{font-size:48px;font-weight:700;color:var(--primary);font-family:var(--font-mono);text-align:center;padding:20px 0}
+.estado-presente{background:#dff6dd;border:1px solid #9fd89f;border-radius:var(--radius-lg);padding:12px;text-align:center}
+.estado-ausente{background:#fde7e9;border:1px solid #f1bcbe;border-radius:var(--radius-lg);padding:12px;text-align:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dia{padding:6px 4px;text-align:center;border-radius:var(--radius);font-size:11px}
+.cal-hdr{font-weight:600;color:var(--text-muted);font-size:10px}
+.cal-presente{background:#dff6dd;color:#107c10}
+.cal-ausente{background:#fde7e9;color:#c50f1f}
+.cal-tardanza{background:#fff4ce;color:#797600}
+.cal-festivo{background:var(--bg);color:var(--text-muted)}
+.cal-hoy{border:2px solid var(--primary);font-weight:700}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
+  </header>
+  <nav class="sidebar" id="main-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">🕐 Registro de asistencia</div>
+      <div class="page-sub">Entrada · Salida · Horas trabajadas · Novedades</div></div>
+      <div class="btn-group">
+        <button class="btn-secondary btn-sm" onclick="exportarMes()">📊 Exportar mes</button>
+        <button class="btn-primary" onclick="abrirModalManual()">➕ Registro manual</button>
+      </div>
+    </div>
+
+    <!-- Reloj y marcación rápida -->
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:16px">
+      <div class="card" style="text-align:center">
+        <div class="reloj" id="reloj-hora">00:00:00</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px" id="reloj-fecha"></div>
+        <div id="estado-actual" class="estado-ausente" style="margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;color:#c50f1f">⏸ Sin marcar hoy</div>
+        </div>
+        <div class="btn-group" style="justify-content:center">
+          <button class="btn-primary" id="btn-entrada" onclick="marcarEntrada()">🟢 Marcar entrada</button>
+          <button class="btn-secondary" id="btn-salida" onclick="marcarSalida()" style="display:none">🔴 Marcar salida</button>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:8px">Jornada: Lun–Vie 8:00AM – 5:00PM</div>
+      </div>
+
+      <!-- Métricas del mes -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">📊 Resumen Mayo 2026</div></div>
+        <div class="metrics-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="metric-card"><div class="metric-label">Días trabajados</div><div class="metric-value" style="color:#107c10">17</div><div class="metric-sub">de 22 hábiles</div><div class="metric-bar"><div class="metric-fill" style="width:77%;background:#107c10"></div></div></div>
+          <div class="metric-card"><div class="metric-label">Ausencias</div><div class="metric-value" style="color:#c50f1f">2</div><div class="metric-sub">días</div></div>
+          <div class="metric-card"><div class="metric-label">Tardanzas</div><div class="metric-value" style="color:#797600">3</div><div class="metric-sub">registradas</div></div>
+          <div class="metric-card"><div class="metric-label">Horas extras</div><div class="metric-value" style="color:#0078d4">6</div><div class="metric-sub">horas mes</div></div>
+        </div>
+        <!-- Calendario -->
+        <div style="margin-top:12px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text-muted)">Calendario Mayo 2026</div>
+          <div class="cal-grid">
+            <div class="cal-dia cal-hdr">Lun</div><div class="cal-dia cal-hdr">Mar</div><div class="cal-dia cal-hdr">Mié</div><div class="cal-dia cal-hdr">Jue</div><div class="cal-dia cal-hdr">Vie</div><div class="cal-dia cal-hdr">Sáb</div><div class="cal-dia cal-hdr">Dom</div>
+            <div class="cal-dia"></div><div class="cal-dia"></div><div class="cal-dia"></div>
+            <div class="cal-dia cal-presente">1</div><div class="cal-dia cal-presente">2</div><div class="cal-dia cal-festivo">3</div><div class="cal-dia cal-festivo">4</div>
+            <div class="cal-dia cal-presente">5</div><div class="cal-dia cal-presente">6</div><div class="cal-dia cal-presente">7</div><div class="cal-dia cal-tardanza">8</div><div class="cal-dia cal-presente">9</div><div class="cal-dia cal-festivo">10</div><div class="cal-dia cal-festivo">11</div>
+            <div class="cal-dia cal-presente">12</div><div class="cal-dia cal-presente">13</div><div class="cal-dia cal-ausente">14</div><div class="cal-dia cal-presente">15</div><div class="cal-dia cal-presente">16</div><div class="cal-dia cal-festivo">17</div><div class="cal-dia cal-festivo">18</div>
+            <div class="cal-dia cal-tardanza">19</div><div class="cal-dia cal-presente">20</div><div class="cal-dia cal-presente">21</div><div class="cal-dia cal-presente">22</div><div class="cal-dia cal-tardanza">23</div><div class="cal-dia cal-festivo">24</div><div class="cal-dia cal-festivo">25</div>
+            <div class="cal-dia cal-hoy">26</div><div class="cal-dia">27</div><div class="cal-dia">28</div><div class="cal-dia">29</div><div class="cal-dia">30</div><div class="cal-dia cal-festivo">31</div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:8px;font-size:10px;flex-wrap:wrap">
+            <span><span class="cal-dia cal-presente" style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle"></span> Presente</span>
+            <span><span class="cal-dia cal-ausente" style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle"></span> Ausente</span>
+            <span><span class="cal-dia cal-tardanza" style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle"></span> Tardanza</span>
+            <span><span class="cal-dia cal-festivo" style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle"></span> Festivo/Fin sem</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla detalle -->
+    <div class="tabs">
+      <div class="tab active" onclick="activarTab(this,'tab-hoy')">📅 Hoy</div>
+      <div class="tab" onclick="activarTab(this,'tab-semana')">📆 Esta semana</div>
+      <div class="tab" onclick="activarTab(this,'tab-todos')">👥 Todos los empleados</div>
+    </div>
+
+    <div id="tab-hoy" class="card">
+      <div class="card-header"><div class="card-title" id="titulo-hoy">Asistencia hoy</div></div>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Empleado</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Novedad</th><th>Estado</th></tr></thead>
+          <tbody id="tbody-hoy">
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#107c10">ML</div><div class="cell-name">María López</div></div></td><td>07:58</td><td>17:02</td><td>9h 04m</td><td>Normal</td><td><span class="badge badge-ok">Completo</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td><td>08:15</td><td>—</td><td>En curso</td><td>Tardanza</td><td><span class="badge badge-warn">En oficina</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#797600">JM</div><div class="cell-name">Jorge Martínez</div></div></td><td>—</td><td>—</td><td>—</td><td>Permiso médico</td><td><span class="badge badge-info">Permiso</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">LG</div><div class="cell-name">Luis García</div></div></td><td>—</td><td>—</td><td>—</td><td>Incapacidad</td><td><span class="badge badge-danger">Incapacitado</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-semana" class="card hidden">
+      <div class="card-header"><div class="card-title">Semana del 26 al 30 de Mayo 2026</div></div>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Empleado</th><th>Lun 26</th><th>Mar 27</th><th>Mié 28</th><th>Jue 29</th><th>Vie 30</th><th>Total hrs</th></tr></thead>
+          <tbody>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#107c10">ML</div><div class="cell-name">María López</div></div></td><td><span class="badge badge-ok">9h</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>9h</td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td><td><span class="badge badge-warn">En curso</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-todos" class="card hidden">
+      <div class="card-header"><div class="card-title">Resumen asistencia — Todos los empleados · Mayo 2026</div></div>
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <thead><tr><th>Empleado</th><th>Días trabajados</th><th>Ausencias</th><th>Tardanzas</th><th>Hrs extras</th><th>Cumplimiento</th></tr></thead>
+          <tbody>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#107c10">ML</div><div class="cell-name">María López</div></div></td><td>20</td><td>0</td><td>1</td><td>0</td><td><span class="badge badge-ok">100%</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td><td>17</td><td>2</td><td>3</td><td>6</td><td><span class="badge badge-warn">85%</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#797600">JM</div><div class="cell-name">Jorge Martínez</div></div></td><td>19</td><td>1</td><td>0</td><td>12</td><td><span class="badge badge-ok">95%</span></td></tr>
+            <tr><td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">LG</div><div class="cell-name">Luis García</div></div></td><td>12</td><td>8</td><td>0</td><td>0</td><td><span class="badge badge-danger">60% — Incapacidad</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal registro manual -->
+<div id="modal-manual" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">➕ Registro manual de asistencia</div><button class="modal-close" onclick="cerrarModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-warning" style="margin-bottom:12px;font-size:12px">⚠️ El registro manual queda en el log de auditoría con el usuario que lo realizó.</div>
+      <div class="form-grid">
+        <div class="field-group span-2"><label class="field-label">Empleado <span class="required">*</span></label><select class="field-input" id="m-emp"><option>Carlos Rodríguez</option><option>María López</option><option>Jorge Martínez</option><option>Luis García</option></select></div>
+        <div class="field-group"><label class="field-label">Fecha <span class="required">*</span></label><input type="date" class="field-input" id="m-fecha"></div>
+        <div class="field-group"><label class="field-label">Hora entrada</label><input type="time" class="field-input" id="m-entrada"></div>
+        <div class="field-group"><label class="field-label">Hora salida</label><input type="time" class="field-input" id="m-salida"></div>
+        <div class="field-group"><label class="field-label">Novedad</label><select class="field-input" id="m-novedad"><option>Normal</option><option>Tardanza</option><option>Permiso</option><option>Incapacidad</option><option>Ausencia justificada</option></select></div>
+        <div class="field-group span-2"><label class="field-label">Observación</label><input type="text" class="field-input" id="m-obs" placeholder="Motivo del registro manual..."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarManual()">💾 Guardar registro</button>
+    </div>
+  </div>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('asistencia.html');
+if(session) Auth.renderUserBar(session);
+var marcado = false;
+var horaEntrada = null;
+
+function actualizarReloj(){
+  var ahora = new Date();
+  document.getElementById('reloj-hora').textContent =
+    ahora.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('reloj-fecha').textContent =
+    ahora.toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('titulo-hoy').textContent =
+    'Asistencia — '+ahora.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+}
+setInterval(actualizarReloj,1000);
+actualizarReloj();
+
+function marcarEntrada(){
+  horaEntrada = new Date();
+  var hora = horaEntrada.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  var tardanza = horaEntrada.getHours() > 8 || (horaEntrada.getHours()===8 && horaEntrada.getMinutes()>10);
+  document.getElementById('estado-actual').className = 'estado-presente';
+  document.getElementById('estado-actual').innerHTML =
+    '<div style="font-size:13px;font-weight:600;color:#107c10">🟢 En oficina desde '+hora+'</div>'+
+    (tardanza?'<div style="font-size:11px;color:#797600">⚠ Tardanza registrada</div>':'');
+  document.getElementById('btn-entrada').style.display='none';
+  document.getElementById('btn-salida').style.display='flex';
+  marcado = true;
+  alert('✅ Entrada registrada: '+hora+(tardanza?' — Tardanza registrada':''));
+}
+
+function marcarSalida(){
+  if(!marcado){return;}
+  var ahora = new Date();
+  var hora = ahora.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  var mins = Math.round((ahora-horaEntrada)/60000);
+  var hrs = Math.floor(mins/60); var m = mins%60;
+  document.getElementById('estado-actual').innerHTML =
+    '<div style="font-size:13px;font-weight:600;color:#605e5c">⏹ Jornada completada: '+hrs+'h '+m+'m</div>';
+  document.getElementById('btn-salida').style.display='none';
+  alert('✅ Salida registrada: '+hora+'\nHoras trabajadas: '+hrs+'h '+m+'m');
+}
+
+function activarTab(el,id){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden');});
+  document.getElementById(id).classList.remove('hidden');
+}
+function abrirModalManual(){document.getElementById('modal-manual').classList.remove('hidden');document.getElementById('m-fecha').value=new Date().toISOString().slice(0,10);}
+function cerrarModal(){document.getElementById('modal-manual').classList.add('hidden');}
+function guardarManual(){
+  alert('✅ Registro manual guardado.\nQueda registrado en auditoría con usuario: '+session.nombre);
+  cerrarModal();
+}
+function exportarMes(){alert('📊 Reporte de asistencia Mayo 2026 exportado. Disponible con BD conectada.');}
+</script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuevo Empleado — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+<style>
+.wizard-panel { display:none; }
+.wizard-panel.active { display:block; }
+.photo-upload { border:2px dashed var(--border-dark); border-radius:var(--radius-lg); padding:24px; text-align:center; cursor:pointer; transition:var(--transition); }
+.photo-upload:hover { border-color:var(--primary); background:var(--primary-light); }
+.photo-preview { width:100px; height:100px; border-radius:50%; background:var(--bg); border:3px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:36px; color:var(--text-light); overflow:hidden; margin:0 auto 12px; }
+.photo-preview img { width:100%; height:100%; object-fit:cover; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="main-sidebar"></nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">Nuevo empleado</div>
+        <div class="page-sub">Complete todos los pasos para registrar el empleado</div>
+      </div>
+      <a class="btn-secondary btn-sm" href="/pages/sabana.html">← Volver</a>
+    </div>
+
+    <!-- Wizard steps -->
+    <div class="wizard-steps" style="margin-bottom:24px">
+      <div class="wz-step active" id="ws-1">
+        <div class="wz-num">1</div>
+        <div class="wz-label">Datos personales</div>
+      </div>
+      <div class="wz-line"></div>
+      <div class="wz-step" id="ws-2">
+        <div class="wz-num">2</div>
+        <div class="wz-label">Datos laborales</div>
+      </div>
+      <div class="wz-line"></div>
+      <div class="wz-step" id="ws-3">
+        <div class="wz-num">3</div>
+        <div class="wz-label">Seguridad social</div>
+      </div>
+      <div class="wz-line"></div>
+      <div class="wz-step" id="ws-4">
+        <div class="wz-num">4</div>
+        <div class="wz-label">Acceso al sistema</div>
+      </div>
+    </div>
+
+    <div class="card">
+
+      <!-- Panel 1: Datos personales -->
+      <div class="wizard-panel active" id="panel-1">
+        <div class="card-header">
+          <div class="card-title">👤 Datos personales y fotografía</div>
+        </div>
+
+        <!-- Foto -->
+        <div style="display:flex;gap:24px;align-items:flex-start;margin-bottom:20px">
+          <div>
+            <div class="field-label">Fotografía</div>
+            <div class="photo-upload" onclick="document.getElementById('foto-input').click()" style="width:160px">
+              <div class="photo-preview" id="foto-preview">📷</div>
+              <div style="font-size:12px;color:var(--text-muted)">Click para subir foto<br>JPG/PNG · máx 2MB</div>
+              <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="previewFoto(this)">
+            </div>
+          </div>
+          <div style="flex:1">
+            <div class="form-grid">
+              <div class="field-group">
+                <label class="field-label">Tipo de documento <span class="required">*</span></label>
+                <select class="field-input" id="tipo-doc">
+                  <option value="CC">Cédula de ciudadanía</option>
+                  <option value="CE">Cédula de extranjería</option>
+                  <option value="PA">Pasaporte</option>
+                  <option value="PEP">PEP</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Número de cédula (ID) <span class="required">*</span></label>
+                <input type="text" class="field-input" id="cedula" placeholder="1.234.567.890">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Nombres <span class="required">*</span></label>
+                <input type="text" class="field-input" id="nombres" placeholder="Carlos Andrés">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Apellidos <span class="required">*</span></label>
+                <input type="text" class="field-input" id="apellidos" placeholder="Rodríguez Gómez">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label class="field-label">Fecha de nacimiento</label>
+            <input type="date" class="field-input" id="fecha-nac">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Lugar de nacimiento</label>
+            <input type="text" class="field-input" id="lugar-nac" placeholder="Bogotá, Colombia">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Género</label>
+            <select class="field-input" id="genero">
+              <option value="M">Masculino</option>
+              <option value="F">Femenino</option>
+              <option value="O">Otro</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Estado civil</label>
+            <select class="field-input" id="estado-civil">
+              <option>Soltero/a</option>
+              <option>Casado/a</option>
+              <option>Unión libre</option>
+              <option>Divorciado/a</option>
+              <option>Viudo/a</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Nivel educativo</label>
+            <select class="field-input" id="nivel-edu">
+              <option>Bachiller</option>
+              <option>Técnico</option>
+              <option>Tecnólogo</option>
+              <option>Profesional</option>
+              <option>Especialista</option>
+              <option>Magíster</option>
+              <option>Doctor/PhD</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Teléfono</label>
+            <input type="tel" class="field-input" id="telefono" placeholder="+57 310 456 7890">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Email corporativo <span class="required">*</span></label>
+            <input type="email" class="field-input" id="email-corp" placeholder="nombre@iit.com.co">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Email personal</label>
+            <input type="email" class="field-input" id="email-pers" placeholder="nombre@gmail.com">
+          </div>
+          <div class="field-group span-2">
+            <label class="field-label">Dirección de residencia</label>
+            <input type="text" class="field-input" id="direccion" placeholder="Cra 7 # 45-23, Chapinero">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Ciudad</label>
+            <input type="text" class="field-input" id="ciudad" placeholder="Bogotá">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Contacto de emergencia</label>
+            <input type="text" class="field-input" id="contacto-emerg" placeholder="María García · 311 234 5678">
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:flex-end">
+          <button class="btn-primary" onclick="siguientePaso(2)">Siguiente → Datos laborales</button>
+        </div>
+      </div>
+
+      <!-- Panel 2: Datos laborales -->
+      <div class="wizard-panel" id="panel-2">
+        <div class="card-header">
+          <div class="card-title">💼 Datos laborales y contrato</div>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label class="field-label">Cargo <span class="required">*</span></label>
+            <select class="field-input" id="cargo">
+              <option>Gerente General</option>
+              <option>Coordinador RRHH</option>
+              <option>Ingeniero de Proyectos</option>
+              <option>Técnico Instalaciones Eléctricas</option>
+              <option>Técnico Solar Fotovoltaico</option>
+              <option>Asistente Administrativo</option>
+              <option>Asesor Comercial</option>
+              <option>Técnico en Redes</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Departamento <span class="required">*</span></label>
+            <select class="field-input" id="departamento">
+              <option>Administración</option>
+              <option>Instalaciones</option>
+              <option>Comercial</option>
+              <option>Tecnología</option>
+              <option>RRHH</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Sede <span class="required">*</span></label>
+            <select class="field-input" id="sede">
+              <option>Bogotá Principal</option>
+              <option>Medellín</option>
+              <option>Cali</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Fecha de ingreso <span class="required">*</span></label>
+            <input type="date" class="field-input" id="fecha-ingreso">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Tipo de contrato <span class="required">*</span></label>
+            <select class="field-input" id="tipo-contrato">
+              <option>Indefinido</option>
+              <option>Término fijo</option>
+              <option>Obra labor</option>
+              <option>Aprendizaje</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Jornada</label>
+            <select class="field-input" id="jornada">
+              <option>Completa</option>
+              <option>Parcial</option>
+              <option>Flexible</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Modalidad</label>
+            <select class="field-input" id="modalidad">
+              <option>Presencial</option>
+              <option>Remoto</option>
+              <option>Híbrido</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Salario básico <span class="required">*</span></label>
+            <input type="number" class="field-input" id="salario" placeholder="2800000" min="1423500">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Auxilio de transporte</label>
+            <input type="number" class="field-input" id="aux-transporte" value="200000">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Banco</label>
+            <select class="field-input" id="banco">
+              <option>Bancolombia</option>
+              <option>Banco de Bogotá</option>
+              <option>Davivienda</option>
+              <option>BBVA</option>
+              <option>Nequi</option>
+              <option>Daviplata</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Tipo de cuenta</label>
+            <select class="field-input" id="tipo-cuenta">
+              <option>Ahorros</option>
+              <option>Corriente</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Número de cuenta</label>
+            <input type="text" class="field-input" id="num-cuenta" placeholder="123456789">
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between">
+          <button class="btn-secondary" onclick="siguientePaso(1)">← Anterior</button>
+          <button class="btn-primary" onclick="siguientePaso(3)">Siguiente → Seguridad social</button>
+        </div>
+      </div>
+
+      <!-- Panel 3: Seguridad Social -->
+      <div class="wizard-panel" id="panel-3">
+        <div class="card-header">
+          <div class="card-title">❤️ Afiliaciones de seguridad social</div>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label class="field-label">EPS <span class="required">*</span></label>
+            <select class="field-input" id="eps">
+              <option>Sanitas</option>
+              <option>Sura</option>
+              <option>Compensar</option>
+              <option>Nueva EPS</option>
+              <option>Famisanar</option>
+              <option>Coomeva</option>
+              <option>Salud Total</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Fondo de pensión <span class="required">*</span></label>
+            <select class="field-input" id="pension">
+              <option>Porvenir</option>
+              <option>Protección</option>
+              <option>Colpensiones</option>
+              <option>Skandia</option>
+              <option>Colfondos</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Fondo de cesantías</label>
+            <select class="field-input" id="cesantias">
+              <option>Porvenir</option>
+              <option>Protección</option>
+              <option>Colfondos</option>
+              <option>Skandia</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">ARL <span class="required">*</span></label>
+            <select class="field-input" id="arl">
+              <option>Sura</option>
+              <option>Positiva</option>
+              <option>Colmena</option>
+              <option>Liberty</option>
+              <option>Equidad</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Clase de riesgo ARL</label>
+            <select class="field-input" id="clase-riesgo">
+              <option value="1">I — Mínimo</option>
+              <option value="2" selected>II — Bajo</option>
+              <option value="3">III — Medio</option>
+              <option value="4">IV — Alto</option>
+              <option value="5">V — Máximo</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Caja de compensación</label>
+            <select class="field-input" id="caja">
+              <option>Compensar</option>
+              <option>Cafam</option>
+              <option>Colsubsidio</option>
+              <option>Comfenalco</option>
+              <option>Comfama</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Resumen de aportes -->
+        <div class="alert alert-info" style="margin-top:16px">
+          <strong>Aportes mensuales estimados</strong> (se calculan automáticamente con el salario ingresado)<br>
+          <div id="resumen-aportes" style="margin-top:8px;font-size:12px"></div>
+        </div>
+
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between">
+          <button class="btn-secondary" onclick="siguientePaso(2)">← Anterior</button>
+          <button class="btn-primary" onclick="siguientePaso(4)">Siguiente → Acceso al sistema</button>
+        </div>
+      </div>
+
+      <!-- Panel 4: Acceso al sistema -->
+      <div class="wizard-panel" id="panel-4">
+        <div class="card-header">
+          <div class="card-title">🔐 Crear acceso al sistema</div>
+        </div>
+
+        <div class="alert alert-info">
+          El empleado recibirá un correo con el link de activación. Usará su <strong>cédula</strong> como identificador principal.
+        </div>
+
+        <div class="form-grid" style="margin-top:16px">
+          <div class="field-group">
+            <label class="field-label">Cédula (ID del sistema)</label>
+            <input type="text" class="field-input" id="acc-cedula" disabled style="background:var(--bg)">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Email de acceso <span class="required">*</span></label>
+            <input type="email" class="field-input" id="acc-email">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Rol en el sistema</label>
+            <select class="field-input" id="acc-rol">
+              <option value="empleado">Empleado — solo sus datos</option>
+              <option value="usuario">Usuario — alimenta datos generales</option>
+              <option value="administrador">Administrador — acceso completo</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Contraseña temporal</label>
+            <input type="text" class="field-input" id="acc-pass" value="IIT2026*" readonly>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px">El empleado deberá cambiarla al primer ingreso</div>
+          </div>
+        </div>
+
+        <!-- Cláusula de confidencialidad -->
+        <div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">📋 Cláusula de confidencialidad</div>
+          <div style="font-size:12px;color:var(--text-muted);max-height:100px;overflow-y:auto;line-height:1.6">
+            El empleado se compromete a mantener la confidencialidad de toda la información de la empresa IIT InfraestructuraIT a la que tenga acceso en razón de su cargo, tanto durante su vinculación como después de ella. Esta obligación incluye información técnica, comercial, financiera y de clientes.
+          </div>
+          <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+            <input type="checkbox" id="acepta-clausula" style="width:16px;height:16px">
+            <label for="acepta-clausula" style="font-size:12px;cursor:pointer">El administrador confirma que el empleado ha sido informado sobre la cláusula de confidencialidad</label>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between">
+          <button class="btn-secondary" onclick="siguientePaso(3)">← Anterior</button>
+          <button class="btn-primary" onclick="guardarEmpleado()" style="background:#107c10">✅ Crear empleado</button>
+        </div>
+      </div>
+
+    </div><!-- fin card -->
+  </main>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('nuevo-empleado.html');
+if (session) {
+  Auth.renderUserBar(session);
+  if (!Auth.isAdmin()) {
+    document.querySelector('.main-content').innerHTML =
+      '<div class="alert alert-error" style="margin:40px">⛔ Solo administradores pueden crear empleados.</div>';
+  }
+}
+
+var pasoActual = 1;
+
+function siguientePaso(paso) {
+  // Validación básica
+  if (paso > pasoActual) {
+    if (pasoActual === 1) {
+      if (!document.getElementById('cedula').value.trim()) {
+        alert('La cédula es obligatoria'); return;
+      }
+      if (!document.getElementById('nombres').value.trim()) {
+        alert('El nombre es obligatorio'); return;
+      }
+    }
+    if (pasoActual === 2) {
+      if (!document.getElementById('salario').value) {
+        alert('El salario es obligatorio'); return;
+      }
+    }
+  }
+
+  // Sincronizar datos entre paneles
+  if (paso === 3) calcularAportes();
+  if (paso === 4) {
+    document.getElementById('acc-cedula').value = document.getElementById('cedula').value;
+    document.getElementById('acc-email').value  = document.getElementById('email-corp').value;
+  }
+
+  document.getElementById('panel-'+pasoActual).classList.remove('active');
+  document.getElementById('ws-'+pasoActual).classList.remove('active');
+
+  pasoActual = paso;
+
+  document.getElementById('panel-'+pasoActual).classList.add('active');
+  var stepEl = document.getElementById('ws-'+pasoActual);
+  stepEl.classList.add('active');
+
+  // Marcar pasos completados
+  for (var i=1; i<pasoActual; i++) {
+    document.getElementById('ws-'+i).classList.add('done');
+    document.getElementById('ws-'+i).classList.remove('active');
+  }
+  window.scrollTo(0,0);
+}
+
+function calcularAportes() {
+  var salario = parseFloat(document.getElementById('salario').value) || 0;
+  if (!salario) { document.getElementById('resumen-aportes').textContent = 'Ingresa el salario en el paso anterior.'; return; }
+  var fmt = function(n){ return '$'+Math.round(n).toLocaleString('es-CO'); };
+  document.getElementById('resumen-aportes').innerHTML =
+    'Salud empleado (4%): <b>'+fmt(salario*0.04)+'</b> · ' +
+    'Pensión empleado (4%): <b>'+fmt(salario*0.04)+'</b> · ' +
+    'Salud empresa (8.5%): <b>'+fmt(salario*0.085)+'</b> · ' +
+    'Pensión empresa (12%): <b>'+fmt(salario*0.12)+'</b> · ' +
+    'ARL (1.044%): <b>'+fmt(salario*0.01044)+'</b> · ' +
+    'Caja (4%): <b>'+fmt(salario*0.04)+'</b>';
+}
+
+function previewFoto(input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('foto-preview').innerHTML = '<img src="'+e.target.result+'">';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function guardarEmpleado() {
+  if (!document.getElementById('acepta-clausula').checked) {
+    alert('Debes confirmar que el empleado fue informado sobre la cláusula de confidencialidad.');
+    return;
+  }
+  var cedula = document.getElementById('cedula').value.trim();
+  var nombres = document.getElementById('nombres').value.trim();
+  var apellidos = document.getElementById('apellidos').value.trim();
+
+  // Simulación de guardado
+  alert('✅ Empleado '+nombres+' '+apellidos+' ('+cedula+') creado exitosamente.\n\nSe enviará el link de activación al correo registrado.');
+  window.location.href = '/pages/sabana.html';
+}
+</script>
+</body>
+</html>

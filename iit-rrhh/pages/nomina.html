@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nómina — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="main-sidebar"></nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">💰 Nómina</div>
+        <div class="page-sub">Liquidación mensual · Normativa colombiana 2026</div>
+      </div>
+      <div class="btn-group">
+        <select class="field-input" style="width:140px" id="sel-periodo" onchange="cargarNomina()">
+          <option value="2026-05">Mayo 2026</option>
+          <option value="2026-04">Abril 2026</option>
+          <option value="2026-03">Marzo 2026</option>
+        </select>
+        <button class="btn-secondary btn-sm" onclick="exportar('excel')">📊 Excel</button>
+        <button class="btn-secondary btn-sm" onclick="exportar('pdf')">📄 PDF</button>
+        <button class="btn-primary btn-sm" onclick="liquidarNomina()">⚡ Liquidar nómina</button>
+      </div>
+    </div>
+
+    <!-- Totales -->
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card">
+        <div class="metric-label">Total devengado</div>
+        <div class="metric-value" style="color:#107c10;font-size:18px" id="m-devengado">$24.400.000</div>
+        <div class="metric-sub">8 empleados</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Total deducciones</div>
+        <div class="metric-value" style="color:#c50f1f;font-size:18px" id="m-deducciones">$1.952.000</div>
+        <div class="metric-sub">salud + pensión</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Total neto a pagar</div>
+        <div class="metric-value" style="color:#0078d4;font-size:18px" id="m-neto">$22.448.000</div>
+        <div class="metric-sub">transferencias bancarias</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Aportes empresa</div>
+        <div class="metric-value" style="font-size:18px" id="m-empresa">$6.832.000</div>
+        <div class="metric-sub">SS + parafiscales</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Estado</div>
+        <div class="metric-value" style="font-size:14px;color:#797600" id="m-estado">Pendiente</div>
+        <div class="metric-sub" id="m-estado-sub">Sin liquidar</div>
+      </div>
+    </div>
+
+    <!-- Tabla nómina -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Salario básico</th>
+            <th>Aux. transporte</th>
+            <th>Otros deveng.</th>
+            <th>Total deveng.</th>
+            <th>Ded. salud (4%)</th>
+            <th>Ded. pensión (4%)</th>
+            <th>Otros desc.</th>
+            <th>Neto a pagar</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="nomina-tbody"></tbody>
+        <tfoot>
+          <tr style="background:var(--bg);font-weight:600">
+            <td>TOTALES</td>
+            <td id="tot-salario"></td>
+            <td id="tot-aux"></td>
+            <td>—</td>
+            <td id="tot-dev" style="color:#107c10"></td>
+            <td id="tot-salud" style="color:#c50f1f"></td>
+            <td id="tot-pension" style="color:#c50f1f"></td>
+            <td>—</td>
+            <td id="tot-neto" style="color:#0078d4"></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Colilla individual -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-header">
+        <div class="card-title">🧾 Generar colilla de pago individual</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+        <div class="field-group" style="margin:0;flex:1">
+          <label class="field-label">Empleado</label>
+          <select class="field-input" id="sel-emp-colilla">
+            <option>Carlos Rodríguez</option>
+            <option>María López</option>
+            <option>Jorge Martínez</option>
+            <option>Andrea Parra</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="generarColilla()">📄 Generar colilla PDF</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('nomina.html');
+if (session) {
+  Auth.renderUserBar(session);
+  if (!Auth.isAdmin()) {
+    document.querySelector('.main-content').innerHTML =
+      '<div class="alert alert-error" style="margin:40px">⛔ Solo administradores pueden ver la nómina.</div>';
+  }
+}
+
+var NOMINA = [
+  {nombre:'Carlos Rodríguez', salario:2800000, aux:200000, otros:0, libranza:0, estado:'Pendiente'},
+  {nombre:'María López',      salario:4500000, aux:0,      otros:0, libranza:200000, estado:'Pendiente'},
+  {nombre:'Jorge Martínez',   salario:5200000, aux:0,      otros:300000, libranza:0, estado:'Pendiente'},
+  {nombre:'Andrea Parra',     salario:2200000, aux:200000, otros:0, libranza:0, estado:'Pendiente'},
+  {nombre:'Luis García',      salario:2600000, aux:200000, otros:0, libranza:100000, estado:'Pendiente'},
+  {nombre:'Diana Herrera',    salario:3100000, aux:0,      otros:500000, libranza:0, estado:'Pendiente'},
+  {nombre:'Ricardo Mora',     salario:2900000, aux:200000, otros:0, libranza:0, estado:'Pendiente'},
+  {nombre:'Sandra Castro',    salario:3800000, aux:0,      otros:0, libranza:150000, estado:'Pendiente'}
+];
+
+var fmt = function(n){ return '$'+Math.round(n).toLocaleString('es-CO'); };
+
+function cargarNomina() {
+  var tbody = document.getElementById('nomina-tbody');
+  var tots = {sal:0,aux:0,dev:0,sal2:0,pen:0,net:0};
+
+  tbody.innerHTML = NOMINA.map(function(e,i) {
+    var ini = e.nombre.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+    var col = ['#0078d4','#107c10','#797600','#c50f1f','#8764b8','#038387','#ca5010','#005b70'][i%8];
+    var dev  = e.salario + e.aux + e.otros;
+    var sal2 = e.salario * 0.04;
+    var pen  = e.salario * 0.04;
+    var desc = e.libranza;
+    var neto = dev - sal2 - pen - desc;
+    tots.sal+=e.salario; tots.aux+=e.aux; tots.dev+=dev;
+    tots.sal2+=sal2; tots.pen+=pen; tots.net+=neto;
+    return '<tr>' +
+      '<td><div class="cell-avatar"><div class="avatar" style="background:'+col+'">'+ini+'</div>' +
+        '<div class="cell-name">'+e.nombre+'</div></div></td>' +
+      '<td>'+fmt(e.salario)+'</td>' +
+      '<td>'+fmt(e.aux)+'</td>' +
+      '<td>'+fmt(e.otros)+'</td>' +
+      '<td style="font-weight:500;color:#107c10">'+fmt(dev)+'</td>' +
+      '<td style="color:#c50f1f">'+fmt(sal2)+'</td>' +
+      '<td style="color:#c50f1f">'+fmt(pen)+'</td>' +
+      '<td>'+fmt(desc)+'</td>' +
+      '<td style="font-weight:600;color:#0078d4">'+fmt(neto)+'</td>' +
+      '<td><span class="badge badge-warn">'+e.estado+'</span></td>' +
+    '</tr>';
+  }).join('');
+
+  document.getElementById('tot-salario').textContent = fmt(tots.sal);
+  document.getElementById('tot-aux').textContent     = fmt(tots.aux);
+  document.getElementById('tot-dev').textContent     = fmt(tots.dev);
+  document.getElementById('tot-salud').textContent   = fmt(tots.sal2);
+  document.getElementById('tot-pension').textContent = fmt(tots.pen);
+  document.getElementById('tot-neto').textContent    = fmt(tots.net);
+  document.getElementById('m-devengado').textContent = fmt(tots.dev);
+  document.getElementById('m-deducciones').textContent = fmt(tots.sal2+tots.pen);
+  document.getElementById('m-neto').textContent = fmt(tots.net);
+}
+
+function liquidarNomina() {
+  if (!confirm('¿Liquidar nómina de '+document.getElementById('sel-periodo').value+'? Esta acción marcará todos los registros como pagados.')) return;
+  NOMINA.forEach(function(e){ e.estado = 'Pagado'; });
+  document.getElementById('m-estado').textContent = '✅ Liquidada';
+  document.getElementById('m-estado').style.color = '#107c10';
+  document.getElementById('m-estado-sub').textContent = new Date().toLocaleDateString('es-CO');
+  cargarNomina();
+  alert('✅ Nómina liquidada exitosamente.');
+}
+
+function exportar(tipo) {
+  alert('Exportación a '+tipo.toUpperCase()+' disponible con conexión a base de datos.');
+}
+
+function generarColilla() {
+  var emp = document.getElementById('sel-emp-colilla').value;
+  alert('📄 Colilla de pago de '+emp+' generada.\nDisponible con conexión a base de datos.');
+}
+
+cargarNomina();
+</script>
+</body>
+</html>

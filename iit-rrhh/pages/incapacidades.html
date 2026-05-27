@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incapacidades — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="main-sidebar"></nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">🏥 Incapacidades médicas</div>
+        <div class="page-sub">Registro y seguimiento de incapacidades por EPS, ARL y maternidad</div>
+      </div>
+      <button class="btn-primary" onclick="abrirModal()">➕ Registrar incapacidad</button>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card">
+        <div class="metric-label">Activas hoy</div>
+        <div class="metric-value" style="color:#c50f1f">2</div>
+        <div class="metric-sub">empleados incapacitados</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Días este mes</div>
+        <div class="metric-value">18</div>
+        <div class="metric-sub">días acumulados</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Por EPS</div>
+        <div class="metric-value" style="color:#0078d4">14</div>
+        <div class="metric-sub">días enfermedad general</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Por ARL</div>
+        <div class="metric-value" style="color:#797600">4</div>
+        <div class="metric-sub">días accidente trabajo</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Tipo</th>
+            <th>Diagnóstico CIE-10</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Días</th>
+            <th>Entidad paga</th>
+            <th>Estado</th>
+            <th>Doc.</th>
+          </tr>
+        </thead>
+        <tbody id="incap-tbody">
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#c50f1f">LG</div><div class="cell-name">Luis García</div></div></td>
+            <td><span class="badge badge-info">EPS</span></td>
+            <td>M54.5 — Lumbalgia</td>
+            <td>22/05/2026</td><td>28/05/2026</td><td>5</td>
+            <td>EPS Sura</td>
+            <td><span class="badge badge-warn">Activa</span></td>
+            <td><button class="btn-secondary btn-sm">📄</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div class="cell-name">Carlos Rodríguez</div></div></td>
+            <td><span class="badge badge-info">EPS</span></td>
+            <td>J02.9 — Faringitis</td>
+            <td>08/05/2026</td><td>10/05/2026</td><td>3</td>
+            <td>EPS Sanitas</td>
+            <td><span class="badge badge-ok">Terminada</span></td>
+            <td><button class="btn-secondary btn-sm">📄</button></td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#797600">JM</div><div class="cell-name">Jorge Martínez</div></div></td>
+            <td><span class="badge badge-warn">ARL</span></td>
+            <td>S60.0 — Contusión mano</td>
+            <td>02/04/2026</td><td>06/04/2026</td><td>4</td>
+            <td>ARL Sura</td>
+            <td><span class="badge badge-ok">Terminada</span></td>
+            <td><button class="btn-secondary btn-sm">📄</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<div id="modal-inc" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🏥 Registrar incapacidad</div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group span-2">
+          <label class="field-label">Empleado <span class="required">*</span></label>
+          <select class="field-input" id="inc-empleado">
+            <option>Carlos Rodríguez</option><option>María López</option>
+            <option>Jorge Martínez</option><option>Luis García</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Tipo <span class="required">*</span></label>
+          <select class="field-input" id="inc-tipo">
+            <option>Enfermedad general (EPS)</option>
+            <option>Accidente de trabajo (ARL)</option>
+            <option>Enfermedad profesional (ARL)</option>
+            <option>Maternidad / Paternidad</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Código CIE-10</label>
+          <input type="text" class="field-input" id="inc-cie" placeholder="Ej: M54.5">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Diagnóstico</label>
+          <input type="text" class="field-input" id="inc-diag" placeholder="Lumbalgia, Faringitis...">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Médico tratante</label>
+          <input type="text" class="field-input" id="inc-medico" placeholder="Dr. Nombre Apellido">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fecha inicio <span class="required">*</span></label>
+          <input type="date" class="field-input" id="inc-inicio" onchange="calcDias()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fecha fin <span class="required">*</span></label>
+          <input type="date" class="field-input" id="inc-fin" onchange="calcDias()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Días totales</label>
+          <input type="number" class="field-input" id="inc-dias" readonly style="background:var(--bg)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Entidad que reconoce</label>
+          <select class="field-input" id="inc-entidad">
+            <option>EPS</option><option>ARL</option><option>Empresa (primeros 2 días)</option>
+          </select>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Documento (foto o PDF)</label>
+          <input type="file" class="field-input" id="inc-doc" accept=".pdf,.jpg,.png">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardar()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('incapacidades.html');
+if (session) Auth.renderUserBar(session);
+
+function abrirModal() { document.getElementById('modal-inc').classList.remove('hidden'); }
+function cerrarModal() { document.getElementById('modal-inc').classList.add('hidden'); }
+
+function calcDias() {
+  var ini = new Date(document.getElementById('inc-inicio').value);
+  var fin = new Date(document.getElementById('inc-fin').value);
+  if (ini && fin && fin >= ini) {
+    document.getElementById('inc-dias').value = Math.round((fin-ini)/(1000*60*60*24))+1;
+  }
+}
+
+function guardar() {
+  var inicio = document.getElementById('inc-inicio').value;
+  var fin    = document.getElementById('inc-fin').value;
+  if (!inicio || !fin) { alert('Las fechas son obligatorias'); return; }
+  var emp   = document.getElementById('inc-empleado').value;
+  var tipo  = document.getElementById('inc-tipo').value.split(' ')[0];
+  var diag  = document.getElementById('inc-diag').value || 'Sin diagnóstico';
+  var dias  = document.getElementById('inc-dias').value;
+  var ini2  = new Date(inicio).toLocaleDateString('es-CO');
+  var fin2  = new Date(fin).toLocaleDateString('es-CO');
+  var ini3  = emp.split(' ').map(function(p){return p[0]||'';}).join('').substring(0,2).toUpperCase();
+  var tbody = document.getElementById('incap-tbody');
+  tbody.insertAdjacentHTML('afterbegin',
+    '<tr>' +
+    '<td><div class="cell-avatar"><div class="avatar" style="background:#605e5c">'+ini3+'</div><div class="cell-name">'+emp+'</div></div></td>' +
+    '<td><span class="badge badge-info">'+tipo+'</span></td>' +
+    '<td>'+diag+'</td>' +
+    '<td>'+ini2+'</td><td>'+fin2+'</td><td>'+dias+'</td>' +
+    '<td>EPS</td>' +
+    '<td><span class="badge badge-warn">Activa</span></td>' +
+    '<td><button class="btn-secondary btn-sm">📄</button></td>' +
+    '</tr>');
+  cerrarModal();
+  alert('✅ Incapacidad registrada exitosamente.');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vacaciones — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="main-sidebar"></nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">🏖 Vacaciones</div>
+        <div class="page-sub" id="vac-sub">Solicitudes y saldos de vacaciones</div>
+      </div>
+      <button class="btn-primary" onclick="abrirModalNueva()">➕ Nueva solicitud</button>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics-grid" style="margin-bottom:16px" id="metricas-admin">
+      <div class="metric-card">
+        <div class="metric-label">Pendientes aprobación</div>
+        <div class="metric-value" style="color:#797600">3</div>
+        <div class="metric-sub">solicitudes</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">En vacaciones hoy</div>
+        <div class="metric-value" style="color:#0078d4">3</div>
+        <div class="metric-sub">empleados</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Aprobadas este mes</div>
+        <div class="metric-value" style="color:#107c10">8</div>
+        <div class="metric-sub">solicitudes</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Días promedio</div>
+        <div class="metric-value">10</div>
+        <div class="metric-sub">por solicitud</div>
+      </div>
+    </div>
+
+    <!-- Mi saldo (empleado) -->
+    <div id="mi-saldo" class="card hidden" style="margin-bottom:16px">
+      <div class="card-header">
+        <div class="card-title">🏖 Mi saldo de vacaciones</div>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Días disponibles</div>
+          <div class="metric-value" style="color:#107c10">12</div>
+          <div class="metric-sub">hábiles</div>
+          <div class="metric-bar"><div class="metric-fill" style="width:80%;background:#107c10"></div></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Días disfrutados</div>
+          <div class="metric-value">3</div>
+          <div class="metric-sub">este año</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Días causados</div>
+          <div class="metric-value">15</div>
+          <div class="metric-sub">total 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solicitudes pendientes (admin) -->
+    <div class="card" id="pendientes-card">
+      <div class="card-header">
+        <div class="card-title">⏳ Solicitudes pendientes de aprobación</div>
+        <span class="badge badge-warn" id="cnt-pendientes">3 pendientes</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Fechas</th>
+            <th>Días</th>
+            <th>Tipo</th>
+            <th>Solicitado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="pendientes-tbody">
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#0078d4">CR</div><div><div class="cell-name">Carlos Rodríguez</div><div class="cell-sub">Instalaciones</div></div></div></td>
+            <td>12 Jun – 18 Jun 2026</td><td>5 días</td>
+            <td><span class="badge badge-muted">Disfrutadas</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Hace 2 días</td>
+            <td>
+              <button class="btn-success btn-sm" onclick="aprobarVac(this,'Carlos Rodríguez')">✓ Aprobar</button>
+              <button class="btn-danger btn-sm"  onclick="rechazarVac(this,'Carlos Rodríguez')">✗ Rechazar</button>
+            </td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#107c10">AP</div><div><div class="cell-name">Andrea Parra</div><div class="cell-sub">RRHH</div></div></div></td>
+            <td>01 Jul – 10 Jul 2026</td><td>8 días</td>
+            <td><span class="badge badge-muted">Disfrutadas</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Hace 5 días</td>
+            <td>
+              <button class="btn-success btn-sm" onclick="aprobarVac(this,'Andrea Parra')">✓ Aprobar</button>
+              <button class="btn-danger btn-sm"  onclick="rechazarVac(this,'Andrea Parra')">✗ Rechazar</button>
+            </td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#797600">RM</div><div><div class="cell-name">Ricardo Mora</div><div class="cell-sub">Tecnología</div></div></div></td>
+            <td>15 Jun – 22 Jun 2026</td><td>6 días</td>
+            <td><span class="badge badge-muted">Disfrutadas</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Hoy</td>
+            <td>
+              <button class="btn-success btn-sm" onclick="aprobarVac(this,'Ricardo Mora')">✓ Aprobar</button>
+              <button class="btn-danger btn-sm"  onclick="rechazarVac(this,'Ricardo Mora')">✗ Rechazar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Historial -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-header">
+        <div class="card-title">📋 Historial de vacaciones</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th id="col-empleado">Empleado</th>
+            <th>Fechas</th>
+            <th>Días</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Aprobado por</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#8764b8">ML</div><div class="cell-name">María López</div></div></td>
+            <td>03 Mar – 14 Mar 2026</td><td>10 días</td>
+            <td><span class="badge badge-muted">Disfrutadas</span></td>
+            <td><span class="badge badge-ok">Aprobado</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Admin IIT</td>
+          </tr>
+          <tr>
+            <td><div class="cell-avatar"><div class="avatar" style="background:#038387">LG</div><div class="cell-name">Luis García</div></div></td>
+            <td>10 Ene – 17 Ene 2026</td><td>6 días</td>
+            <td><span class="badge badge-muted">Disfrutadas</span></td>
+            <td><span class="badge badge-ok">Aprobado</span></td>
+            <td style="font-size:12px;color:var(--text-muted)">Admin IIT</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal nueva solicitud -->
+<div id="modal-nueva" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Nueva solicitud de vacaciones</div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="campo-empleado-vac"></div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">Fecha inicio <span class="required">*</span></label>
+          <input type="date" class="field-input" id="vac-inicio">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fecha fin <span class="required">*</span></label>
+          <input type="date" class="field-input" id="vac-fin" onchange="calcularDias()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Tipo</label>
+          <select class="field-input" id="vac-tipo">
+            <option>Disfrutadas</option>
+            <option>Compensadas en dinero</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Días hábiles</label>
+          <input type="number" class="field-input" id="vac-dias" readonly style="background:var(--bg)">
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Observaciones</label>
+          <textarea class="field-input" id="vac-obs" placeholder="Opcional..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarSolicitud()">Enviar solicitud</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('vacaciones.html');
+var esAdmin = false;
+if (session) {
+  Auth.renderUserBar(session);
+  esAdmin = Auth.isAdmin();
+  document.getElementById('vac-sub').textContent = esAdmin
+    ? 'Gestión de vacaciones · Todos los empleados'
+    : 'Mis vacaciones · '+session.nombre;
+
+  if (session.rol === 'empleado') {
+    document.getElementById('metricas-admin').classList.add('hidden');
+    document.getElementById('mi-saldo').classList.remove('hidden');
+    document.getElementById('pendientes-card').classList.add('hidden');
+    document.getElementById('col-empleado').style.display = 'none';
+  }
+
+  // Admin: agregar campo empleado en modal
+  if (esAdmin) {
+    document.getElementById('campo-empleado-vac').innerHTML =
+      '<div class="field-group"><label class="field-label">Empleado</label>' +
+      '<select class="field-input" id="vac-empleado">' +
+      '<option>Carlos Rodríguez</option><option>María López</option>' +
+      '<option>Jorge Martínez</option><option>Andrea Parra</option>' +
+      '<option>Luis García</option></select></div>';
+  }
+}
+
+function abrirModalNueva() {
+  document.getElementById('modal-nueva').classList.remove('hidden');
+}
+function cerrarModal() {
+  document.getElementById('modal-nueva').classList.add('hidden');
+}
+
+function calcularDias() {
+  var ini = new Date(document.getElementById('vac-inicio').value);
+  var fin = new Date(document.getElementById('vac-fin').value);
+  if (!ini || !fin || fin < ini) { document.getElementById('vac-dias').value = ''; return; }
+  var dias = 0;
+  var cur = new Date(ini);
+  while (cur <= fin) {
+    var d = cur.getDay();
+    if (d !== 0 && d !== 6) dias++;
+    cur.setDate(cur.getDate()+1);
+  }
+  document.getElementById('vac-dias').value = dias;
+}
+
+function guardarSolicitud() {
+  var ini = document.getElementById('vac-inicio').value;
+  var fin = document.getElementById('vac-fin').value;
+  if (!ini || !fin) { alert('Las fechas son obligatorias'); return; }
+  cerrarModal();
+  alert('✅ Solicitud de vacaciones enviada. El administrador la revisará.');
+}
+
+function aprobarVac(btn, nombre) {
+  var fila = btn.closest('tr');
+  fila.querySelector('td:last-child').innerHTML = '<span class="badge badge-ok">✓ Aprobado</span>';
+  alert('✅ Vacaciones de '+nombre+' aprobadas.');
+  actualizarContador();
+}
+
+function rechazarVac(btn, nombre) {
+  var razon = prompt('Motivo del rechazo para '+nombre+':');
+  if (razon === null) return;
+  var fila = btn.closest('tr');
+  fila.querySelector('td:last-child').innerHTML = '<span class="badge badge-danger">✗ Rechazado</span>';
+  actualizarContador();
+}
+
+function actualizarContador() {
+  var pend = document.querySelectorAll('#pendientes-tbody td:last-child button').length;
+  document.getElementById('cnt-pendientes').textContent = (pend/2)+' pendientes';
+}
+</script>
+</body>
+</html>

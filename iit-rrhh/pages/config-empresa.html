@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuración — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo">
+      <div class="logo-icon">IIT</div>
+      <span class="logo-main">RRHH</span>
+    </a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="main-sidebar"></nav>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">⚙️ Configuración de la empresa</div>
+        <div class="page-sub">Datos de IIT InfraestructuraIT y parámetros globales de nómina</div>
+      </div>
+      <button class="btn-primary" onclick="guardarConfig()">💾 Guardar cambios</button>
+    </div>
+
+    <div id="alerta-guardado" class="alert alert-success hidden">✅ Configuración guardada exitosamente</div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="activarTab(this,'tab-empresa')">Datos empresa</div>
+      <div class="tab" onclick="activarTab(this,'tab-nomina')">Parámetros nómina</div>
+      <div class="tab" onclick="activarTab(this,'tab-sedes')">Sedes</div>
+    </div>
+
+    <!-- Tab empresa -->
+    <div id="tab-empresa" class="card">
+      <div class="card-header">
+        <div class="card-title">🏢 Información de la empresa</div>
+      </div>
+
+      <div style="display:flex;gap:24px;align-items:flex-start;margin-bottom:20px">
+        <div>
+          <div class="field-label">Logo de la empresa</div>
+          <div class="photo-upload" onclick="document.getElementById('logo-input').click()"
+               style="width:160px;border:2px dashed var(--border-dark);border-radius:var(--radius-lg);padding:16px;text-align:center;cursor:pointer">
+            <div id="logo-preview" style="width:100px;height:100px;background:var(--bg);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 8px">🏢</div>
+            <div style="font-size:11px;color:var(--text-muted)">Click para cambiar<br>PNG/JPG · máx 2MB</div>
+            <input type="file" id="logo-input" accept="image/*" style="display:none" onchange="previewLogo(this)">
+          </div>
+        </div>
+        <div style="flex:1">
+          <div class="form-grid">
+            <div class="field-group span-2">
+              <label class="field-label">Razón social <span class="required">*</span></label>
+              <input type="text" class="field-input" id="razon-social" value="InfraestructuraIT SAS">
+            </div>
+            <div class="field-group">
+              <label class="field-label">NIT <span class="required">*</span></label>
+              <input type="text" class="field-input" id="nit" value="900.123.456">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Dígito de verificación</label>
+              <input type="text" class="field-input" id="digito" value="7" maxlength="1" style="width:60px">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Tipo de empresa</label>
+              <select class="field-input" id="tipo-empresa">
+                <option selected>SAS</option>
+                <option>LTDA</option>
+                <option>SA</option>
+                <option>Unipersonal</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Representante legal</label>
+              <input type="text" class="field-input" id="rep-legal" value="Administrador IIT">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group span-2">
+          <label class="field-label">Dirección principal</label>
+          <input type="text" class="field-input" id="direccion" value="Cra 7 # 32-15, Bogotá">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Ciudad</label>
+          <input type="text" class="field-input" id="ciudad" value="Bogotá">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Teléfono</label>
+          <input type="text" class="field-input" id="telefono" value="+57 601 234 5678">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email RRHH</label>
+          <input type="email" class="field-input" id="email-rrhh" value="rrhh@iit.com.co">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email nómina</label>
+          <input type="email" class="field-input" id="email-nomina" value="nomina@iit.com.co">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Sitio web</label>
+          <input type="url" class="field-input" id="sitio-web" value="https://iit.com.co">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Actividad económica (CIIU)</label>
+          <input type="text" class="field-input" id="ciiu" value="6190 — Otras telecomunicaciones">
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab nómina -->
+    <div id="tab-nomina" class="card hidden">
+      <div class="card-header">
+        <div class="card-title">💰 Parámetros de nómina Colombia 2026</div>
+      </div>
+
+      <div class="alert alert-info" style="margin-bottom:16px">
+        Estos valores se aplican automáticamente al calcular nómina. Actualiza cuando el gobierno colombiano modifique los porcentajes.
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">SMLMV 2026</label>
+          <input type="number" class="field-input" id="smlmv" value="1423500">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Auxilio de transporte</label>
+          <input type="number" class="field-input" id="aux-transporte" value="200000">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-muted)">Aportes del empleado</div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">Salud empleado (%)</label>
+          <input type="number" class="field-input" id="p-salud-emp" value="4" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Pensión empleado (%)</label>
+          <input type="number" class="field-input" id="p-pension-emp" value="4" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fondo solidaridad (%)</label>
+          <input type="number" class="field-input" id="p-solidaridad" value="1" step="0.01">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-muted)">Aportes de la empresa</div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">Salud empresa (%)</label>
+          <input type="number" class="field-input" id="p-salud-emp2" value="8.5" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Pensión empresa (%)</label>
+          <input type="number" class="field-input" id="p-pension-emp2" value="12" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Caja compensación (%)</label>
+          <input type="number" class="field-input" id="p-caja" value="4" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">ICBF (%)</label>
+          <input type="number" class="field-input" id="p-icbf" value="3" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">SENA (%)</label>
+          <input type="number" class="field-input" id="p-sena" value="2" step="0.01">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-muted)">Prestaciones sociales</div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label class="field-label">Cesantías (%)</label>
+          <input type="number" class="field-input" id="p-cesantias" value="8.33" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Int. cesantías (%)</label>
+          <input type="number" class="field-input" id="p-int-ces" value="12" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Prima de servicios (%)</label>
+          <input type="number" class="field-input" id="p-prima" value="8.33" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Vacaciones (%)</label>
+          <input type="number" class="field-input" id="p-vacaciones" value="4.17" step="0.01">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Días vacaciones / año</label>
+          <input type="number" class="field-input" id="dias-vac" value="15">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Días permiso / año</label>
+          <input type="number" class="field-input" id="dias-perm" value="5">
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab sedes -->
+    <div id="tab-sedes" class="card hidden">
+      <div class="card-header">
+        <div class="card-title">📍 Sedes IIT</div>
+        <button class="btn-primary btn-sm" onclick="agregarSede()">➕ Nueva sede</button>
+      </div>
+      <div id="sedes-lista">
+        <div class="sede-card" style="border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px">
+          <div class="form-grid">
+            <div class="field-group">
+              <label class="field-label">Nombre</label>
+              <input type="text" class="field-input" value="Bogotá Principal">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Ciudad</label>
+              <input type="text" class="field-input" value="Bogotá">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Dirección</label>
+              <input type="text" class="field-input" value="Cra 7 # 32-15">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Teléfono</label>
+              <input type="text" class="field-input" value="+57 601 234 5678">
+            </div>
+          </div>
+        </div>
+        <div class="sede-card" style="border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px">
+          <div class="form-grid">
+            <div class="field-group">
+              <label class="field-label">Nombre</label>
+              <input type="text" class="field-input" value="Medellín">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Ciudad</label>
+              <input type="text" class="field-input" value="Medellín">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Dirección</label>
+              <input type="text" class="field-input" value="Calle 50 # 42-20">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Teléfono</label>
+              <input type="text" class="field-input" value="+57 604 234 9012">
+            </div>
+          </div>
+        </div>
+        <div class="sede-card" style="border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px">
+          <div class="form-grid">
+            <div class="field-group">
+              <label class="field-label">Nombre</label>
+              <input type="text" class="field-input" value="Cali">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Ciudad</label>
+              <input type="text" class="field-input" value="Cali">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Dirección</label>
+              <input type="text" class="field-input" value="Av. 6N # 25-10">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Teléfono</label>
+              <input type="text" class="field-input" value="+57 602 234 3456">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) Sidebar.inject('config-empresa.html');
+if (session) {
+  Auth.renderUserBar(session);
+  if (!Auth.isAdmin()) {
+    document.querySelector('.main-content').innerHTML =
+      '<div class="alert alert-error" style="margin:40px">⛔ Solo administradores pueden acceder a la configuración.</div>';
+  }
+}
+
+function activarTab(el, tabId) {
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.querySelectorAll('#tab-empresa,#tab-nomina,#tab-sedes').forEach(function(t){t.classList.add('hidden');});
+  document.getElementById(tabId).classList.remove('hidden');
+}
+
+function previewLogo(input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('logo-preview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:contain;border-radius:4px">';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function guardarConfig() {
+  var config = {
+    razon_social:  document.getElementById('razon-social').value,
+    nit:           document.getElementById('nit').value,
+    smlmv:         document.getElementById('smlmv') ? document.getElementById('smlmv').value : 1423500
+  };
+  localStorage.setItem('iit_config_empresa', JSON.stringify(config));
+  var alerta = document.getElementById('alerta-guardado');
+  alerta.classList.remove('hidden');
+  setTimeout(function(){ alerta.classList.add('hidden'); }, 3000);
+}
+
+function agregarSede() {
+  var lista = document.getElementById('sedes-lista');
+  var div = document.createElement('div');
+  div.className = 'sede-card';
+  div.style.cssText = 'border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px';
+  div.innerHTML = '<div class="form-grid">' +
+    '<div class="field-group"><label class="field-label">Nombre</label><input type="text" class="field-input" placeholder="Nueva sede"></div>' +
+    '<div class="field-group"><label class="field-label">Ciudad</label><input type="text" class="field-input" placeholder="Ciudad"></div>' +
+    '<div class="field-group"><label class="field-label">Dirección</label><input type="text" class="field-input" placeholder="Dirección"></div>' +
+    '<div class="field-group"><label class="field-label">Teléfono</label><input type="text" class="field-input" placeholder="+57..."></div>' +
+    '</div>' +
+    '<button class="btn-danger btn-sm" onclick="this.parentElement.remove()" style="margin-top:8px">🗑 Eliminar sede</button>';
+  lista.appendChild(div);
+}
+</script>
+</body>
+</html>
