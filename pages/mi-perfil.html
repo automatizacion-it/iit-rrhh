@@ -154,6 +154,7 @@
       <button class="tp-btn" onclick="aTab(this,'tp-caps')">🎓 Capacitaciones</button>
       <button class="tp-btn" onclick="aTab(this,'tp-sst')">🦺 SST</button>
       <button class="tp-btn" onclick="aTab(this,'tp-bienestar')">🎁 Bienestar</button>
+      <button class="tp-btn" onclick="aTab(this,'tp-formacion')">🎓 Formación</button>
       <button class="tp-btn" id="tb-nomina" onclick="aTab(this,'tp-nomina')" style="display:none">💰 Nómina</button>
     </div>
 
@@ -472,6 +473,76 @@
 
     </div><!-- /tp-bienestar -->
 
+
+    <!-- ══ TAB FORMACIÓN ══ -->
+    <div id="tp-formacion" class="hidden">
+
+      <div class="nom-tabs">
+        <button class="nom-tab active" onclick="aFormTab(this,'form-capacitaciones')">🎓 Capacitaciones</button>
+        <button class="nom-tab" onclick="aFormTab(this,'form-cursos')">📜 Cursos y certs.</button>
+        <button class="nom-tab" onclick="aFormTab(this,'form-socializacion')">📢 Socialización</button>
+        <button class="nom-tab" onclick="aFormTab(this,'form-estudios')">🏫 Estudios académicos</button>
+      </div>
+
+      <!-- Capacitaciones -->
+      <div id="form-capacitaciones">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🎓 Capacitaciones asistidas</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/capacitaciones.html'">Ver módulo</button>
+          </div>
+          <div class="metrics-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px">
+            <div class="metric-card"><div class="metric-label">Total capacitaciones</div><div class="metric-value" style="color:#0078d4" id="fc-total">—</div></div>
+            <div class="metric-card"><div class="metric-label">Horas formación</div><div class="metric-value" style="color:#107c10" id="fc-horas">—</div></div>
+            <div class="metric-card"><div class="metric-label">Año en curso</div><div class="metric-value" id="fc-ano">—</div></div>
+            <div class="metric-card"><div class="metric-label">Pendientes</div><div class="metric-value" style="color:#797600" id="fc-pend">—</div></div>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Capacitación</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>Modalidad</th><th>SST</th><th>Estado</th></tr></thead>
+            <tbody id="t-form-caps"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Cursos y certificaciones -->
+      <div id="form-cursos" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📜 Cursos y certificaciones</div>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Certificación</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>No. Certificado</th><th>Vence</th><th>Vigencia</th></tr></thead>
+            <tbody id="t-form-certs"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Socialización -->
+      <div id="form-socializacion" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📢 Eventos de socialización</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/socializacion.html'">Ver módulo</button>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Evento</th><th>Tipo</th><th>Fecha</th><th>Duración</th><th>Modalidad</th><th>Asistencia</th><th>Evaluación</th></tr></thead>
+            <tbody id="t-form-soc"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Estudios académicos -->
+      <div id="form-estudios" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🏫 Estudios académicos</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px" id="lista-estudios"></div>
+        </div>
+      </div>
+
+    </div><!-- /tp-formacion -->
+
     <!-- ══ TAB NÓMINA — solo admins ══ -->
     <div id="tp-nomina" class="hidden">
 
@@ -610,7 +681,7 @@ function vacio(n){return '<tr><td colspan="'+n+'" style="text-align:center;color
 var bE={aprobado:'badge-ok',disfrutado:'badge-ok',aprobada:'badge-ok',pendiente:'badge-warn',rechazado:'badge-danger'};
 
 // ── Tabs ──────────────────────────────────────────────────────────
-var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-sst','tp-bienestar','tp-nomina'];
+var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-sst','tp-bienestar','tp-formacion','tp-nomina'];
 function aTab(btn,id){
   document.querySelectorAll('.tp-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
@@ -627,6 +698,204 @@ function aNomTab(btn,id){
 
 // ── Carga principal ───────────────────────────────────────────────
 
+
+
+// ── Sub-tabs Formación ────────────────────────────────────────────
+var ALL_FORM=['form-capacitaciones','form-cursos','form-socializacion','form-estudios'];
+function aFormTab(btn,id){
+  var container=btn.closest('.nom-tabs')||btn.parentElement;
+  container.querySelectorAll('.nom-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  ALL_FORM.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ── DB Formación por empleado ─────────────────────────────────────
+var DR_FORM = {
+  '1234567890':{
+    fc_total:4, fc_horas:64, fc_ano:2, fc_pend:0,
+    capacitaciones:[
+      {n:'Inducción SST 2026',  en:'ARL Sura',    f:'15/01/2026',h:4, m:'Presencial',sst:true, e:'aprobado'},
+      {n:'Simulacro evacuación',en:'IIT',          f:'20/03/2026',h:1, m:'Presencial',sst:true, e:'aprobado'},
+      {n:'Trabajo en alturas',  en:'ARL Sura',     f:'10/03/2024',h:40,m:'Presencial',sst:true, e:'aprobado'},
+      {n:'Equipo eléctrico BT', en:'ICONTEC',      f:'15/07/2024',h:8, m:'Presencial',sst:false,e:'aprobado'},
+    ],
+    cursos:[
+      {c:'Trabajo en alturas avanzado',en:'ARL Sura',f:'10/03/2024',h:40,cert:'SA-2024-001',vence:'Mar 2027',ok:true},
+      {c:'Primeros auxilios básico',   en:'Cruz Roja',f:'05/06/2024',h:16,cert:'CR-2024-123',vence:'Jun 2026',ok:false},
+      {c:'Manejo equipo eléctrico BT', en:'ICONTEC', f:'15/07/2024',h:8, cert:'IC-2024-456',vence:'Jul 2026',ok:false},
+    ],
+    socializacion:[
+      {n:'Inducción SST 2026',  t:'Capacitación', f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.8/5'},
+      {n:'Simulacro evacuación',t:'Simulacro',    f:'20/03/2026',dur:'1h',m:'Presencial',asist:'✅',eval:'—'},
+    ],
+    estudios:[
+      {nivel:'Tecnólogo',titulo:'Tecnólogo en Electrónica',inst:'SENA',grado:'Nov 2012',verificado:true},
+      {nivel:'Bachiller', titulo:'Bachiller Académico',     inst:'Col. La Salle',grado:'Nov 2008',verificado:true},
+    ]
+  },
+  '52456789':{
+    fc_total:3, fc_horas:14, fc_ano:2, fc_pend:0,
+    capacitaciones:[
+      {n:'Inducción SST 2026',  en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true, e:'aprobado'},
+      {n:'Excel avanzado RRHH', en:'SENA',    f:'10/05/2026',h:8,m:'Virtual',   sst:false,e:'aprobado'},
+      {n:'Reunión Comité Conv.',en:'IIT',     f:'15/03/2026',h:2,m:'Presencial',sst:false,e:'aprobado'},
+    ],
+    cursos:[],
+    socializacion:[
+      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'5.0/5'},
+      {n:'Excel avanzado',    en:'Capacitación',f:'10/05/2026',dur:'8h',m:'Virtual',   asist:'✅',eval:'4.9/5'},
+    ],
+    estudios:[
+      {nivel:'Profesional',titulo:'Administradora de Empresas',inst:'Universidad Nacional',grado:'Jun 2008',verificado:true},
+    ]
+  },
+  '79234567':{
+    fc_total:2, fc_horas:5, fc_ano:2, fc_pend:0,
+    capacitaciones:[
+      {n:'Inducción SST 2026',  en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true,e:'aprobado'},
+      {n:'Simulacro evacuación',en:'IIT',     f:'20/03/2026',h:1,m:'Presencial',sst:true,e:'aprobado'},
+    ],
+    cursos:[
+      {c:'PMP Gestión de Proyectos',en:'PMI',f:'15/06/2023',h:120,cert:'PMP-2023-789',vence:'—',ok:true},
+    ],
+    socializacion:[
+      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.7/5'},
+    ],
+    estudios:[
+      {nivel:'Profesional',titulo:'Ingeniero Eléctrico',inst:'Universidad de Antioquia',grado:'Dic 2013',verificado:true},
+    ]
+  },
+  '1098765432':{
+    fc_total:2, fc_horas:12, fc_ano:2, fc_pend:1,
+    capacitaciones:[
+      {n:'Inducción SST 2026',en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true,e:'aprobado'},
+      {n:'Excel avanzado RRHH',en:'SENA',   f:'10/05/2026',h:8,m:'Virtual',   sst:false,e:'aprobado'},
+    ],
+    cursos:[],
+    socializacion:[
+      {n:'Excel avanzado',en:'Capacitación',f:'10/05/2026',dur:'8h',m:'Virtual',asist:'✅',eval:'4.6/5'},
+    ],
+    estudios:[
+      {nivel:'Tecnólogo',titulo:'Tecnólogo en RRHH',inst:'SENA',grado:'Jun 2023',verificado:true},
+    ]
+  },
+  '80123456':{
+    fc_total:3, fc_horas:45, fc_ano:1, fc_pend:0,
+    capacitaciones:[
+      {n:'Inducción SST 2026',  en:'ARL Sura',f:'15/01/2026',h:4, m:'Presencial',sst:true,e:'aprobado'},
+      {n:'Trabajo en alturas',  en:'ARL Sura',f:'20/08/2023',h:40,m:'Presencial',sst:true,e:'aprobado'},
+      {n:'Simulacro evacuación',en:'IIT',     f:'20/03/2026',h:1, m:'Presencial',sst:true,e:'aprobado'},
+    ],
+    cursos:[
+      {c:'Trabajo en alturas avanzado',en:'ARL Sura',f:'20/08/2023',h:40,cert:'SA-2023-456',vence:'Ago 2026',ok:false},
+    ],
+    socializacion:[
+      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.5/5'},
+    ],
+    estudios:[
+      {nivel:'Técnico',titulo:'Técnico en Instalaciones Eléctricas',inst:'SENA',grado:'Nov 2010',verificado:true},
+    ]
+  },
+  '1020345678':{
+    fc_total:1, fc_horas:4, fc_ano:1, fc_pend:0,
+    capacitaciones:[
+      {n:'Inducción SST 2026',en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true,e:'aprobado'},
+    ],
+    cursos:[],
+    socializacion:[
+      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.8/5'},
+    ],
+    estudios:[
+      {nivel:'Profesional',titulo:'Administradora Comercial',inst:'Pontificia Universidad Javeriana',grado:'Jun 2015',verificado:true},
+    ]
+  },
+  '79876543':{
+    fc_total:2, fc_horas:164, fc_ano:1, fc_pend:0,
+    capacitaciones:[
+      {n:'Inducción SST 2026',en:'ARL Sura',f:'15/01/2026',h:4,  m:'Presencial',sst:true, e:'aprobado'},
+      {n:'CCNA Redes Cisco',  en:'Cisco',   f:'30/05/2024',h:160,m:'Virtual',   sst:false,e:'aprobado'},
+    ],
+    cursos:[
+      {c:'CCNA Redes Cisco',en:'Cisco',f:'30/05/2024',h:160,cert:'CCNA-2024-321',vence:'May 2027',ok:true},
+    ],
+    socializacion:[
+      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.9/5'},
+    ],
+    estudios:[
+      {nivel:'Tecnólogo',titulo:'Tecnólogo en Redes',inst:'SENA',grado:'Nov 2014',verificado:true},
+    ]
+  },
+  '52789012':{
+    fc_total:1, fc_horas:4, fc_ano:1, fc_pend:0,
+    capacitaciones:[
+      {n:'Inducción SST 2026',en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true,e:'aprobado'},
+    ],
+    cursos:[],
+    socializacion:[
+      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'5.0/5'},
+    ],
+    estudios:[
+      {nivel:'Profesional',titulo:'Administradora de Empresas',inst:'EAFIT',grado:'Jun 2007',verificado:true},
+    ]
+  }
+};
+
+function cargarFormacion(ced) {
+  var f = DR_FORM[ced];
+  if (!f) return;
+
+  document.getElementById('fc-total').textContent = f.fc_total;
+  document.getElementById('fc-horas').textContent = f.fc_horas + 'h';
+  document.getElementById('fc-ano').textContent   = f.fc_ano;
+  document.getElementById('fc-pend').textContent  = f.fc_pend;
+
+  var iconoSst = function(s){ return s ? '<span class="badge badge-ok">SST</span>' : '<span class="badge badge-muted">No</span>'; };
+  var bE3 = {aprobado:'badge-ok',pendiente:'badge-warn',reprobado:'badge-danger'};
+
+  // Capacitaciones
+  document.getElementById('t-form-caps').innerHTML = f.capacitaciones.length ?
+    f.capacitaciones.map(function(x){
+      return '<tr><td style="font-weight:500">'+x.n+'</td><td>'+x.en+'</td><td>'+x.f+'</td>'+
+        '<td>'+x.h+'h</td><td>'+x.m+'</td><td>'+iconoSst(x.sst)+'</td>'+
+        '<td><span class="badge '+(bE3[x.e]||'badge-muted')+'">'+x.e+'</span></td></tr>';
+    }).join('') : vacio(7);
+
+  // Cursos y certs
+  document.getElementById('t-form-certs').innerHTML = f.cursos.length ?
+    f.cursos.map(function(x){
+      var vig = x.ok
+        ? '<span class="badge badge-ok">✓ Vigente</span>'
+        : '<span class="badge badge-danger">⚠ Por vencer</span>';
+      return '<tr><td>'+x.c+'</td><td>'+x.en+'</td><td>'+x.f+'</td><td>'+x.h+'h</td>'+
+        '<td style="font-family:monospace;font-size:11px">'+x.cert+'</td>'+
+        '<td>'+x.vence+'</td><td>'+vig+'</td></tr>';
+    }).join('') : vacio(7);
+
+  // Socialización
+  document.getElementById('t-form-soc').innerHTML = f.socializacion.length ?
+    f.socializacion.map(function(x){
+      return '<tr><td style="font-weight:500">'+x.n+'</td>'+
+        '<td><span class="badge badge-info">'+x.t+'</span></td>'+
+        '<td>'+x.f+'</td><td>'+x.dur+'</td><td>'+x.m+'</td>'+
+        '<td>'+x.asist+'</td><td>'+x.eval+'</td></tr>';
+    }).join('') : vacio(7);
+
+  // Estudios académicos
+  var colores=['#0078d4','#107c10','#797600','#8764b8'];
+  document.getElementById('lista-estudios').innerHTML = f.estudios.length ?
+    f.estudios.map(function(x,i){
+      return '<div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;display:flex;gap:14px;align-items:center">'+
+        '<div style="width:40px;height:40px;border-radius:50%;background:'+colores[i%4]+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🎓</div>'+
+        '<div style="flex:1">'+
+          '<div style="font-weight:600;font-size:13px">'+x.titulo+'</div>'+
+          '<div style="font-size:12px;color:var(--text-muted)">'+x.inst+' · Grado: '+x.grado+'</div>'+
+          '<div style="margin-top:4px"><span class="badge badge-info">'+x.nivel+'</span></div>'+
+        '</div>'+
+        (x.verificado ? '<span class="badge badge-ok">✓ Verificado</span>' : '<span class="badge badge-warn">Pendiente</span>')+
+      '</div>';
+    }).join('') : '<div class="alert alert-info">Sin estudios académicos registrados.</div>';
+}
 
 // ── Sub-tabs Bienestar ────────────────────────────────────────────
 var ALL_BIEN=['bien-incentivos','bien-convivencia','bien-disciplinario','bien-seguridad','bien-validacion'];
@@ -1027,6 +1296,9 @@ function cargar(){
 
   // Bienestar
   cargarBienestar(ced3);
+
+  // Formación
+  cargarFormacion(ced3);
 
   if(esAdmin){
     document.getElementById('t-he-nom').innerHTML=document.getElementById('t-he').innerHTML;
