@@ -152,6 +152,7 @@
       <button class="tp-btn" onclick="aTab(this,'tp-incapacidades')">🏥 Incapacidades</button>
       <button class="tp-btn" onclick="aTab(this,'tp-hextras')">⏰ H. extras</button>
       <button class="tp-btn" onclick="aTab(this,'tp-caps')">🎓 Capacitaciones</button>
+      <button class="tp-btn" onclick="aTab(this,'tp-sst')">🦺 SST</button>
       <button class="tp-btn" id="tb-nomina" onclick="aTab(this,'tp-nomina')" style="display:none">💰 Nómina</button>
     </div>
 
@@ -304,6 +305,66 @@
       </div>
     </div>
 
+
+    <!-- ══ TAB SST ══ -->
+    <div id="tp-sst" class="hidden">
+
+      <!-- Sub-tabs SST -->
+      <div class="nom-tabs">
+        <button class="nom-tab active" onclick="aSstTab(this,'sst-arl')">🦺 Accidentes ARL</button>
+        <button class="nom-tab" onclick="aSstTab(this,'sst-examenes')">🩺 Exámenes médicos</button>
+        <button class="nom-tab" onclick="aSstTab(this,'sst-cursos')">📜 Certificaciones SST</button>
+      </div>
+
+      <!-- ARL -->
+      <div id="sst-arl">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🦺 Accidentes de trabajo</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/arl.html'">Ver módulo ARL</button>
+          </div>
+          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+            <div class="metric-card"><div class="metric-label">Accidentes registrados</div><div class="metric-value" style="color:#c50f1f" id="arl-total">—</div></div>
+            <div class="metric-card"><div class="metric-label">Días perdidos ARL</div><div class="metric-value" style="color:#797600" id="arl-dias">—</div></div>
+            <div class="metric-card"><div class="metric-label">Último accidente</div><div class="metric-value" style="font-size:13px" id="arl-ultimo">—</div></div>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Lesión</th><th>Parte afectada</th><th>Gravedad</th><th>Días incap.</th><th>FURAT</th></tr></thead>
+            <tbody id="t-arl"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Exámenes -->
+      <div id="sst-examenes" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🩺 Exámenes médicos ocupacionales</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/examenes-medicos.html'">Ver módulo</button>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Tipo</th><th>Fecha</th><th>Empresa médica</th><th>Resultado</th><th>Restricciones</th><th>Próxima</th></tr></thead>
+            <tbody id="t-examenes"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Certificaciones SST -->
+      <div id="sst-cursos" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📜 Certificaciones de seguridad</div>
+            <button class="btn-secondary btn-sm" onclick="window.location='/pages/capacitaciones.html'">Ver módulo</button>
+          </div>
+          <div class="table-wrap" style="margin:0"><table>
+            <thead><tr><th>Certificación</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>Certificado</th><th>Vence</th><th>Estado</th></tr></thead>
+            <tbody id="t-sst-certs"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+    </div><!-- /tp-sst -->
+
     <!-- ══ TAB NÓMINA — solo admins ══ -->
     <div id="tp-nomina" class="hidden">
 
@@ -442,7 +503,7 @@ function vacio(n){return '<tr><td colspan="'+n+'" style="text-align:center;color
 var bE={aprobado:'badge-ok',disfrutado:'badge-ok',aprobada:'badge-ok',pendiente:'badge-warn',rechazado:'badge-danger'};
 
 // ── Tabs ──────────────────────────────────────────────────────────
-var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-nomina'];
+var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-sst','tp-nomina'];
 function aTab(btn,id){
   document.querySelectorAll('.tp-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
@@ -458,6 +519,113 @@ function aNomTab(btn,id){
 }
 
 // ── Carga principal ───────────────────────────────────────────────
+
+// ── Sub-tabs SST ─────────────────────────────────────────────────
+var ALL_SST=['sst-arl','sst-examenes','sst-cursos'];
+function aSstTab(btn,id){
+  document.querySelectorAll('.nom-tabs .nom-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  ALL_SST.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ── DB SST por empleado ───────────────────────────────────────────
+var DR_SST = {
+  '1234567890':{
+    accidentes:[
+      {f:'15/03/2026',t:'Trabajo',l:'Esguince espalda',p:'Espalda baja',g:'Leve',d:2,furat:'✓ Enviado'},
+    ],
+    arl_total:1, arl_dias:2, arl_ultimo:'Mar 2026',
+    examenes:[
+      {t:'Preocupacional',f:'15/03/2022',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Mar 2024'},
+    ],
+    certs_sst:[
+      {c:'Trabajo en alturas avanzado',en:'ARL Sura',f:'10/03/2024',h:40,cert:'SA-2024-001',vence:'Mar 2027',ok:true},
+      {c:'Primeros auxilios básico',en:'Cruz Roja',f:'05/06/2024',h:16,cert:'CR-2024-123',vence:'Jun 2026',ok:false},
+      {c:'Manejo equipo eléctrico BT',en:'ICONTEC',f:'15/07/2024',h:8,cert:'IC-2024-456',vence:'Jul 2026',ok:false},
+    ]
+  },
+  '52456789':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
+    examenes:[{t:'Preocupacional',f:'02/01/2020',em:'Clínica del Trabajo',r:'Apto',res:'Ninguna',prox:'Ene 2022'}],
+    certs_sst:[]
+  },
+  '79234567':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
+    examenes:[{t:'Periódico',f:'10/06/2024',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Jun 2026'}],
+    certs_sst:[{c:'PMP Gestión Proyectos',en:'PMI',f:'15/06/2023',h:120,cert:'PMP-2023-789',vence:'—',ok:true}]
+  },
+  '1098765432':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
+    examenes:[{t:'Preocupacional',f:'10/02/2024',em:'Clínica del Trabajo',r:'Apto',res:'Ninguna',prox:'Feb 2026'}],
+    certs_sst:[]
+  },
+  '80123456':{
+    accidentes:[
+      {f:'02/04/2026',t:'Trabajo',l:'Contusión mano',p:'Mano derecha',g:'Moderado',d:4,furat:'✓ Enviado'},
+    ],
+    arl_total:1, arl_dias:4, arl_ultimo:'Abr 2026',
+    examenes:[
+      {t:'Preocupacional',f:'03/03/2022',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Mar 2024'},
+      {t:'Post-incapacidad',f:'05/05/2026',em:'Salud Ocupacional SAS',r:'Apto con restricciones',res:'No levantar >5kg',prox:'Nov 2026'},
+    ],
+    certs_sst:[
+      {c:'Trabajo en alturas avanzado',en:'ARL Sura',f:'20/08/2023',h:40,cert:'SA-2023-456',vence:'Ago 2026',ok:false},
+    ]
+  },
+  '1020345678':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
+    examenes:[{t:'Preocupacional',f:'25/07/2023',em:'Clínica del Trabajo',r:'Apto',res:'Ninguna',prox:'Jul 2025'}],
+    certs_sst:[]
+  },
+  '79876543':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
+    examenes:[{t:'Preocupacional',f:'10/11/2022',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Nov 2024'}],
+    certs_sst:[{c:'CCNA Redes Cisco',en:'Cisco',f:'30/05/2024',h:160,cert:'CCNA-2024-321',vence:'May 2027',ok:true}]
+  },
+  '52789012':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
+    examenes:[{t:'Periódico',f:'15/01/2026',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Ene 2028'}],
+    certs_sst:[]
+  }
+};
+
+function cargarSST(ced) {
+  var s = DR_SST[ced];
+  if (!s) return;
+
+  // Métricas ARL
+  document.getElementById('arl-total').textContent = s.arl_total;
+  document.getElementById('arl-dias').textContent  = s.arl_dias;
+  document.getElementById('arl-ultimo').textContent= s.arl_ultimo;
+
+  var gc={Leve:'gravedad-leve',Moderado:'gravedad-moderado',Grave:'gravedad-grave'};
+
+  // Tabla accidentes
+  document.getElementById('t-arl').innerHTML = s.accidentes.length ?
+    s.accidentes.map(function(a){
+      return '<tr><td>'+a.f+'</td><td><span class="badge badge-warn">'+a.t+'</span></td>'+
+        '<td>'+a.l+'</td><td>'+a.p+'</td>'+
+        '<td><span class="badge '+(gc[a.g]||'badge-muted')+'">'+a.g+'</span></td>'+
+        '<td>'+a.d+' días</td><td><span class="badge badge-ok">'+a.furat+'</span></td></tr>';
+    }).join('') : vacio(7);
+
+  // Tabla exámenes
+  var re={Apto:'badge-ok','Apto con restricciones':'badge-warn','No apto':'badge-danger'};
+  document.getElementById('t-examenes').innerHTML = s.examenes.length ?
+    s.examenes.map(function(e){
+      return '<tr><td><span class="badge badge-info">'+e.t+'</span></td><td>'+e.f+'</td>'+
+        '<td>'+e.em+'</td>'+
+        '<td><span class="badge '+(re[e.r]||'badge-muted')+'">'+e.r+'</span></td>'+
+        '<td style="font-size:11px;color:var(--text-muted)">'+e.res+'</td><td>'+e.prox+'</td></tr>';
+    }).join('') : vacio(6);
+
+  // Tabla certs SST
+  document.getElementById('t-sst-certs').innerHTML = s.certs_sst.length ?
+    s.certs_sst.map(function(x){
+      var estado = x.ok
+        ? '<span class="badge badge-ok">✓ Vigente</span>'
+        : '<span class="badge badge-danger">⚠ Por vencer</span>';
+      return '<tr><td>'+x.c+'</td><td>'+x.en+'</td><td>'+x.f+'</td><td>'+x.h+'h</td>'+
+        '<td style="font-family:monospace;font-size:11px">'+x.cert+'</td>'+
+        '<td>'+x.vence+'</td><td>'+estado+'</td></tr>';
+    }).join('') : vacio(7);
+}
+
 function cargar(){
   var ced=qp('cedula');
   if(!ced&&session)ced=session.cedula;
@@ -559,6 +727,9 @@ function cargar(){
   document.getElementById('t-inc').innerHTML=r.incap.length?r.incap.map(function(i){return '<tr><td>'+i.dx+'</td><td>'+i.i+'</td><td>'+i.f+'</td><td>'+i.d+'</td><td>'+i.en+'</td></tr>';}).join(''):vacio(5);
   document.getElementById('t-he').innerHTML=r.he.length?r.he.map(function(h){return '<tr><td>'+h.f+'</td><td>'+h.t+'</td><td>'+h.h+'h</td><td style="color:#107c10;font-weight:500">'+h.v+'</td><td><span class="badge '+(bE[h.e]||'badge-muted')+'">'+h.e+'</span></td></tr>';}).join(''):vacio(5);
   document.getElementById('t-cap').innerHTML=r.caps.length?r.caps.map(function(c){return '<tr><td>'+c.c+'</td><td>'+c.en+'</td><td>'+c.f+'</td><td>'+c.h+'h</td><td style="font-family:monospace;font-size:11px">'+c.cert+'</td><td>'+c.vence+'</td></tr>';}).join(''):vacio(6);
+
+  // SST
+  cargarSST(ced3);
 
   if(esAdmin){
     document.getElementById('t-he-nom').innerHTML=document.getElementById('t-he').innerHTML;
