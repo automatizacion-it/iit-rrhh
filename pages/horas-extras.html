@@ -6,6 +6,7 @@
 <title>Horas Extras — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
 <style>
 .he-tipo-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;cursor:pointer;transition:var(--transition)}
 .he-tipo-card:hover{border-color:var(--primary);background:var(--primary-light)}
@@ -25,35 +26,7 @@
       <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()" title="Cerrar sesión"></div>
     </div>
   </header>
-  <nav class="sidebar">
-    <div class="nav-section">Principal</div>
-    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-    <div class="nav-section">Empleados</div>
-    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
-    <a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>
-    <div class="nav-section">Nómina</div>
-    <a class="nav-item active" href="/pages/horas-extras.html"><span class="nav-icon">⏰</span> Horas extras</a>
-    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
-    <a class="nav-item" href="/pages/liquidacion.html"><span class="nav-icon">💼</span> Liquidación retiro</a>
-    <div class="nav-section">Tiempo</div>
-    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
-    <a class="nav-item" href="/pages/permisos-remunerados.html"><span class="nav-icon">⏸</span> Permisos remunerados</a>
-    <a class="nav-item" href="/pages/licencias.html"><span class="nav-icon">📋</span> Licencias</a>
-    <a class="nav-item" href="/pages/ausencias.html"><span class="nav-icon">🚫</span> Ausencias</a>
-    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
-    <div class="nav-section">SST</div>
-    <a class="nav-item" href="/pages/arl.html"><span class="nav-icon">🦺</span> ARL · Accidentes</a>
-    <a class="nav-item" href="/pages/examenes-medicos.html"><span class="nav-icon">🩺</span> Exámenes médicos</a>
-    <div class="nav-section">Bienestar</div>
-    <a class="nav-item" href="/pages/incentivos.html"><span class="nav-icon">🎁</span> Incentivos</a>
-    <a class="nav-item" href="/pages/convivencia.html"><span class="nav-icon">⚖️</span> Convivencia</a>
-    <a class="nav-item" href="/pages/disciplinario.html"><span class="nav-icon">📜</span> Disciplinario</a>
-    <div class="nav-section">Sistema</div>
-    <a class="nav-item" href="/pages/validacion-identidad.html"><span class="nav-icon">🔐</span> Validación ID</a>
-    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
-    <a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>
-    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
-  </nav>
+  <nav class="sidebar" id="main-sidebar"></nav>
   <main class="main-content">
     <div class="page-header">
       <div>
@@ -250,6 +223,7 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
+if (session) Sidebar.inject('horas-extras.html');
 if (session) Auth.renderUserBar(session);
 
 function calcularEjemplos() {

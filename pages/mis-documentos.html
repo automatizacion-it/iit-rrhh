@@ -6,6 +6,7 @@
 <title>Mis Documentos — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
 </head>
 <body>
 <div class="app-layout">
@@ -17,21 +18,7 @@
       <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
     </div>
   </header>
-  <nav class="sidebar">
-    <div class="nav-section">Principal</div>
-    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-    <div class="nav-section">Mi información</div>
-    <a class="nav-item" href="/pages/mi-perfil.html"><span class="nav-icon">👤</span> Mi perfil</a>
-    <a class="nav-item active" href="/pages/mis-documentos.html"><span class="nav-icon">📁</span> Mis documentos</a>
-    <div class="nav-section">Tiempo</div>
-    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
-    <a class="nav-item" href="/pages/permisos-remunerados.html"><span class="nav-icon">⏸</span> Permisos</a>
-    <a class="nav-item" href="/pages/ausencias.html"><span class="nav-icon">🚫</span> Ausencias</a>
-    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
-    <div class="nav-section">Formación</div>
-    <a class="nav-item" href="/pages/capacitaciones.html"><span class="nav-icon">🎓</span> Capacitaciones</a>
-    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
-  </nav>
+  <nav class="sidebar" id="main-sidebar"></nav>
   <main class="main-content">
     <div class="page-header">
       <div>
@@ -148,6 +135,7 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
+if (session) Sidebar.inject('mis-documentos.html');
 if (session) {
   Auth.renderUserBar(session);
   document.getElementById('doc-sub').textContent = 'Documentos de ' + session.nombre;

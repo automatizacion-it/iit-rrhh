@@ -3,22 +3,15 @@
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cláusulas Firmadas — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="stylesheet" href="/css/styles.css"></head>
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script></head>
 <body>
 <div class="app-layout">
   <header class="topbar">
     <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
     <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
   </header>
-  <nav class="sidebar">
-    <div class="nav-section">Principal</div><a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-    <div class="nav-section">Empleados</div>
-    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
-    <a class="nav-item active" href="/pages/clausulas.html"><span class="nav-icon">📋</span> Cláusulas firmadas</a>
-    <div class="nav-section">Sistema</div>
-    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
-    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
-  </nav>
+  <nav class="sidebar" id="main-sidebar"></nav>
   <main class="main-content">
     <div class="page-header">
       <div><div class="page-title">📋 Cláusulas firmadas</div>
@@ -111,6 +104,7 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
+if (session) Sidebar.inject('clausulas.html');
 if(session) Auth.renderUserBar(session);
 function activarTab(el,id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden');});document.getElementById(id).classList.remove('hidden');}
 function enviarClausula(){alert('Selecciona el empleado y tipo de cláusula a enviar para firma digital.');}

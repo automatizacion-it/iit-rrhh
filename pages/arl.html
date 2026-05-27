@@ -6,6 +6,7 @@
 <title>ARL · Accidentes — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
 <style>
 .gravedad-leve{background:#dff6dd;color:#107c10;border:1px solid #9fd89f;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
 .gravedad-moderado{background:#fff4ce;color:#797600;border:1px solid #f8e08e;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
@@ -19,18 +20,7 @@
     <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
     <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
   </header>
-  <nav class="sidebar">
-    <div class="nav-section">Principal</div><a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-    <div class="nav-section">SST</div>
-    <a class="nav-item active" href="/pages/arl.html"><span class="nav-icon">🦺</span> ARL · Accidentes</a>
-    <a class="nav-item" href="/pages/examenes-medicos.html"><span class="nav-icon">🩺</span> Exámenes médicos</a>
-    <div class="nav-section">Empleados</div>
-    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
-    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
-    <div class="nav-section">Sistema</div>
-    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
-    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
-  </nav>
+  <nav class="sidebar" id="main-sidebar"></nav>
   <main class="main-content">
     <div class="page-header">
       <div><div class="page-title">🦺 ARL · Accidentes de trabajo</div>
@@ -155,6 +145,7 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
+if (session) Sidebar.inject('arl.html');
 if (session) Auth.renderUserBar(session);
 function activarTab(el,id){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden');});document.getElementById(id).classList.remove('hidden');}
 function abrirModal(){document.getElementById('modal-arl').classList.remove('hidden');document.getElementById('acc-fecha').value=new Date().toISOString().slice(0,10);}

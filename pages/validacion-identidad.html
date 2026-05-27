@@ -4,6 +4,7 @@
 <title>Validación de Identidad — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
 <style>
 .biometrico-box{border:2px dashed var(--border-dark);border-radius:var(--radius-lg);padding:24px;text-align:center;background:var(--bg)}
 .foto-box{width:180px;height:180px;border-radius:50%;background:var(--bg);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;overflow:hidden;font-size:48px}
@@ -18,13 +19,7 @@
     <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
     <div class="topbar-right"><span class="topbar-badge" id="topbar-badge"></span><span class="topbar-name" id="topbar-name"></span><div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div></div>
   </header>
-  <nav class="sidebar">
-    <div class="nav-section">Principal</div><a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-    <div class="nav-section">Sistema</div>
-    <a class="nav-item active" href="/pages/validacion-identidad.html"><span class="nav-icon">🔐</span> Validación ID</a>
-    <a class="nav-item" href="/pages/seguridad.html"><span class="nav-icon">🔒</span> Est. seguridad</a>
-    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
-  </nav>
+  <nav class="sidebar" id="main-sidebar"></nav>
   <main class="main-content">
     <div class="page-header">
       <div><div class="page-title">🔐 Validación de identidad</div>
@@ -128,6 +123,7 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
+if (session) Sidebar.inject('validacion-identidad.html');
 if (session) Auth.renderUserBar(session);
 
 var DATOS = {

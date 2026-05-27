@@ -6,6 +6,7 @@
 <title>Ausencias — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
 </head>
 <body>
 <div class="app-layout">
@@ -22,31 +23,7 @@
     </div>
   </header>
 
-  <nav class="sidebar">
-    <div class="nav-section">Principal</div>
-    <a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-    <div class="nav-section">Empleados</div>
-    <a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>
-    <a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>
-    <a class="nav-item" href="/pages/nuevo-empleado.html"><span class="nav-icon">➕</span> Nuevo empleado</a>
-    <div class="nav-section">Tiempo</div>
-    <a class="nav-item" href="/pages/vacaciones.html"><span class="nav-icon">🏖</span> Vacaciones</a>
-    <a class="nav-item" href="/pages/permisos.html"><span class="nav-icon">⏸</span> Permisos</a>
-    <a class="nav-item active" href="/pages/ausencias.html"><span class="nav-icon">🚫</span> Ausencias</a>
-    <a class="nav-item" href="/pages/incapacidades.html"><span class="nav-icon">🏥</span> Incapacidades</a>
-    <div class="nav-section">Formación</div>
-    <a class="nav-item" href="/pages/capacitaciones.html"><span class="nav-icon">🎓</span> Capacitaciones</a>
-    <a class="nav-item" href="/pages/socializacion.html"><span class="nav-icon">📢</span> Socialización</a>
-    <div class="nav-section">Nómina</div>
-    <a class="nav-item" href="/pages/nomina.html"><span class="nav-icon">💰</span> Nómina</a>
-    <div class="nav-section">Reportes</div>
-    <a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>
-    <div class="nav-section">Sistema</div>
-    <a class="nav-item" href="/pages/usuarios.html"><span class="nav-icon">🔐</span> Usuarios</a>
-    <a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>
-    <a class="nav-item" href="/pages/backup.html"><span class="nav-icon">💾</span> Backup</a>
-    <a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>
-  </nav>
+  <nav class="sidebar" id="main-sidebar"></nav>
 
   <main class="main-content">
 
@@ -255,6 +232,7 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
+if (session) Sidebar.inject('ausencias.html');
 if (session) {
   Auth.renderUserBar(session);
   if (Auth.isAdmin()) {
