@@ -233,5 +233,6 @@ var Sidebar = (function () {
     }
   }
 
-  return { render:render, inject:inject, toggleGrupo:toggleGrupo, MENU:MENU };
+  function inyectarEstilosGlobal() { inyectarEstilos(); }
+  return { render:render, inject:inject, toggleGrupo:toggleGrupo, inyectarEstilosGlobal:inyectarEstilosGlobal, MENU:MENU };
 })();

@@ -669,7 +669,7 @@
 var session = Auth.requireAuth();
 if (session) {
   Auth.renderUserBar(session);
-  Sidebar.inject('mi-perfil.html');
+  initProfileSidebar();
 }
 
 // ── DB empleados ───────────────────────────────────────────────────
@@ -1347,6 +1347,199 @@ function cargarSST(ced) {
     }).join('') : vacio(7);
 }
 
+
+// ── Sidebar personalizado para el perfil ─────────────────────────
+function buildProfileSidebar(rol) {
+  var cedula = new URLSearchParams(window.location.search).get('cedula') || '';
+  var base   = '/pages/mi-perfil.html' + (cedula ? '?cedula=' + cedula : '');
+
+  function goTab(tab) {
+    return "event.preventDefault(); irTab('" + tab + "')";
+  }
+
+  var html = '';
+
+  // Principal
+  html += '<div class="nav-section">Principal</div>';
+  html += '<a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>';
+
+  // Empleados
+  if (rol !== 'empleado') {
+    html += '<div class="nav-section">Empleados</div>';
+    html += '<a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>';
+    if (rol === 'administrador' || rol === 'empresa') {
+      html += '<a class="nav-item" href="/pages/nuevo-empleado.html"><span class="nav-icon">➕</span> Nuevo empleado</a>';
+      html += '<a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>';
+    }
+  }
+
+  // Mi información
+  html += '<div class="nav-section">Mi información</div>';
+  html += '<a class="nav-item active" href="' + base + '"><span class="nav-icon">👤</span> Mi perfil</a>';
+  html += '<a class="nav-item" href="#" onclick="' + goTab('tp-docs') + '"><span class="nav-icon">📁</span> Mis documentos</a>';
+
+  // TIEMPO — desplegable → pestañas del perfil
+  html += buildGrupoPerfil('🕐 Tiempo', [
+    { icon:'🏖',  label:'Vacaciones',           tab:'tp-vacaciones'    },
+    { icon:'⏸',  label:'Permisos',             tab:'tp-permisos'      },
+    { icon:'⏸',  label:'Permisos remunerados', tab:'tp-permisos'      },
+    { icon:'🚫', label:'Ausencias',            tab:'tp-permisos'      },
+    { icon:'🏥', label:'Incapacidades',        tab:'tp-incapacidades' },
+    { icon:'📋', label:'Licencias',            tab:'tp-permisos'      },
+    { icon:'🕐', label:'Asistencia',           tab:'tp-hextras'       },
+  ], ['tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras']);
+
+  // NÓMINA — desplegable → pestañas nómina del perfil
+  if (rol === 'administrador' || rol === 'empresa') {
+    html += buildGrupoPerfil('💰 Nómina', [
+      { icon:'💰', label:'Nómina',       tab:'tp-nomina', subtab:'nt-salario'    },
+      { icon:'⏰', label:'Horas extras', tab:'tp-hextras'                        },
+      { icon:'💼', label:'Liquidación',  tab:'tp-nomina', subtab:'nt-liquidacion'},
+      { icon:'❤️', label:'Seg. social',  tab:'tp-nomina', subtab:'nt-ss'         },
+      { icon:'🏦', label:'Préstamos',    tab:'tp-nomina', subtab:'nt-prestamos'  },
+    ], ['tp-nomina','tp-hextras']);
+  }
+
+  // SST
+  html += buildGrupoPerfil('🦺 SST', [
+    { icon:'🦺', label:'ARL · Accidentes', tab:'tp-sst', subtab:'sst-arl'      },
+    { icon:'🩺', label:'Exámenes médicos', tab:'tp-sst', subtab:'sst-examenes' },
+  ], ['tp-sst']);
+
+  // BIENESTAR
+  html += buildGrupoPerfil('🎁 Bienestar', [
+    { icon:'🎁', label:'Incentivos',    tab:'tp-bienestar', subtab:'bien-incentivos'   },
+    { icon:'⚖️', label:'Convivencia',   tab:'tp-bienestar', subtab:'bien-convivencia'  },
+    { icon:'📜', label:'Disciplinario', tab:'tp-bienestar', subtab:'bien-disciplinario'},
+  ], ['tp-bienestar']);
+
+  // FORMACIÓN
+  html += buildGrupoPerfil('🎓 Formación', [
+    { icon:'🎓', label:'Capacitaciones', tab:'tp-formacion', subtab:'form-capacitaciones'},
+    { icon:'📜', label:'Cursos y certs', tab:'tp-caps'                                   },
+    { icon:'📢', label:'Socialización',  tab:'tp-formacion', subtab:'form-socializacion' },
+    { icon:'🏫', label:'Estudios',       tab:'tp-formacion', subtab:'form-estudios'      },
+  ], ['tp-formacion','tp-caps']);
+
+  // OPERACIONES
+  html += buildGrupoPerfil('🏗️ Operaciones', [
+    { icon:'🏗️', label:'Proyectos',        tab:'tp-operaciones', subtab:'ops-proyectos'  },
+    { icon:'📋', label:'Cláusulas',        tab:'tp-operaciones', subtab:'ops-clausulas'  },
+    { icon:'💬', label:'Sugerencias jefe', tab:'tp-operaciones', subtab:'ops-sugerencias'},
+  ], ['tp-operaciones']);
+
+  // Sistema
+  if (rol === 'administrador' || rol === 'empresa') {
+    html += '<div class="nav-section">Sistema</div>';
+    html += '<a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>';
+    html += '<a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>';
+  }
+  if (rol === 'empresa') {
+    html += '<a class="nav-item" href="/pages/auditoria.html"><span class="nav-icon">📜</span> Auditoría</a>';
+  }
+
+  html += '<div class="nav-section">Sesión</div>';
+  html += '<a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>';
+
+  return html;
+}
+
+function buildGrupoPerfil(titulo, items, tabsActivos) {
+  // Verificar si algún tab del grupo está activo actualmente
+  var tabActual = document.querySelector('.tp-btn.active');
+  var tabId = tabActual ? tabActual.getAttribute('onclick').match(/'([^']+)'/)?.[1] : '';
+  var abierto = tabsActivos.indexOf(tabId) !== -1;
+
+  var html = '<div class="nav-grupo">';
+  html += '<div class="nav-grupo-header' + (abierto ? ' abierto' : '') + '" onclick="Sidebar.toggleGrupo(this)">';
+  html += '<span class="nav-section-label">' + titulo + '</span>';
+  html += '<span class="nav-chevron">▾</span>';
+  html += '</div>';
+  html += '<div class="nav-grupo-items' + (abierto ? ' abierto' : '') + '"' +
+          (abierto ? ' style="max-height:600px"' : '') + '>';
+
+  items.forEach(function(item) {
+    var onclick = '';
+    if (item.subtab) {
+      onclick = ' onclick="event.preventDefault(); irTab('' + item.tab + '', '' + item.subtab + '')"';
+    } else {
+      onclick = ' onclick="event.preventDefault(); irTab('' + item.tab + '')"';
+    }
+    html += '<a class="nav-item" href="#"' + onclick + '>';
+    html += '<span class="nav-icon">' + item.icon + '</span> ' + item.label;
+    html += '</a>';
+  });
+
+  html += '</div></div>';
+  return html;
+}
+
+function irTab(tabId, subtabId) {
+  // Activar tab principal
+  var btns = document.querySelectorAll('.tp-btn');
+  btns.forEach(function(b) { b.classList.remove('active'); });
+
+  ALL_TABS.forEach(function(t) {
+    var el = document.getElementById(t);
+    if (el) el.classList.add('hidden');
+  });
+
+  var tabEl = document.getElementById(tabId);
+  if (tabEl) tabEl.classList.remove('hidden');
+
+  // Marcar botón activo
+  btns.forEach(function(b) {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf(tabId) !== -1) {
+      b.classList.add('active');
+    }
+  });
+
+  // Activar subtab si existe
+  if (subtabId) {
+    setTimeout(function() {
+      // Buscar el botón del subtab dentro del tab activo
+      var subBtns = tabEl ? tabEl.querySelectorAll('.nom-tab') : [];
+      subBtns.forEach(function(b) { b.classList.remove('active'); });
+
+      var allSubIds = [];
+      if (tabEl) {
+        tabEl.querySelectorAll('[id^="nt-"],[id^="sst-"],[id^="bien-"],[id^="form-"],[id^="ops-"]').forEach(function(el) {
+          el.classList.add('hidden');
+          allSubIds.push(el.id);
+        });
+      }
+
+      var subEl = document.getElementById(subtabId);
+      if (subEl) subEl.classList.remove('hidden');
+
+      // Marcar botón subtab activo
+      subBtns.forEach(function(b) {
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf(subtabId) !== -1) {
+          b.classList.add('active');
+        }
+      });
+    }, 50);
+  }
+
+  // Scroll al contenido
+  window.scrollTo({ top: 100, behavior: 'smooth' });
+
+  // Reconstruir sidebar para reflejar tab activo
+  var nav = document.getElementById('main-sidebar');
+  if (nav && session) {
+    nav.innerHTML = buildProfileSidebar(session.rol);
+    Sidebar.inyectarEstilosGlobal();
+  }
+}
+
+function initProfileSidebar() {
+  var nav = document.getElementById('main-sidebar');
+  if (!nav || !session) return;
+  // Inyectar estilos del sidebar desplegable
+  Sidebar.inyectarEstilosGlobal();
+  nav.innerHTML = buildProfileSidebar(session.rol);
+}
+
 function cargar(){
   var ced=qp('cedula');
   if(!ced&&session)ced=session.cedula;
@@ -1460,6 +1653,9 @@ function cargar(){
 
   // Operaciones
   cargarOperaciones(ced3);
+
+  // Reconstruir sidebar con estado correcto
+  initProfileSidebar();
 
   if(esAdmin){
     document.getElementById('t-he-nom').innerHTML=document.getElementById('t-he').innerHTML;
