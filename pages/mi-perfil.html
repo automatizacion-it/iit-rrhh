@@ -8,1683 +8,427 @@
 <link rel="stylesheet" href="/css/styles.css">
 <script src="/js/sidebar.js"></script>
 <style>
-/* ── Avatar ──────────────────────────────── */
-.avatar-perfil {
-  width:72px;height:72px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:26px;font-weight:700;color:#fff;
-  flex-shrink:0;cursor:pointer;position:relative;
-  transition:filter .2s;
-}
-.avatar-perfil:hover{filter:brightness(.85);}
-.avatar-cam{
-  position:absolute;bottom:-2px;right:-2px;
-  background:#0078d4;border-radius:50%;
-  width:22px;height:22px;display:flex;align-items:center;
-  justify-content:center;font-size:11px;
-  border:2px solid var(--bg-card);
-}
-
-/* ── Header compacto ─────────────────────── */
-.perfil-header{
-  display:flex;gap:16px;align-items:center;
-  padding:16px 20px;
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--radius-lg);
-  margin-bottom:14px;
-  flex-wrap:wrap;
-}
-.perfil-header-info{flex:1;min-width:180px;}
-.perfil-nombre{font-size:18px;font-weight:700;margin-bottom:1px;}
-.perfil-cargo{font-size:12px;color:var(--text-muted);margin-bottom:6px;}
-.perfil-chips{display:flex;gap:6px;flex-wrap:wrap;}
-.chip{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:3px;}
-.perfil-header-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:12px;color:var(--text-muted);}
-
-/* ── Tabs ────────────────────────────────── */
-.tabs-perfil{
-  display:flex;gap:0;overflow-x:auto;
-  border-bottom:2px solid var(--border);
-  margin-bottom:14px;
-}
-.tabs-perfil::-webkit-scrollbar{height:0;}
-.tp-btn{
-  padding:8px 14px;font-size:12px;white-space:nowrap;
-  border:none;background:none;cursor:pointer;
-  color:var(--text-muted);border-bottom:2px solid transparent;
-  margin-bottom:-2px;transition:all .15s;
-}
-.tp-btn:hover{color:var(--primary);}
-.tp-btn.active{color:var(--primary);font-weight:600;border-bottom-color:var(--primary);}
-
-/* ── Ficha ───────────────────────────────── */
-.ficha-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
-.ficha-item{display:flex;flex-direction:column;gap:2px;}
-.ficha-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
-.ficha-valor{font-size:13px;color:var(--text);}
-
-/* ── Nomina sub-tabs ─────────────────────── */
-.nom-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-.nom-tab{
-  padding:5px 12px;font-size:11px;border-radius:20px;
-  border:1px solid var(--border);background:var(--bg-card);
-  cursor:pointer;transition:var(--transition);color:var(--text-muted);
-}
-.nom-tab:hover{border-color:var(--primary);color:var(--primary);}
-.nom-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.av{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer;position:relative}
+.av-cam{position:absolute;bottom:-2px;right:-2px;background:#0078d4;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--bg-card)}
+.ph{display:flex;gap:16px;align-items:center;padding:16px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:14px;flex-wrap:wrap}
+.pi{flex:1;min-width:180px}
+.pn{font-size:18px;font-weight:700;margin-bottom:1px}
+.pc{font-size:12px;color:var(--text-muted);margin-bottom:6px}
+.pm{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:12px;color:var(--text-muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--text-muted)}
+.tabs-h{display:flex;gap:0;overflow-x:auto;border-bottom:2px solid var(--border);margin-bottom:14px}
+.tabs-h::-webkit-scrollbar{height:0}
+.tb{padding:8px 12px;font-size:11px;white-space:nowrap;border:none;background:none;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tb:hover{color:var(--primary)}
+.tb.active{color:var(--primary);font-weight:600;border-bottom-color:var(--primary)}
+.fl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:3px}
+.fv{font-size:13px;color:var(--text);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.fv:last-child{border:none;margin:0;padding:0}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.st{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.stt{padding:4px 12px;font-size:11px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;color:var(--text-muted);transition:var(--transition)}
+.stt:hover{border-color:var(--primary);color:var(--primary)}
+.stt.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 </style>
 </head>
 <body>
 <div class="app-layout">
-
   <header class="topbar">
-    <a href="/pages/dashboard.html" class="topbar-logo">
-      <div class="logo-icon">IIT</div><span class="logo-main">RRHH</span>
-    </a>
-    <div class="topbar-search">
-      <span class="topbar-search-icon">🔍</span>
-      <input type="text" placeholder="Buscar empleado..." id="search-global"
-        onkeydown="if(event.key==='Enter')window.location='/pages/empleados.html'">
-    </div>
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
     <div class="topbar-right">
       <span class="topbar-badge" id="topbar-badge"></span>
-      <span class="topbar-name"  id="topbar-name"></span>
+      <span class="topbar-name" id="topbar-name"></span>
       <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
     </div>
   </header>
-
   <nav class="sidebar" id="main-sidebar"></nav>
-
   <main class="main-content">
-
-    <!-- Breadcrumb -->
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
-      <a href="/pages/empleados.html" style="color:var(--primary);text-decoration:none">👥 Empleados</a>
-      <span> › </span><span id="bc-nombre">Perfil</span>
+      <a href="/pages/empleados.html" style="color:var(--primary);text-decoration:none">&#x1F465; Empleados</a>
+      &rsaquo; <span id="bc">Perfil</span>
     </div>
-
-    <!-- ── HEADER COMPACTO — un solo cuadro ── -->
-    <div class="perfil-header">
-
-      <!-- Avatar -->
+    <div class="ph">
       <div>
-        <div class="avatar-perfil" id="av-perfil" onclick="document.getElementById('inp-foto').click()" title="Cambiar foto">
-          <span id="av-ini">??</span>
-          <div class="avatar-cam">📷</div>
+        <div class="av" id="av" onclick="document.getElementById('inp-foto').click()" title="Cambiar foto">
+          <span id="ai">??</span><div class="av-cam">&#x1F4F7;</div>
         </div>
-        <input type="file" id="inp-foto" accept="image/*" style="display:none" onchange="previewFoto(this)">
+        <input type="file" id="inp-foto" accept="image/*" style="display:none" onchange="prevFoto(this)">
       </div>
-
-      <!-- Info principal -->
-      <div class="perfil-header-info">
-        <div class="perfil-nombre" id="h-nombre">—</div>
-        <div class="perfil-cargo"  id="h-cargo">—</div>
-        <div class="perfil-chips">
-          <span class="chip">🏢 <span id="h-depto">—</span></span>
-          <span class="chip">📍 <span id="h-ciudad">—</span></span>
-          <span class="chip">✉️ <span id="h-email">—</span></span>
-          <span class="chip">📱 <span id="h-tel">—</span></span>
+      <div class="pi">
+        <div class="pn" id="hn">&#x2014;</div>
+        <div class="pc" id="hc">&#x2014;</div>
+        <div class="chips">
+          <span>&#x1F3E2; <span id="hd">&#x2014;</span></span>
+          <span>&#x1F4CD; <span id="hci">&#x2014;</span></span>
+          <span>&#x2709;&#xFE0F; <span id="he">&#x2014;</span></span>
+          <span>&#x1F4F1; <span id="ht">&#x2014;</span></span>
         </div>
       </div>
-
-      <!-- Meta -->
-      <div class="perfil-header-meta">
-        <span class="badge badge-ok" id="h-estado">Activo</span>
-        <span>Ingreso: <strong id="h-ingreso">—</strong></span>
-        <span>Antigüedad: <strong id="h-antig">—</strong></span>
-        <div class="btn-group" id="h-acciones" style="display:none;margin-top:4px">
-          <button class="btn-secondary btn-sm" onclick="editarPerfil()">✏️ Editar</button>
-          <button class="btn-secondary btn-sm" onclick="window.location='/pages/contratos.html'">📄 Contrato</button>
+      <div class="pm">
+        <span class="badge badge-ok" id="hest">Activo</span>
+        <span>Ingreso: <strong id="hi">&#x2014;</strong></span>
+        <span>Antig&#xFC;edad: <strong id="ha">&#x2014;</strong></span>
+        <div class="btn-group" id="hadm" style="display:none;margin-top:4px">
+          <button class="btn-secondary btn-sm" onclick="alert('Edici&#xF3;n disponible con API backend.')">&#x270F;&#xFE0F; Editar</button>
+          <button class="btn-secondary btn-sm" onclick="window.location='/pages/contratos.html'">&#x1F4C4; Contrato</button>
         </div>
       </div>
-
     </div>
 
-    <!-- ── TABS HORIZONTALES ── -->
-    <div class="tabs-perfil" id="tabs-perfil">
-      <button class="tp-btn active" onclick="aTab(this,'tp-personal')">👤 Personal</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-laboral')">💼 Laboral</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-contacto')">📞 Contacto</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-docs')">📁 Documentos</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-vacaciones')">🏖 Vacaciones</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-permisos')">⏸ Permisos</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-incapacidades')">🏥 Incapacidades</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-hextras')">⏰ H. extras</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-caps')">🎓 Capacitaciones</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-sst')">🦺 SST</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-bienestar')">🎁 Bienestar</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-formacion')">🎓 Formación</button>
-      <button class="tp-btn" onclick="aTab(this,'tp-operaciones')">🏗️ Operaciones</button>
-      <button class="tp-btn" id="tb-nomina" onclick="aTab(this,'tp-nomina')" style="display:none">💰 Nómina</button>
+    <div class="tabs-h" id="tabs-perfil">
+      <button class="tb active" onclick="aTab(this,'t0')">&#x1F464; Personal</button>
+      <button class="tb" onclick="aTab(this,'t1')">&#x1F4BC; Laboral</button>
+      <button class="tb" onclick="aTab(this,'t2')">&#x1F4DE; Contacto</button>
+      <button class="tb" onclick="aTab(this,'t3')">&#x1F4C1; Docs</button>
+      <button class="tb" onclick="aTab(this,'t4')">&#x1F3D6; Vacaciones</button>
+      <button class="tb" onclick="aTab(this,'t5')">&#x23F8; Permisos</button>
+      <button class="tb" onclick="aTab(this,'t6')">&#x1F3E5; Incapacidades</button>
+      <button class="tb" onclick="aTab(this,'t7')">&#x23F0; H.extras</button>
+      <button class="tb" onclick="aTab(this,'t8')">&#x1F393; Capacitaciones</button>
+      <button class="tb" onclick="aTab(this,'t9')">&#x1F9BA; SST</button>
+      <button class="tb" onclick="aTab(this,'t10')">&#x1F381; Bienestar</button>
+      <button class="tb" onclick="aTab(this,'t11')">&#x1F393; Formaci&#xF3;n</button>
+      <button class="tb" onclick="aTab(this,'t12')">&#x1F3D7;&#xFE0F; Operaciones</button>
+      <button class="tb" id="tbn" onclick="aTab(this,'t13')" style="display:none">&#x1F4B0; N&#xF3;mina</button>
     </div>
 
-    <!-- ══ TAB PERSONAL ══ -->
-    <div id="tp-personal">
+    <div id="t0">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="card">
-          <div class="card-header"><div class="card-title">🪪 Identificación</div></div>
-          <div class="ficha-grid" style="grid-template-columns:1fr 1fr">
-            <div class="ficha-item"><div class="ficha-label">Tipo doc.</div><div class="ficha-valor" id="d-tipodoc">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Número</div><div class="ficha-valor" id="d-cedula">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Nacimiento</div><div class="ficha-valor" id="d-nac">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Lugar nacimiento</div><div class="ficha-valor" id="d-lugarnac">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Género</div><div class="ficha-valor" id="d-genero">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Estado civil</div><div class="ficha-valor" id="d-civil">—</div></div>
+        <div class="card"><div class="card-header"><div class="card-title">&#x1F9FE; Identificaci&#xF3;n</div></div>
+          <div class="fg" style="grid-template-columns:1fr 1fr">
+            <div><div class="fl">Tipo doc.</div><div class="fv" id="d0">&#x2014;</div></div>
+            <div><div class="fl">N&#xFA;mero</div><div class="fv" id="d1">&#x2014;</div></div>
+            <div><div class="fl">Nacimiento</div><div class="fv" id="d2">&#x2014;</div></div>
+            <div><div class="fl">Lugar</div><div class="fv" id="d3">&#x2014;</div></div>
+            <div><div class="fl">G&#xE9;nero</div><div class="fv" id="d4">&#x2014;</div></div>
+            <div><div class="fl">Estado civil</div><div class="fv" id="d5">&#x2014;</div></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">🎓 Educación</div></div>
-          <div class="ficha-grid" style="grid-template-columns:1fr">
-            <div class="ficha-item"><div class="ficha-label">Nivel</div><div class="ficha-valor" id="d-edu">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Título</div><div class="ficha-valor" id="d-titulo">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Institución</div><div class="ficha-valor" id="d-inst">—</div></div>
+        <div class="card"><div class="card-header"><div class="card-title">&#x1F393; Educaci&#xF3;n</div></div>
+          <div class="fg" style="grid-template-columns:1fr">
+            <div><div class="fl">Nivel</div><div class="fv" id="d6">&#x2014;</div></div>
+            <div><div class="fl">T&#xED;tulo</div><div class="fv" id="d7">&#x2014;</div></div>
+            <div><div class="fl">Instituci&#xF3;n</div><div class="fv" id="d8">&#x2014;</div></div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- ══ TAB LABORAL ══ -->
-    <div id="tp-laboral" class="hidden">
-      <div class="card">
-        <div class="card-header"><div class="card-title">💼 Información laboral</div></div>
-        <div class="ficha-grid">
-          <div class="ficha-item"><div class="ficha-label">Código</div><div class="ficha-valor" id="l-codigo">—</div></div>
-          <div class="ficha-item"><div class="ficha-label">Tipo vinculación</div><div class="ficha-valor" id="l-vinc">—</div></div>
-          <div class="ficha-item"><div class="ficha-label">Cargo</div><div class="ficha-valor" id="l-cargo">—</div></div>
-          <div class="ficha-item"><div class="ficha-label">Departamento</div><div class="ficha-valor" id="l-depto">—</div></div>
-          <div class="ficha-item"><div class="ficha-label">Sede</div><div class="ficha-valor" id="l-sede">—</div></div>
-          <div class="ficha-item"><div class="ficha-label">Fecha ingreso</div><div class="ficha-valor" id="l-ingreso">—</div></div>
-          <div class="ficha-item"><div class="ficha-label">Antigüedad</div><div class="ficha-valor" id="l-antig">—</div></div>
-          <div class="ficha-item"><div class="ficha-label">Estado</div><div class="ficha-valor" id="l-estado">—</div></div>
-        </div>
+    <div id="t1" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4BC; Info laboral</div></div>
+      <div class="fg">
+        <div><div class="fl">C&#xF3;digo</div><div class="fv" id="l0">&#x2014;</div></div>
+        <div><div class="fl">Vinculaci&#xF3;n</div><div class="fv" id="l1">&#x2014;</div></div>
+        <div><div class="fl">Cargo</div><div class="fv" id="l2">&#x2014;</div></div>
+        <div><div class="fl">Departamento</div><div class="fv" id="l3">&#x2014;</div></div>
+        <div><div class="fl">Sede</div><div class="fv" id="l4">&#x2014;</div></div>
+        <div><div class="fl">Fecha ingreso</div><div class="fv" id="l5">&#x2014;</div></div>
+        <div><div class="fl">Antig&#xFC;edad</div><div class="fv" id="l6">&#x2014;</div></div>
+        <div><div class="fl">Estado</div><div class="fv" id="l7">&#x2014;</div></div>
       </div>
-    </div>
-
-    <!-- ══ TAB CONTACTO ══ -->
-    <div id="tp-contacto" class="hidden">
+    </div></div>
+    <div id="t2" class="hidden">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="card">
-          <div class="card-header"><div class="card-title">📞 Contacto</div></div>
-          <div class="ficha-grid" style="grid-template-columns:1fr">
-            <div class="ficha-item"><div class="ficha-label">Email corporativo</div><div class="ficha-valor" id="c-ecorp">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Email personal</div><div class="ficha-valor" id="c-epers">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Teléfono</div><div class="ficha-valor" id="c-tel">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Dirección</div><div class="ficha-valor" id="c-dir">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Barrio · Ciudad</div><div class="ficha-valor" id="c-ciudad">—</div></div>
+        <div class="card"><div class="card-header"><div class="card-title">&#x1F4DE; Contacto</div></div>
+          <div class="fg" style="grid-template-columns:1fr">
+            <div><div class="fl">Email corp.</div><div class="fv" id="c0">&#x2014;</div></div>
+            <div><div class="fl">Email personal</div><div class="fv" id="c1">&#x2014;</div></div>
+            <div><div class="fl">Tel&#xE9;fono</div><div class="fv" id="c2">&#x2014;</div></div>
+            <div><div class="fl">Direcci&#xF3;n</div><div class="fv" id="c3">&#x2014;</div></div>
+            <div><div class="fl">Ciudad</div><div class="fv" id="c4">&#x2014;</div></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">🆘 Emergencia</div></div>
-          <div class="ficha-grid" style="grid-template-columns:1fr">
-            <div class="ficha-item"><div class="ficha-label">Nombre</div><div class="ficha-valor" id="e-nombre">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Teléfono</div><div class="ficha-valor" id="e-tel">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Parentesco</div><div class="ficha-valor" id="e-parent">—</div></div>
+        <div class="card"><div class="card-header"><div class="card-title">&#x1F198; Emergencia</div></div>
+          <div class="fg" style="grid-template-columns:1fr">
+            <div><div class="fl">Nombre</div><div class="fv" id="e0">&#x2014;</div></div>
+            <div><div class="fl">Tel&#xE9;fono</div><div class="fv" id="e1">&#x2014;</div></div>
+            <div><div class="fl">Parentesco</div><div class="fv" id="e2">&#x2014;</div></div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- ══ TAB DOCUMENTOS ══ -->
-    <div id="tp-docs" class="hidden">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">📁 Documentos</div>
-          <button class="btn-primary btn-sm" onclick="window.location='/pages/mis-documentos.html'">Ver todos</button>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
-          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">📄</span><div><div style="font-size:12px;font-weight:500">Cédula</div><span class="badge badge-ok">Verificado</span></div></div>
-          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">📋</span><div><div style="font-size:12px;font-weight:500">Contrato laboral</div><span class="badge badge-ok">Firmado</span></div></div>
-          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">🎓</span><div><div style="font-size:12px;font-weight:500">Diploma / Título</div><span class="badge badge-ok">Verificado</span></div></div>
-          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">📜</span><div><div style="font-size:12px;font-weight:500">Cert. alturas</div><span class="badge badge-warn" id="doc-alt">Verificar</span></div></div>
-          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">🔒</span><div><div style="font-size:12px;font-weight:500">Cláusula confidencialidad</div><span class="badge badge-ok">Firmada</span></div></div>
-        </div>
+    <div id="t3" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4C1; Documentos</div><button class="btn-primary btn-sm" onclick="window.location='/pages/mis-documentos.html'">Ver todos</button></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+        <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">&#x1F4C4;</span><div><div style="font-size:12px;font-weight:500">C&#xE9;dula</div><span class="badge badge-ok">Verificado</span></div></div>
+        <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">&#x1F4CB;</span><div><div style="font-size:12px;font-weight:500">Contrato laboral</div><span class="badge badge-ok">Firmado</span></div></div>
+        <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">&#x1F393;</span><div><div style="font-size:12px;font-weight:500">Diploma</div><span class="badge badge-ok">Verificado</span></div></div>
+        <div style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;gap:8px;align-items:center"><span style="font-size:20px">&#x1F512;</span><div><div style="font-size:12px;font-weight:500">Confidencialidad</div><span class="badge badge-ok">Firmada</span></div></div>
       </div>
-    </div>
-
-    <!-- ══ TAB VACACIONES ══ -->
-    <div id="tp-vacaciones" class="hidden">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">🏖 Mis vacaciones</div>
-          <button class="btn-primary btn-sm" onclick="window.location='/pages/vacaciones.html'">+ Solicitar</button>
-        </div>
+    </div></div>
+    <div id="t4" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F3D6; Vacaciones</div><button class="btn-primary btn-sm" onclick="window.location='/pages/vacaciones.html'">+ Solicitar</button></div>
+      <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+        <div class="metric-card"><div class="metric-label">Disponibles</div><div class="metric-value" style="color:#107c10" id="vd">&#x2014;</div></div>
+        <div class="metric-card"><div class="metric-label">Disfrutados</div><div class="metric-value" id="vdis">&#x2014;</div></div>
+        <div class="metric-card"><div class="metric-label">Pendiente</div><div class="metric-value" style="color:#797600" id="vp">&#x2014;</div></div>
+      </div>
+      <div class="table-wrap" style="margin:0"><table><thead><tr><th>Per&#xED;odo</th><th>Inicio</th><th>Fin</th><th>D&#xED;as</th><th>Estado</th></tr></thead><tbody id="tv"></tbody></table></div>
+    </div></div>
+    <div id="t5" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x23F8; Permisos</div><button class="btn-primary btn-sm" onclick="window.location='/pages/permisos.html'">+ Solicitar</button></div>
+      <div class="table-wrap" style="margin:0"><table><thead><tr><th>Tipo</th><th>Fecha</th><th>Horas</th><th>Motivo</th><th>Estado</th></tr></thead><tbody id="tperm"></tbody></table></div>
+    </div></div>
+    <div id="t6" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F3E5; Incapacidades</div></div>
+      <div class="table-wrap" style="margin:0"><table><thead><tr><th>Diagn&#xF3;stico</th><th>Inicio</th><th>Fin</th><th>D&#xED;as</th><th>Entidad</th></tr></thead><tbody id="tinc"></tbody></table></div>
+    </div></div>
+    <div id="t7" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x23F0; Horas extras</div><button class="btn-secondary btn-sm" onclick="window.location='/pages/horas-extras.html'">Ver m&#xF3;dulo</button></div>
+      <div class="table-wrap" style="margin:0"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Horas</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="the"></tbody></table></div>
+    </div></div>
+    <div id="t8" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F393; Capacitaciones</div></div>
+      <div class="table-wrap" style="margin:0"><table><thead><tr><th>Curso</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>Certificado</th><th>Vence</th></tr></thead><tbody id="tcap"></tbody></table></div>
+    </div></div>
+    <div id="t9" class="hidden">
+      <div class="st">
+        <button class="stt active" onclick="aST(this,'s0')">&#x1F9BA; ARL</button>
+        <button class="stt" onclick="aST(this,'s1')">&#x1FA7A; Ex&#xE1;menes</button>
+        <button class="stt" onclick="aST(this,'s2')">&#x1F4DC; Certificaciones</button>
+      </div>
+      <div id="s0"><div class="card"><div class="card-header"><div class="card-title">&#x1F9BA; Accidentes ARL</div></div>
         <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
-          <div class="metric-card"><div class="metric-label">Días disponibles</div><div class="metric-value" style="color:#107c10" id="v-disp">—</div></div>
-          <div class="metric-card"><div class="metric-label">Disfrutados</div><div class="metric-value" id="v-dis">—</div></div>
-          <div class="metric-card"><div class="metric-label">Pendiente aprobación</div><div class="metric-value" style="color:#797600" id="v-pend">—</div></div>
+          <div class="metric-card"><div class="metric-label">Accidentes</div><div class="metric-value" style="color:#c50f1f" id="at">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">D&#xED;as perdidos</div><div class="metric-value" style="color:#797600" id="ad">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">&#xDA;ltimo</div><div class="metric-value" style="font-size:12px" id="au">&#x2014;</div></div>
         </div>
-        <div class="table-wrap" style="margin:0"><table>
-          <thead><tr><th>Período</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Estado</th></tr></thead>
-          <tbody id="t-vac"></tbody>
-        </table></div>
-      </div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Lesi&#xF3;n</th><th>Gravedad</th><th>D&#xED;as</th><th>FURAT</th></tr></thead><tbody id="tarl"></tbody></table></div>
+      </div></div>
+      <div id="s1" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1FA7A; Ex&#xE1;menes m&#xE9;dicos</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Tipo</th><th>Fecha</th><th>Empresa m&#xE9;dica</th><th>Resultado</th><th>Restricciones</th><th>Pr&#xF3;xima</th></tr></thead><tbody id="tex"></tbody></table></div>
+      </div></div>
+      <div id="s2" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4DC; Certificaciones SST</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Certificaci&#xF3;n</th><th>Entidad</th><th>Fecha</th><th>Certificado</th><th>Vence</th><th>Estado</th></tr></thead><tbody id="tcer"></tbody></table></div>
+      </div></div>
     </div>
-
-    <!-- ══ TAB PERMISOS ══ -->
-    <div id="tp-permisos" class="hidden">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">⏸ Mis permisos</div>
-          <button class="btn-primary btn-sm" onclick="window.location='/pages/permisos.html'">+ Solicitar</button>
-        </div>
-        <div class="table-wrap" style="margin:0"><table>
-          <thead><tr><th>Tipo</th><th>Fecha</th><th>Horas</th><th>Motivo</th><th>Estado</th></tr></thead>
-          <tbody id="t-perm"></tbody>
-        </table></div>
+    <div id="t10" class="hidden">
+      <div class="st">
+        <button class="stt active" onclick="aST(this,'b0')">&#x1F381; Incentivos</button>
+        <button class="stt" onclick="aST(this,'b1')">&#x2696;&#xFE0F; Convivencia</button>
+        <button class="stt" onclick="aST(this,'b2')">&#x1F4DC; Disciplinario</button>
       </div>
+      <div id="b0"><div class="card"><div class="card-header"><div class="card-title">&#x1F381; Incentivos recibidos</div></div>
+        <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+          <div class="metric-card"><div class="metric-label">Incentivos 2026</div><div class="metric-value" style="color:#107c10" id="inct">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Valor total</div><div class="metric-value" style="font-size:14px;color:#0078d4" id="incv">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Pr&#xF3;ximo</div><div class="metric-value" style="font-size:12px" id="incp">&#x2014;</div></div>
+        </div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Tipo</th><th>Fecha</th><th>Descripci&#xF3;n</th><th>Valor</th></tr></thead><tbody id="tincentivos"></tbody></table></div>
+      </div></div>
+      <div id="b1" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x2696;&#xFE0F; Convivencia</div></div>
+        <div class="alert alert-info" style="margin-bottom:10px;font-size:11px">&#x1F512; Informaci&#xF3;n confidencial.</div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Radicado</th><th>Tipo</th><th>Fecha</th><th>Rol</th><th>Estado</th></tr></thead><tbody id="tconv"></tbody></table></div>
+        <div id="manual-txt" style="margin-top:8px;font-size:12px;padding:8px;background:var(--bg);border-radius:var(--radius)">&#x2014;</div>
+      </div></div>
+      <div id="b2" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4DC; Disciplinario</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Proceso</th><th>Tipo falta</th><th>Fecha</th><th>Estado</th><th>Sanci&#xF3;n</th></tr></thead><tbody id="tdisc"></tbody></table></div>
+      </div></div>
     </div>
-
-    <!-- ══ TAB INCAPACIDADES ══ -->
-    <div id="tp-incapacidades" class="hidden">
-      <div class="card">
-        <div class="card-header"><div class="card-title">🏥 Mis incapacidades</div></div>
-        <div class="table-wrap" style="margin:0"><table>
-          <thead><tr><th>Diagnóstico</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Entidad</th></tr></thead>
-          <tbody id="t-inc"></tbody>
-        </table></div>
+    <div id="t11" class="hidden">
+      <div class="st">
+        <button class="stt active" onclick="aST(this,'f0')">&#x1F393; Capacitaciones</button>
+        <button class="stt" onclick="aST(this,'f1')">&#x1F4E2; Socializaci&#xF3;n</button>
+        <button class="stt" onclick="aST(this,'f2')">&#x1F3EB; Estudios</button>
       </div>
+      <div id="f0"><div class="card"><div class="card-header"><div class="card-title">&#x1F393; Capacitaciones asistidas</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Capacitaci&#xF3;n</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>SST</th><th>Estado</th></tr></thead><tbody id="tfcap"></tbody></table></div>
+      </div></div>
+      <div id="f1" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4E2; Socializaci&#xF3;n</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Evento</th><th>Tipo</th><th>Fecha</th><th>Duraci&#xF3;n</th><th>Asistencia</th><th>Evaluaci&#xF3;n</th></tr></thead><tbody id="tfsoc"></tbody></table></div>
+      </div></div>
+      <div id="f2" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F3EB; Estudios acad&#xE9;micos</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="festudios"></div>
+      </div></div>
     </div>
-
-    <!-- ══ TAB HORAS EXTRAS ══ -->
-    <div id="tp-hextras" class="hidden">
-      <div class="card">
-        <div class="card-header"><div class="card-title">⏰ Mis horas extras</div></div>
-        <div class="table-wrap" style="margin:0"><table>
-          <thead><tr><th>Fecha</th><th>Tipo</th><th>Horas</th><th>Valor</th><th>Estado</th></tr></thead>
-          <tbody id="t-he"></tbody>
-        </table></div>
+    <div id="t12" class="hidden">
+      <div class="st">
+        <button class="stt active" onclick="aST(this,'o0')">&#x1F3D7;&#xFE0F; Proyectos</button>
+        <button class="stt" onclick="aST(this,'o1')">&#x1F4CB; Cl&#xE1;usulas</button>
+        <button class="stt" onclick="aST(this,'o2')">&#x1F4AC; Sugerencias</button>
       </div>
+      <div id="o0"><div class="card"><div class="card-header"><div class="card-title">&#x1F3D7;&#xFE0F; Proyectos asignados</div><button class="btn-secondary btn-sm" onclick="window.location='/pages/proyectos.html'">Ver todos</button></div>
+        <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+          <div class="metric-card"><div class="metric-label">Activos</div><div class="metric-value" style="color:#0078d4" id="oa">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Completados</div><div class="metric-value" style="color:#107c10" id="oc">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Dedicaci&#xF3;n</div><div class="metric-value" id="od">&#x2014;</div></div>
+        </div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Proyecto</th><th>Tipo</th><th>Rol</th><th>Desde</th><th>Dedicaci&#xF3;n</th><th>Estado</th></tr></thead><tbody id="tproy"></tbody></table></div>
+      </div></div>
+      <div id="o1" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4CB; Cl&#xE1;usulas firmadas</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Cl&#xE1;usula</th><th>Versi&#xF3;n</th><th>Fecha firma</th><th>Estado</th></tr></thead><tbody id="tclaus"></tbody></table></div>
+      </div></div>
+      <div id="o2" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4AC; Sugerencias del jefe</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Per&#xED;odo</th><th>Categor&#xED;a</th><th>T&#xED;tulo</th><th>Tipo</th><th>Le&#xED;da</th></tr></thead><tbody id="tsug"></tbody></table></div>
+      </div></div>
     </div>
-
-    <!-- ══ TAB CAPACITACIONES ══ -->
-    <div id="tp-caps" class="hidden">
-      <div class="card">
-        <div class="card-header"><div class="card-title">🎓 Mis capacitaciones y certificaciones</div></div>
-        <div class="table-wrap" style="margin:0"><table>
-          <thead><tr><th>Curso</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>Certificado</th><th>Vence</th></tr></thead>
-          <tbody id="t-cap"></tbody>
-        </table></div>
+    <div id="t13" class="hidden">
+      <div class="st">
+        <button class="stt active" onclick="aST(this,'n0')">&#x1F4B0; Salario</button>
+        <button class="stt" onclick="aST(this,'n1')">&#x23F0; H.extras</button>
+        <button class="stt" onclick="aST(this,'n2')">&#x1F4BC; Liquidaci&#xF3;n</button>
+        <button class="stt" onclick="aST(this,'n3')">&#x2764;&#xFE0F; Seg.social</button>
+        <button class="stt" onclick="aST(this,'n4')">&#x1F3E6; Pr&#xE9;stamos</button>
       </div>
+      <div id="n0"><div class="card"><div class="card-header"><div class="card-title">&#x1F4B0; Informaci&#xF3;n salarial</div></div>
+        <div class="fg">
+          <div><div class="fl">Salario b&#xE1;sico</div><div class="fv" style="font-size:16px;font-weight:700;color:#107c10" id="ns">&#x2014;</div></div>
+          <div><div class="fl">Aux. transporte</div><div class="fv" id="na">&#x2014;</div></div>
+          <div><div class="fl">Total devengado</div><div class="fv" id="nd">&#x2014;</div></div>
+          <div><div class="fl">Salud (4%)</div><div class="fv" style="color:#c50f1f" id="nsa">&#x2014;</div></div>
+          <div><div class="fl">Pensi&#xF3;n (4%)</div><div class="fv" style="color:#c50f1f" id="np">&#x2014;</div></div>
+          <div><div class="fl">Neto a pagar</div><div class="fv" style="font-size:16px;font-weight:700;color:#107c10" id="nn">&#x2014;</div></div>
+          <div><div class="fl">Banco</div><div class="fv" id="nb">&#x2014;</div></div>
+          <div><div class="fl">Cuenta</div><div class="fv" id="ncu">&#x2014;</div></div>
+        </div>
+      </div></div>
+      <div id="n1" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x23F0; Horas extras</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Horas</th><th>Valor</th><th>Estado</th></tr></thead><tbody id="nhe"></tbody></table></div>
+      </div></div>
+      <div id="n2" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4BC; Prestaciones acumuladas</div></div>
+        <div class="fg">
+          <div><div class="fl">Prima servicios</div><div class="fv" style="color:#107c10" id="nlp">&#x2014;</div></div>
+          <div><div class="fl">Cesant&#xED;as</div><div class="fv" style="color:#107c10" id="nlc">&#x2014;</div></div>
+          <div><div class="fl">Int. cesant&#xED;as</div><div class="fv" style="color:#107c10" id="nli">&#x2014;</div></div>
+          <div><div class="fl">Vacaciones</div><div class="fv" style="color:#107c10" id="nlv">&#x2014;</div></div>
+        </div>
+        <div class="alert alert-info" style="margin-top:10px;font-size:11px">Estimado. Use el m&#xF3;dulo de <a href="/pages/liquidacion.html" style="color:var(--primary)">Liquidaci&#xF3;n</a> para c&#xE1;lculo exacto.</div>
+      </div></div>
+      <div id="n3" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x2764;&#xFE0F; Seguridad social</div><button class="btn-secondary btn-sm" onclick="window.location='/pages/seguridad-social.html'">Ver m&#xF3;dulo</button></div>
+        <div class="fg">
+          <div><div class="fl">EPS</div><div class="fv" id="ss0">&#x2014;</div></div>
+          <div><div class="fl">Pensi&#xF3;n</div><div class="fv" id="ss1">&#x2014;</div></div>
+          <div><div class="fl">ARL</div><div class="fv" id="ss2">&#x2014;</div></div>
+          <div><div class="fl">Clase riesgo</div><div class="fv" id="ss3">&#x2014;</div></div>
+          <div><div class="fl">Caja compensaci&#xF3;n</div><div class="fv" id="ss4">&#x2014;</div></div>
+          <div><div class="fl">Fondo cesant&#xED;as</div><div class="fv" id="ss5">&#x2014;</div></div>
+        </div>
+      </div></div>
+      <div id="n4" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F3E6; Pr&#xE9;stamos activos</div><button class="btn-secondary btn-sm" onclick="window.location='/pages/prestamos.html'">Ver m&#xF3;dulo</button></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Tipo</th><th>Entidad</th><th>Cuota/mes</th><th>Saldo</th><th>Estado</th></tr></thead><tbody id="nprest"></tbody></table></div>
+      </div></div>
     </div>
-
-
-    <!-- ══ TAB SST ══ -->
-    <div id="tp-sst" class="hidden">
-
-      <!-- Sub-tabs SST -->
-      <div class="nom-tabs">
-        <button class="nom-tab active" onclick="aSstTab(this,'sst-arl')">🦺 Accidentes ARL</button>
-        <button class="nom-tab" onclick="aSstTab(this,'sst-examenes')">🩺 Exámenes médicos</button>
-        <button class="nom-tab" onclick="aSstTab(this,'sst-cursos')">📜 Certificaciones SST</button>
-      </div>
-
-      <!-- ARL -->
-      <div id="sst-arl">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🦺 Accidentes de trabajo</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/arl.html'">Ver módulo ARL</button>
-          </div>
-          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
-            <div class="metric-card"><div class="metric-label">Accidentes registrados</div><div class="metric-value" style="color:#c50f1f" id="arl-total">—</div></div>
-            <div class="metric-card"><div class="metric-label">Días perdidos ARL</div><div class="metric-value" style="color:#797600" id="arl-dias">—</div></div>
-            <div class="metric-card"><div class="metric-label">Último accidente</div><div class="metric-value" style="font-size:13px" id="arl-ultimo">—</div></div>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Lesión</th><th>Parte afectada</th><th>Gravedad</th><th>Días incap.</th><th>FURAT</th></tr></thead>
-            <tbody id="t-arl"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Exámenes -->
-      <div id="sst-examenes" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🩺 Exámenes médicos ocupacionales</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/examenes-medicos.html'">Ver módulo</button>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Tipo</th><th>Fecha</th><th>Empresa médica</th><th>Resultado</th><th>Restricciones</th><th>Próxima</th></tr></thead>
-            <tbody id="t-examenes"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Certificaciones SST -->
-      <div id="sst-cursos" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">📜 Certificaciones de seguridad</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/capacitaciones.html'">Ver módulo</button>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Certificación</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>Certificado</th><th>Vence</th><th>Estado</th></tr></thead>
-            <tbody id="t-sst-certs"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-    </div><!-- /tp-sst -->
-
-
-    <!-- ══ TAB BIENESTAR ══ -->
-    <div id="tp-bienestar" class="hidden">
-
-      <!-- Sub-tabs Bienestar -->
-      <div class="nom-tabs">
-        <button class="nom-tab active" onclick="aBienTab(this,'bien-incentivos')">🎁 Incentivos</button>
-        <button class="nom-tab" onclick="aBienTab(this,'bien-convivencia')">⚖️ Convivencia</button>
-        <button class="nom-tab" onclick="aBienTab(this,'bien-disciplinario')">📜 Disciplinario</button>
-      </div>
-
-      <!-- Incentivos -->
-      <div id="bien-incentivos">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🎁 Incentivos recibidos</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/incentivos.html'">Ver módulo</button>
-          </div>
-          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
-            <div class="metric-card"><div class="metric-label">Incentivos 2026</div><div class="metric-value" style="color:#107c10" id="bi-total">—</div></div>
-            <div class="metric-card"><div class="metric-label">Valor total recibido</div><div class="metric-value" style="font-size:14px;color:#0078d4" id="bi-valor">—</div></div>
-            <div class="metric-card"><div class="metric-label">Próximo incentivo</div><div class="metric-value" style="font-size:13px" id="bi-prox">—</div></div>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Tipo</th><th>Fecha</th><th>Descripción</th><th>Valor</th><th>Estado</th></tr></thead>
-            <tbody id="t-incentivos"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Convivencia -->
-      <div id="bien-convivencia" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">⚖️ Quejas y convivencia</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/convivencia.html'">Ver módulo</button>
-          </div>
-          <div class="alert alert-info" style="margin-bottom:12px;font-size:11px">
-            🔒 Información confidencial. Solo visible para el rol Empresa y el empleado relacionado.
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Radicado</th><th>Tipo</th><th>Fecha</th><th>Rol</th><th>Estado</th><th>Resolución</th></tr></thead>
-            <tbody id="t-convivencia"></tbody>
-          </table></div>
-          <div id="bien-manual" style="margin-top:12px;padding:10px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border);font-size:12px">
-            <span id="bien-manual-txt">—</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Disciplinario -->
-      <div id="bien-disciplinario" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">📜 Procesos disciplinarios</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/disciplinario.html'">Ver módulo</button>
-          </div>
-          <div class="alert alert-warning" style="margin-bottom:12px;font-size:11px">
-            ⚖️ Información confidencial · Ley 2466/2025 · Debido proceso garantizado.
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Proceso</th><th>Tipo falta</th><th>Fecha</th><th>Estado</th><th>Sanción</th></tr></thead>
-            <tbody id="t-disciplinario"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-    </div><!-- /tp-bienestar -->
-
-
-    <!-- ══ TAB FORMACIÓN ══ -->
-    <div id="tp-formacion" class="hidden">
-
-      <div class="nom-tabs">
-        <button class="nom-tab active" onclick="aFormTab(this,'form-capacitaciones')">🎓 Capacitaciones</button>
-        <button class="nom-tab" onclick="aFormTab(this,'form-cursos')">📜 Cursos y certs.</button>
-        <button class="nom-tab" onclick="aFormTab(this,'form-socializacion')">📢 Socialización</button>
-        <button class="nom-tab" onclick="aFormTab(this,'form-estudios')">🏫 Estudios académicos</button>
-      </div>
-
-      <!-- Capacitaciones -->
-      <div id="form-capacitaciones">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🎓 Capacitaciones asistidas</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/capacitaciones.html'">Ver módulo</button>
-          </div>
-          <div class="metrics-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px">
-            <div class="metric-card"><div class="metric-label">Total capacitaciones</div><div class="metric-value" style="color:#0078d4" id="fc-total">—</div></div>
-            <div class="metric-card"><div class="metric-label">Horas formación</div><div class="metric-value" style="color:#107c10" id="fc-horas">—</div></div>
-            <div class="metric-card"><div class="metric-label">Año en curso</div><div class="metric-value" id="fc-ano">—</div></div>
-            <div class="metric-card"><div class="metric-label">Pendientes</div><div class="metric-value" style="color:#797600" id="fc-pend">—</div></div>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Capacitación</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>Modalidad</th><th>SST</th><th>Estado</th></tr></thead>
-            <tbody id="t-form-caps"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Cursos y certificaciones -->
-      <div id="form-cursos" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">📜 Cursos y certificaciones</div>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Certificación</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>No. Certificado</th><th>Vence</th><th>Vigencia</th></tr></thead>
-            <tbody id="t-form-certs"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Socialización -->
-      <div id="form-socializacion" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">📢 Eventos de socialización</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/socializacion.html'">Ver módulo</button>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Evento</th><th>Tipo</th><th>Fecha</th><th>Duración</th><th>Modalidad</th><th>Asistencia</th><th>Evaluación</th></tr></thead>
-            <tbody id="t-form-soc"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Estudios académicos -->
-      <div id="form-estudios" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🏫 Estudios académicos</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px" id="lista-estudios"></div>
-        </div>
-      </div>
-
-    </div><!-- /tp-formacion -->
-
-
-    <!-- ══ TAB OPERACIONES ══ -->
-    <div id="tp-operaciones" class="hidden">
-
-      <div class="nom-tabs">
-        <button class="nom-tab active" onclick="aOpsTab(this,'ops-proyectos')">🏗️ Proyectos</button>
-        <button class="nom-tab" onclick="aOpsTab(this,'ops-clausulas')">📋 Cláusulas</button>
-        <button class="nom-tab" onclick="aOpsTab(this,'ops-sugerencias')">💬 Sugerencias</button>
-      </div>
-
-      <!-- Proyectos asignados -->
-      <div id="ops-proyectos">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🏗️ Proyectos asignados</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/proyectos.html'">Ver todos</button>
-          </div>
-          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
-            <div class="metric-card"><div class="metric-label">Proyectos activos</div><div class="metric-value" style="color:#0078d4" id="ops-activos">—</div></div>
-            <div class="metric-card"><div class="metric-label">Completados</div><div class="metric-value" style="color:#107c10" id="ops-completados">—</div></div>
-            <div class="metric-card"><div class="metric-label">Dedicación actual</div><div class="metric-value" id="ops-dedicacion">—</div></div>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Proyecto</th><th>Tipo</th><th>Rol</th><th>Desde</th><th>Dedicación</th><th>Estado</th></tr></thead>
-            <tbody id="t-proyectos-emp"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Cláusulas firmadas -->
-      <div id="ops-clausulas" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">📋 Cláusulas firmadas</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/clausulas.html'">Ver módulo</button>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Tipo de cláusula</th><th>Versión</th><th>Fecha firma</th><th>Estado</th></tr></thead>
-            <tbody id="t-clausulas-emp"></tbody>
-          </table></div>
-          <div id="ops-manual-estado" style="margin-top:8px;font-size:12px"></div>
-        </div>
-      </div>
-
-      <!-- Sugerencias del jefe -->
-      <div id="ops-sugerencias" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">💬 Sugerencias del jefe inmediato</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/sugerencias-jefe.html'">Ver módulo</button>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Período</th><th>Categoría</th><th>Título</th><th>Tipo</th><th>Leída</th></tr></thead>
-            <tbody id="t-sugerencias-emp"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-    </div><!-- /tp-operaciones -->
-
-    <!-- ══ TAB NÓMINA — solo admins ══ -->
-    <div id="tp-nomina" class="hidden">
-
-      <!-- Sub-tabs de nómina -->
-      <div class="nom-tabs">
-        <button class="nom-tab active" onclick="aNomTab(this,'nt-salario')">💰 Salario</button>
-        <button class="nom-tab" onclick="aNomTab(this,'nt-hextras')">⏰ Horas extras</button>
-        <button class="nom-tab" onclick="aNomTab(this,'nt-liquidacion')">💼 Liquidación</button>
-        <button class="nom-tab" onclick="aNomTab(this,'nt-ss')">❤️ Seg. social</button>
-        <button class="nom-tab" onclick="aNomTab(this,'nt-prestamos')">🏦 Préstamos</button>
-      </div>
-
-      <!-- Salario -->
-      <div id="nt-salario">
-        <div class="card">
-          <div class="card-header"><div class="card-title">💰 Información salarial</div></div>
-          <div class="ficha-grid">
-            <div class="ficha-item"><div class="ficha-label">Salario básico</div><div class="ficha-valor" id="n-salario">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Auxilio transporte</div><div class="ficha-valor" id="n-aux">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Total devengado</div><div class="ficha-valor" id="n-devengado">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Salud empleado (4%)</div><div class="ficha-valor" style="color:#c50f1f" id="n-salud">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Pensión empleado (4%)</div><div class="ficha-valor" style="color:#c50f1f" id="n-pension">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Neto a pagar</div><div class="ficha-valor" style="color:#107c10;font-weight:700;font-size:15px" id="n-neto">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Banco</div><div class="ficha-valor" id="n-banco">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Cuenta</div><div class="ficha-valor" id="n-cuenta">—</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Horas extras -->
-      <div id="nt-hextras" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">⏰ Horas extras del empleado</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/horas-extras.html'">Ver módulo</button>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Horas</th><th>Valor</th><th>Estado</th></tr></thead>
-            <tbody id="t-he-nom"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Liquidación -->
-      <div id="nt-liquidacion" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">💼 Liquidación de prestaciones</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/liquidacion.html'">Calcular retiro</button>
-          </div>
-          <div class="ficha-grid" style="margin-bottom:12px">
-            <div class="ficha-item"><div class="ficha-label">Prima servicios (acumulada)</div><div class="ficha-valor" style="color:#107c10" id="liq-prima">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Cesantías (acumuladas)</div><div class="ficha-valor" style="color:#107c10" id="liq-ces">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Int. cesantías (12% anual)</div><div class="ficha-valor" style="color:#107c10" id="liq-intces">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Vacaciones (acumuladas)</div><div class="ficha-valor" style="color:#107c10" id="liq-vac">—</div></div>
-          </div>
-          <div class="alert alert-info" style="font-size:11px">💡 Valores estimados basados en salario actual. Para liquidación exacta use el módulo de Liquidación de retiro.</div>
-        </div>
-      </div>
-
-      <!-- Seguridad social -->
-      <div id="nt-ss" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">❤️ Seguridad social</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/seguridad-social.html'">Ver módulo</button>
-          </div>
-          <div class="ficha-grid">
-            <div class="ficha-item"><div class="ficha-label">EPS</div><div class="ficha-valor" id="ss-eps">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Fondo pensión</div><div class="ficha-valor" id="ss-pen">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">ARL</div><div class="ficha-valor" id="ss-arl">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Clase riesgo ARL</div><div class="ficha-valor" id="ss-riesgo">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Caja compensación</div><div class="ficha-valor" id="ss-caja">—</div></div>
-            <div class="ficha-item"><div class="ficha-label">Fondo cesantías</div><div class="ficha-valor" id="ss-ces">—</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Préstamos -->
-      <div id="nt-prestamos" class="hidden">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">🏦 Préstamos activos</div>
-            <button class="btn-secondary btn-sm" onclick="window.location='/pages/prestamos.html'">Ver módulo</button>
-          </div>
-          <div class="table-wrap" style="margin:0"><table>
-            <thead><tr><th>Tipo</th><th>Entidad</th><th>Cuota/mes</th><th>Saldo</th><th>Estado</th></tr></thead>
-            <tbody id="t-prest"></tbody>
-          </table></div>
-        </div>
-      </div>
-
-    </div><!-- /tp-nomina -->
-
   </main>
 </div>
-
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
-if (session) {
-  Auth.renderUserBar(session);
+if (session) { Auth.renderUserBar(session); Sidebar.inject('mi-perfil.html'); }
+
+var TABS = ['t0','t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11','t12','t13'];
+
+function aTab(btn, id) {
+  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  TABS.forEach(function(t){ var el = document.getElementById(t); if(el) el.classList.add('hidden'); });
+  var el = document.getElementById(id);
+  if(el) el.classList.remove('hidden');
 }
 
-// ── DB empleados ───────────────────────────────────────────────────
+function aST(btn, id) {
+  var container = btn.parentElement;
+  container.querySelectorAll('.stt').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  var parent = document.getElementById(id).parentElement;
+  Array.from(parent.children).forEach(function(el){
+    if(el.id && el !== btn.parentElement) el.classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+}
+</script>
+<script>
 var DB = [
-  {cedula:'1234567890',tipodoc:'CC',codigo:'EMP-0001',nombres:'Carlos Andrés',apellidos:'Rodríguez Gómez',nac:'1990-06-14',lugarnac:'Bogotá',genero:'Masculino',civil:'Casado',edu:'Tecnólogo',titulo:'Tecnólogo en Electrónica',inst:'SENA',email_corp:'c.rodriguez@iit.com.co',email_pers:'carlosandres90@gmail.com',tel:'+57 310 456 7890',dir:'Cra 7 # 45-23',barrio:'Chapinero',ciudad:'Bogotá',cem:'María Rodríguez',etel:'+57 311 234 5678',eparent:'Cónyuge',cargo:'Técnico Instalaciones Eléctricas',depto:'Instalaciones',sede:'Bogotá',vinc:'Directo',ingreso:'2022-03-15',estado:'activo',salario:2800000,aux:200000,banco:'Bancolombia',cuenta:'7894521036',eps:'Sanitas',pension:'Porvenir',arl:'Sura',riesgo:'Clase III',caja:'Compensar',fces:'Porvenir',color:'#0078d4'},
-  {cedula:'52456789',tipodoc:'CC',codigo:'EMP-0002',nombres:'María Fernanda',apellidos:'López Castillo',nac:'1985-04-15',lugarnac:'Bogotá',genero:'Femenino',civil:'Casada',edu:'Profesional',titulo:'Administradora de Empresas',inst:'Universidad Nacional',email_corp:'m.lopez@iit.com.co',email_pers:'mflopez85@gmail.com',tel:'+57 311 234 5678',dir:'Calle 72 # 11-25',barrio:'Chapinero',ciudad:'Bogotá',cem:'Roberto López',etel:'+57 312 345 6789',eparent:'Esposo',cargo:'Coordinadora RRHH',depto:'RRHH',sede:'Bogotá',vinc:'Directo',ingreso:'2020-01-02',estado:'activo',salario:4500000,aux:0,banco:'Davivienda',cuenta:'9874563210',eps:'Sanitas',pension:'Protección',arl:'Sura',riesgo:'Clase I',caja:'Compensar',fces:'Protección',color:'#107c10'},
-  {cedula:'79234567',tipodoc:'CC',codigo:'EMP-0003',nombres:'Jorge Alberto',apellidos:'Martínez Ruiz',nac:'1988-09-20',lugarnac:'Medellín',genero:'Masculino',civil:'Soltero',edu:'Profesional',titulo:'Ingeniero Eléctrico',inst:'Universidad de Antioquia',email_corp:'j.martinez@iit.com.co',email_pers:'jorgem88@hotmail.com',tel:'+57 312 345 6789',dir:'Calle 50 # 38-15',barrio:'El Poblado',ciudad:'Medellín',cem:'Carmen Ruiz',etel:'+57 313 456 7890',eparent:'Madre',cargo:'Ingeniero de Proyectos',depto:'Instalaciones',sede:'Medellín',vinc:'Directo',ingreso:'2021-06-10',estado:'activo',salario:5200000,aux:0,banco:'Bancolombia',cuenta:'1234567890',eps:'Compensar',pension:'Porvenir',arl:'Sura',riesgo:'Clase III',caja:'Compensar',fces:'Porvenir',color:'#797600'},
-  {cedula:'1098765432',tipodoc:'CC',codigo:'EMP-0004',nombres:'Andrea Patricia',apellidos:'Parra Vargas',nac:'1995-11-28',lugarnac:'Bogotá',genero:'Femenino',civil:'Soltera',edu:'Tecnólogo',titulo:'Tecnólogo en RRHH',inst:'SENA',email_corp:'a.parra@iit.com.co',email_pers:'andreaparra95@gmail.com',tel:'+57 313 456 7890',dir:'Av. Suba # 91-32',barrio:'Suba',ciudad:'Bogotá',cem:'Claudia Vargas',etel:'+57 314 567 8901',eparent:'Madre',cargo:'Asistente Administrativo',depto:'RRHH',sede:'Bogotá',vinc:'Directo',ingreso:'2024-02-15',estado:'activo',salario:2200000,aux:200000,banco:'Nequi',cuenta:'3134567890',eps:'Nueva EPS',pension:'Colpensiones',arl:'Sura',riesgo:'Clase I',caja:'Cafam',fces:'Porvenir',color:'#c50f1f'},
-  {cedula:'80123456',tipodoc:'CC',codigo:'EMP-0005',nombres:'Luis Fernando',apellidos:'García Mora',nac:'1987-08-03',lugarnac:'Cali',genero:'Masculino',civil:'Casado',edu:'Técnico',titulo:'Técnico en Instalaciones Eléctricas',inst:'SENA',email_corp:'l.garcia@iit.com.co',email_pers:'lfgarcia87@gmail.com',tel:'+57 314 567 8901',dir:'Av. 6N # 22-15',barrio:'Ciudad Jardín',ciudad:'Cali',cem:'Sandra García',etel:'+57 315 678 9012',eparent:'Cónyuge',cargo:'Técnico Solar Fotovoltaico',depto:'Instalaciones',sede:'Cali',vinc:'Directo',ingreso:'2022-03-03',estado:'activo',salario:2600000,aux:200000,banco:'BBVA',cuenta:'4561237890',eps:'Sura',pension:'Protección',arl:'Sura',riesgo:'Clase IV',caja:'Comfenalco',fces:'Protección',color:'#8764b8'},
-  {cedula:'1020345678',tipodoc:'CC',codigo:'EMP-0006',nombres:'Diana Carolina',apellidos:'Herrera Díaz',nac:'1992-03-08',lugarnac:'Bogotá',genero:'Femenino',civil:'Unión libre',edu:'Profesional',titulo:'Administradora Comercial',inst:'Pontificia Universidad Javeriana',email_corp:'d.herrera@iit.com.co',email_pers:'dianaherrera92@gmail.com',tel:'+57 315 678 9012',dir:'Cra 15 # 80-25',barrio:'Cedritos',ciudad:'Bogotá',cem:'Andrés Díaz',etel:'+57 316 789 0123',eparent:'Compañero',cargo:'Asesor Comercial',depto:'Comercial',sede:'Bogotá',vinc:'Directo',ingreso:'2023-08-01',estado:'activo',salario:3100000,aux:0,banco:'Bancolombia',cuenta:'7412589630',eps:'Famisanar',pension:'Porvenir',arl:'Sura',riesgo:'Clase I',caja:'Compensar',fces:'Porvenir',color:'#038387'},
-  {cedula:'79876543',tipodoc:'CC',codigo:'EMP-0007',nombres:'Ricardo Alejandro',apellidos:'Mora Peña',nac:'1991-12-15',lugarnac:'Bogotá',genero:'Masculino',civil:'Soltero',edu:'Tecnólogo',titulo:'Tecnólogo en Redes',inst:'SENA',email_corp:'r.mora@iit.com.co',email_pers:'ricardomorap91@gmail.com',tel:'+57 316 789 0123',dir:'Calle 100 # 14-52',barrio:'Usaquén',ciudad:'Bogotá',cem:'Gloria Peña',etel:'+57 317 890 1234',eparent:'Madre',cargo:'Técnico en Redes',depto:'Tecnología',sede:'Bogotá',vinc:'Directo',ingreso:'2022-11-15',estado:'activo',salario:2900000,aux:200000,banco:'Davivienda',cuenta:'3691470258',eps:'Sanitas',pension:'Porvenir',arl:'Sura',riesgo:'Clase II',caja:'Compensar',fces:'Porvenir',color:'#ca5010'},
-  {cedula:'52789012',tipodoc:'CC',codigo:'EMP-0008',nombres:'Sandra Milena',apellidos:'Castro Reyes',nac:'1983-07-22',lugarnac:'Medellín',genero:'Femenino',civil:'Casada',edu:'Profesional',titulo:'Administradora de Empresas',inst:'EAFIT',email_corp:'s.castro@iit.com.co',email_pers:'sandracastro83@gmail.com',tel:'+57 317 890 1234',dir:'Cra 43A # 16-72',barrio:'El Estadio',ciudad:'Medellín',cem:'Carlos Castro',etel:'+57 318 901 2345',eparent:'Esposo',cargo:'Gerente General',depto:'Administración',sede:'Medellín',vinc:'Directo',ingreso:'2019-05-15',estado:'activo',salario:4800000,aux:0,banco:'Bancolombia',cuenta:'8527419630',eps:'Compensar',pension:'Protección',arl:'Sura',riesgo:'Clase I',caja:'Comfama',fces:'Protección',color:'#0078d4'}
+  {ced:'1234567890',tipodoc:'CC',cod:'EMP-0001',nom:'Carlos Andr\u00e9s',ape:'Rodr\u00edguez G\u00f3mez',nac:'1990-06-14',lugarnac:'Bogot\u00e1',gen:'Masculino',civil:'Casado',edu:'Tecn\u00f3logo',tit:'Tecn\u00f3logo en Electr\u00f3nica',inst:'SENA',ecorp:'c.rodriguez@iit.com.co',epes:'carlosandres90@gmail.com',tel:'+57 310 456 7890',dir:'Cra 7 # 45-23',barrio:'Chapinero',ciudad:'Bogot\u00e1',cem:'Mar\u00eda Rodr\u00edguez',etel:'+57 311 234 5678',eparent:'C\u00f3nyuge',cargo:'T\u00e9cnico Instalaciones El\u00e9ctricas',depto:'Instalaciones',sede:'Bogot\u00e1',vinc:'Directo',ing:'2022-03-15',est:'activo',sal:2800000,aux:200000,banco:'Bancolombia',cta:'7894521036',eps:'Sanitas',pen:'Porvenir',arl:'Sura',riesgo:'Clase III',caja:'Compensar',fces:'Porvenir',col:'#0078d4'},
+  {ced:'52456789',tipodoc:'CC',cod:'EMP-0002',nom:'Mar\u00eda Fernanda',ape:'L\u00f3pez Castillo',nac:'1985-04-15',lugarnac:'Bogot\u00e1',gen:'Femenino',civil:'Casada',edu:'Profesional',tit:'Administradora de Empresas',inst:'Universidad Nacional',ecorp:'m.lopez@iit.com.co',epes:'mflopez85@gmail.com',tel:'+57 311 234 5678',dir:'Calle 72 # 11-25',barrio:'Chapinero',ciudad:'Bogot\u00e1',cem:'Roberto L\u00f3pez',etel:'+57 312 345 6789',eparent:'Esposo',cargo:'Coordinadora RRHH',depto:'RRHH',sede:'Bogot\u00e1',vinc:'Directo',ing:'2020-01-02',est:'activo',sal:4500000,aux:0,banco:'Davivienda',cta:'9874563210',eps:'Sanitas',pen:'Protecci\u00f3n',arl:'Sura',riesgo:'Clase I',caja:'Compensar',fces:'Protecci\u00f3n',col:'#107c10'},
+  {ced:'79234567',tipodoc:'CC',cod:'EMP-0003',nom:'Jorge Alberto',ape:'Mart\u00ednez Ruiz',nac:'1988-09-20',lugarnac:'Medell\u00edn',gen:'Masculino',civil:'Soltero',edu:'Profesional',tit:'Ingeniero El\u00e9ctrico',inst:'Universidad de Antioquia',ecorp:'j.martinez@iit.com.co',epes:'jorgem88@hotmail.com',tel:'+57 312 345 6789',dir:'Calle 50 # 38-15',barrio:'El Poblado',ciudad:'Medell\u00edn',cem:'Carmen Ruiz',etel:'+57 313 456 7890',eparent:'Madre',cargo:'Ingeniero de Proyectos',depto:'Instalaciones',sede:'Medell\u00edn',vinc:'Directo',ing:'2021-06-10',est:'activo',sal:5200000,aux:0,banco:'Bancolombia',cta:'1234567890',eps:'Compensar',pen:'Porvenir',arl:'Sura',riesgo:'Clase III',caja:'Compensar',fces:'Porvenir',col:'#797600'},
+  {ced:'1098765432',tipodoc:'CC',cod:'EMP-0004',nom:'Andrea Patricia',ape:'Parra Vargas',nac:'1995-11-28',lugarnac:'Bogot\u00e1',gen:'Femenino',civil:'Soltera',edu:'Tecn\u00f3logo',tit:'Tecn\u00f3logo en RRHH',inst:'SENA',ecorp:'a.parra@iit.com.co',epes:'andreaparra95@gmail.com',tel:'+57 313 456 7890',dir:'Av. Suba # 91-32',barrio:'Suba',ciudad:'Bogot\u00e1',cem:'Claudia Vargas',etel:'+57 314 567 8901',eparent:'Madre',cargo:'Asistente Administrativo',depto:'RRHH',sede:'Bogot\u00e1',vinc:'Directo',ing:'2024-02-15',est:'activo',sal:2200000,aux:200000,banco:'Nequi',cta:'3134567890',eps:'Nueva EPS',pen:'Colpensiones',arl:'Sura',riesgo:'Clase I',caja:'Cafam',fces:'Porvenir',col:'#c50f1f'},
+  {ced:'80123456',tipodoc:'CC',cod:'EMP-0005',nom:'Luis Fernando',ape:'Garc\u00eda Mora',nac:'1987-08-03',lugarnac:'Cali',gen:'Masculino',civil:'Casado',edu:'T\u00e9cnico',tit:'T\u00e9cnico en Instalaciones El\u00e9ctricas',inst:'SENA',ecorp:'l.garcia@iit.com.co',epes:'lfgarcia87@gmail.com',tel:'+57 314 567 8901',dir:'Av. 6N # 22-15',barrio:'Ciudad Jard\u00edn',ciudad:'Cali',cem:'Sandra Garc\u00eda',etel:'+57 315 678 9012',eparent:'C\u00f3nyuge',cargo:'T\u00e9cnico Solar Fotovoltaico',depto:'Instalaciones',sede:'Cali',vinc:'Directo',ing:'2022-03-03',est:'activo',sal:2600000,aux:200000,banco:'BBVA',cta:'4561237890',eps:'Sura',pen:'Protecci\u00f3n',arl:'Sura',riesgo:'Clase IV',caja:'Comfenalco',fces:'Protecci\u00f3n',col:'#8764b8'},
+  {ced:'1020345678',tipodoc:'CC',cod:'EMP-0006',nom:'Diana Carolina',ape:'Herrera D\u00edaz',nac:'1992-03-08',lugarnac:'Bogot\u00e1',gen:'Femenino',civil:'Uni\u00f3n libre',edu:'Profesional',tit:'Administradora Comercial',inst:'Pontificia Universidad Javeriana',ecorp:'d.herrera@iit.com.co',epes:'dianaherrera92@gmail.com',tel:'+57 315 678 9012',dir:'Cra 15 # 80-25',barrio:'Cedritos',ciudad:'Bogot\u00e1',cem:'Andr\u00e9s D\u00edaz',etel:'+57 316 789 0123',eparent:'Compa\u00f1ero',cargo:'Asesor Comercial',depto:'Comercial',sede:'Bogot\u00e1',vinc:'Directo',ing:'2023-08-01',est:'activo',sal:3100000,aux:0,banco:'Bancolombia',cta:'7412589630',eps:'Famisanar',pen:'Porvenir',arl:'Sura',riesgo:'Clase I',caja:'Compensar',fces:'Porvenir',col:'#038387'},
+  {ced:'79876543',tipodoc:'CC',cod:'EMP-0007',nom:'Ricardo Alejandro',ape:'Mora Pe\u00f1a',nac:'1991-12-15',lugarnac:'Bogot\u00e1',gen:'Masculino',civil:'Soltero',edu:'Tecn\u00f3logo',tit:'Tecn\u00f3logo en Redes',inst:'SENA',ecorp:'r.mora@iit.com.co',epes:'ricardomorap91@gmail.com',tel:'+57 316 789 0123',dir:'Calle 100 # 14-52',barrio:'Usaqu\u00e9n',ciudad:'Bogot\u00e1',cem:'Gloria Pe\u00f1a',etel:'+57 317 890 1234',eparent:'Madre',cargo:'T\u00e9cnico en Redes',depto:'Tecnolog\u00eda',sede:'Bogot\u00e1',vinc:'Directo',ing:'2022-11-15',est:'activo',sal:2900000,aux:200000,banco:'Davivienda',cta:'3691470258',eps:'Sanitas',pen:'Porvenir',arl:'Sura',riesgo:'Clase II',caja:'Compensar',fces:'Porvenir',col:'#ca5010'},
+  {ced:'52789012',tipodoc:'CC',cod:'EMP-0008',nom:'Sandra Milena',ape:'Castro Reyes',nac:'1983-07-22',lugarnac:'Medell\u00edn',gen:'Femenino',civil:'Casada',edu:'Profesional',tit:'Administradora de Empresas',inst:'EAFIT',ecorp:'s.castro@iit.com.co',epes:'sandracastro83@gmail.com',tel:'+57 317 890 1234',dir:'Cra 43A # 16-72',barrio:'El Estadio',ciudad:'Medell\u00edn',cem:'Carlos Castro',etel:'+57 318 901 2345',eparent:'Esposo',cargo:'Gerente General',depto:'Administraci\u00f3n',sede:'Medell\u00edn',vinc:'Directo',ing:'2019-05-15',est:'activo',sal:4800000,aux:0,banco:'Bancolombia',cta:'8527419630',eps:'Compensar',pen:'Protecci\u00f3n',arl:'Sura',riesgo:'Clase I',caja:'Comfama',fces:'Protecci\u00f3n',col:'#0078d4'}
 ];
 
-// ── DB registros por empleado ──────────────────────────────────────
 var DR = {
-  '1234567890':{vac_disp:12,vac_dis:5,vac_pend:1,vacaciones:[{p:'2026',i:'12/06/2026',f:'18/06/2026',d:5,e:'pendiente'}],permisos:[{t:'Cita médica',f:'20/05/2026',h:4,m:'Control EPS',e:'aprobado'}],incap:[{dx:'Faringitis',i:'08/05/2026',f:'10/05/2026',d:3,en:'EPS'},{dx:'Lumbalgia',i:'10/02/2026',f:'14/02/2026',d:5,en:'EPS'}],he:[{f:'20/05/2026',t:'Extra diurna 125%',h:2,v:'$29.167',e:'aprobada'},{f:'14/05/2026',t:'Extra diurna 125%',h:2,v:'$29.167',e:'pendiente'}],caps:[{c:'Trabajo en alturas',en:'ARL Sura',f:'10/03/2024',h:40,cert:'SA-2024-001',vence:'Mar 2027'},{c:'Primeros auxilios',en:'Cruz Roja',f:'05/06/2024',h:16,cert:'CR-2024-123',vence:'Jun 2026'}],prestamos:[{t:'Empresa',en:'IIT',cuota:'$125.000',saldo:'$1.000.000',e:'Al día'}]},
-  '52456789':{vac_disp:15,vac_dis:10,vac_pend:0,vacaciones:[{p:'2026',i:'03/03/2026',f:'14/03/2026',d:10,e:'disfrutado'}],permisos:[],incap:[],he:[],caps:[],prestamos:[{t:'Libranza',en:'Bancolombia',cuota:'$208.333',saldo:'$3.450.000',e:'Al día'}]},
-  '79234567':{vac_disp:18,vac_dis:8,vac_pend:0,vacaciones:[{p:'2026',i:'15/01/2026',f:'26/01/2026',d:8,e:'disfrutado'}],permisos:[{t:'Calamidad doméstica',f:'15/05/2026',h:8,m:'Fallecimiento familiar',e:'aprobado'}],incap:[],he:[{f:'17/05/2026',t:'Extra dominical 200%',h:6,v:'$260.000',e:'aprobada'}],caps:[{c:'PMP Gestión Proyectos',en:'PMI',f:'15/06/2023',h:120,cert:'PMP-2023-789',vence:'—'}],prestamos:[{t:'Cooperativa',en:'Compensar',cuota:'$166.667',saldo:'$1.500.000',e:'Al día'}]},
-  '1098765432':{vac_disp:8,vac_dis:0,vac_pend:0,vacaciones:[],permisos:[{t:'Apoyo hijos Ley 2466',f:'22/05/2026',h:6,m:'Urgencia médica hijo',e:'pendiente'}],incap:[],he:[],caps:[],prestamos:[]},
-  '80123456':{vac_disp:10,vac_dis:0,vac_pend:0,vacaciones:[],permisos:[],incap:[{dx:'Contusión mano',i:'02/04/2026',f:'06/04/2026',d:4,en:'ARL'},{dx:'Lumbalgia crónica',i:'22/05/2026',f:'28/05/2026',d:6,en:'EPS'}],he:[{f:'18/05/2026',t:'Extra nocturna 175%',h:3,v:'$56.875',e:'aprobada'}],caps:[{c:'Trabajo en alturas',en:'ARL Sura',f:'20/08/2023',h:40,cert:'SA-2023-456',vence:'Ago 2026'}],prestamos:[{t:'Empresa',en:'IIT',cuota:'$100.000',saldo:'$600.000',e:'Al día'}]},
-  '1020345678':{vac_disp:12,vac_dis:0,vac_pend:0,vacaciones:[],permisos:[],incap:[],he:[],caps:[],prestamos:[]},
-  '79876543':{vac_disp:10,vac_dis:0,vac_pend:1,vacaciones:[{p:'2026',i:'26/05/2026',f:'06/06/2026',d:10,e:'aprobado'}],permisos:[],incap:[],he:[{f:'10/05/2026',t:'Extra diurna 125%',h:4,v:'$60.417',e:'aprobada'}],caps:[{c:'CCNA Redes Cisco',en:'Cisco',f:'30/05/2024',h:160,cert:'CCNA-2024-321',vence:'May 2027'}],prestamos:[]},
-  '52789012':{vac_disp:20,vac_dis:0,vac_pend:0,vacaciones:[],permisos:[],incap:[],he:[],caps:[],prestamos:[]}
+  '1234567890':{vd:12,vdis:5,vp:1,vac:[{p:'2026',i:'12/06/2026',f:'18/06/2026',d:5,e:'pendiente'}],perm:[{t:'Cita m\u00e9dica',f:'20/05/2026',h:4,m:'Control EPS',e:'aprobado'}],inc:[{dx:'Faringitis',i:'08/05/2026',f:'10/05/2026',d:3,en:'EPS'},{dx:'Lumbalgia',i:'10/02/2026',f:'14/02/2026',d:5,en:'EPS'}],he:[{f:'20/05/2026',t:'Extra diurna 125%',h:2,v:'$29.167',e:'aprobada'},{f:'14/05/2026',t:'Extra diurna 125%',h:2,v:'$29.167',e:'pendiente'}],caps:[{c:'Trabajo en alturas',en:'ARL Sura',f:'10/03/2024',h:40,cert:'SA-2024-001',vence:'Mar 2027',ok:true},{c:'Primeros auxilios',en:'Cruz Roja',f:'05/06/2024',h:16,cert:'CR-2024-123',vence:'Jun 2026',ok:false}],at:1,ad:2,au:'Mar 2026',arl:[{f:'15/03/2026',t:'Trabajo',l:'Esguince espalda',g:'Leve',d:2,fu:'\u2713'}],ex:[{t:'Preocupacional',f:'15/03/2022',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Mar 2024'}],certs:[{c:'Trabajo en alturas',en:'ARL Sura',f:'10/03/2024',cert:'SA-2024-001',vence:'Mar 2027',ok:true}],inct:2,incv:'$200.000',incp:'\ud83c\udf82 Jun 14',inc2:[{t:'\ud83c\udf82 Cumplea\u00f1os',f:'14/06/2025',d:'Gift card',v:'$50.000'},{t:'\u2b50 Mejor empleado',f:'30/04/2026',d:'Bono almuerzo',v:'$150.000'}],conv:[],manual:true,disc:[],oa:1,oc:1,od:'100%',proy:[{n:'Parque Solar Norte',t:'\u2600\ufe0f Solar',r:'T\u00e9cnico el\u00e9ctrico',d:'01/02/2026',ded:'100%',e:'activo'},{n:'Red ACME',t:'\ud83d\udd17 Net',r:'T\u00e9cnico',d:'01/10/2025',ded:'100%',e:'terminado'}],claus:[{t:'Confidencialidad',v:'v1.0',f:'15/03/2022',ok:true},{t:'Manual convivencia',v:'v1.0',f:'15/01/2026',ok:true}],sug:[{p:'May 2026',cat:'Desempe\u00f1o',t:'Excelente Parque Solar',tipo:'pos',l:true},{p:'Mar 2026',cat:'Puntualidad',t:'Tardanzas marzo',tipo:'neg',l:true}],fcaps:[{n:'Inducci\u00f3n SST',en:'ARL Sura',f:'15/01/2026',h:4,sst:true,e:'aprobado'},{n:'Alturas',en:'ARL Sura',f:'10/03/2024',h:40,sst:true,e:'aprobado'}],fsoc:[{n:'Inducci\u00f3n SST 2026',t:'Capacitaci\u00f3n',f:'15/01/2026',dur:'4h',a:'\u2705',ev:'4.8/5'}],fest:[{niv:'Tecn\u00f3logo',tit:'Tecn\u00f3logo en Electr\u00f3nica',inst:'SENA',g:'Nov 2012',v:true},{niv:'Bachiller',tit:'Bachiller Acad\u00e9mico',inst:'Col. La Salle',g:'Nov 2008',v:true}],prest:[{t:'Empresa',en:'IIT',cuota:'$125.000',saldo:'$1.000.000',e:'Al d\u00eda'}]},
+  '52456789':{vd:15,vdis:10,vp:0,vac:[{p:'2026',i:'03/03/2026',f:'14/03/2026',d:10,e:'disfrutado'}],perm:[],inc:[],he:[],caps:[],at:0,ad:0,au:'Sin accidentes',arl:[],ex:[{t:'Preocupacional',f:'02/01/2020',em:'Cl\u00ednica del Trabajo',r:'Apto',res:'Ninguna',prox:'Ene 2022'}],certs:[],inct:2,incv:'$180.000',incp:'\ud83d\udc90 Mar 8/2027',inc2:[{t:'\ud83d\udc90 D\u00eda Mujer',f:'08/03/2026',d:'Detalle especial',v:'$80.000'},{t:'\ud83c\udfc6 Aniversario 6 a\u00f1os',f:'02/01/2026',d:'Gift card',v:'$100.000'}],conv:[],manual:true,disc:[],oa:0,oc:0,od:'\u2014',proy:[],claus:[{t:'Confidencialidad',v:'v1.0',f:'02/01/2020',ok:true},{t:'Manual convivencia',v:'v1.0',f:'15/01/2026',ok:true}],sug:[],fcaps:[{n:'Inducci\u00f3n SST',en:'ARL Sura',f:'15/01/2026',h:4,sst:true,e:'aprobado'},{n:'Excel avanzado RRHH',en:'SENA',f:'10/05/2026',h:8,sst:false,e:'aprobado'}],fsoc:[{n:'Inducci\u00f3n SST 2026',t:'Capacitaci\u00f3n',f:'15/01/2026',dur:'4h',a:'\u2705',ev:'5.0/5'}],fest:[{niv:'Profesional',tit:'Administradora de Empresas',inst:'Universidad Nacional',g:'Jun 2008',v:true}],prest:[{t:'Libranza',en:'Bancolombia',cuota:'$208.333',saldo:'$3.450.000',e:'Al d\u00eda'}]},
+  '79234567':{vd:18,vdis:8,vp:0,vac:[{p:'2026',i:'15/01/2026',f:'26/01/2026',d:8,e:'disfrutado'}],perm:[{t:'Calamidad dom\u00e9stica',f:'15/05/2026',h:8,m:'Fallecimiento familiar',e:'aprobado'}],inc:[],he:[{f:'17/05/2026',t:'Extra dominical 200%',h:6,v:'$260.000',e:'aprobada'}],caps:[{c:'PMP Proyectos',en:'PMI',f:'15/06/2023',h:120,cert:'PMP-2023-789',vence:'\u2014',ok:true}],at:0,ad:0,au:'Sin accidentes',arl:[],ex:[{t:'Peri\u00f3dico',f:'10/06/2024',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Jun 2026'}],certs:[{c:'PMP Gesti\u00f3n Proyectos',en:'PMI',f:'15/06/2023',cert:'PMP-2023-789',vence:'\u2014',ok:true}],inct:1,incv:'$150.000',incp:'\ud83d\udcaa Nov 19',inc2:[{t:'\u2b50 Mejor empleado',f:'30/04/2026',d:'Bono almuerzo',v:'$150.000'}],conv:[],manual:true,disc:[],oa:2,oc:1,od:'100%',proy:[{n:'Parque Solar Norte',t:'\u2600\ufe0f Solar',r:'L\u00edder t\u00e9cnico',d:'01/02/2026',ded:'100%',e:'activo'},{n:'Data Center Bancorp',t:'\ud83d\udcbe DC',r:'L\u00edder t\u00e9cnico',d:'15/03/2026',ded:'100%',e:'activo'}],claus:[{t:'Confidencialidad',v:'v1.0',f:'10/06/2021',ok:true},{t:'Manual convivencia',v:'v1.0',f:'15/01/2026',ok:true}],sug:[],fcaps:[{n:'Inducci\u00f3n SST',en:'ARL Sura',f:'15/01/2026',h:4,sst:true,e:'aprobado'}],fsoc:[{n:'Inducci\u00f3n SST 2026',t:'Capacitaci\u00f3n',f:'15/01/2026',dur:'4h',a:'\u2705',ev:'4.7/5'}],fest:[{niv:'Profesional',tit:'Ingeniero El\u00e9ctrico',inst:'Universidad de Antioquia',g:'Dic 2013',v:true}],prest:[{t:'Cooperativa',en:'Compensar',cuota:'$166.667',saldo:'$1.500.000',e:'Al d\u00eda'}]},
+  '1098765432':{vd:8,vdis:0,vp:0,vac:[],perm:[{t:'Apoyo hijos Ley 2466',f:'22/05/2026',h:6,m:'Urgencia m\u00e9dica hijo',e:'pendiente'}],inc:[],he:[],caps:[],at:0,ad:0,au:'Sin accidentes',arl:[],ex:[{t:'Preocupacional',f:'10/02/2024',em:'Cl\u00ednica del Trabajo',r:'Apto',res:'Ninguna',prox:'Feb 2026'}],certs:[],inct:1,incv:'$80.000',incp:'\ud83c\udf82 Nov 28',inc2:[{t:'\ud83d\udc90 D\u00eda Mujer',f:'08/03/2026',d:'Detalle especial',v:'$80.000'}],conv:[],manual:false,disc:[],oa:0,oc:0,od:'\u2014',proy:[],claus:[{t:'Confidencialidad',v:'v1.0',f:'15/02/2024',ok:true}],sug:[],fcaps:[{n:'Inducci\u00f3n SST',en:'ARL Sura',f:'15/01/2026',h:4,sst:true,e:'aprobado'}],fsoc:[{n:'Excel avanzado',t:'Capacitaci\u00f3n',f:'10/05/2026',dur:'8h',a:'\u2705',ev:'4.6/5'}],fest:[{niv:'Tecn\u00f3logo',tit:'Tecn\u00f3logo en RRHH',inst:'SENA',g:'Jun 2023',v:true}],prest:[]},
+  '80123456':{vd:10,vdis:0,vp:0,vac:[],perm:[],inc:[{dx:'Contusi\u00f3n mano',i:'02/04/2026',f:'06/04/2026',d:4,en:'ARL'},{dx:'Lumbalgia cr\u00f3nica',i:'22/05/2026',f:'28/05/2026',d:6,en:'EPS'}],he:[{f:'18/05/2026',t:'Extra nocturna 175%',h:3,v:'$56.875',e:'aprobada'}],caps:[{c:'Trabajo en alturas',en:'ARL Sura',f:'20/08/2023',h:40,cert:'SA-2023-456',vence:'Ago 2026',ok:false}],at:1,ad:4,au:'Abr 2026',arl:[{f:'02/04/2026',t:'Trabajo',l:'Contusi\u00f3n mano',g:'Moderado',d:4,fu:'\u2713'}],ex:[{t:'Post-incapacidad',f:'05/05/2026',em:'Salud Ocupacional SAS',r:'Apto con restricciones',res:'No levantar >5kg',prox:'Nov 2026'}],certs:[{c:'Trabajo en alturas',en:'ARL Sura',f:'20/08/2023',cert:'SA-2023-456',vence:'Ago 2026',ok:false}],inct:0,incv:'$0',incp:'\ud83c\udf82 Ago 3',inc2:[],conv:[],manual:true,disc:[{num:'PD-2026-001',tp:'Grave',f:'15/02/2026',est:'Resuelto',san:'Amonestaci\u00f3n escrita'}],oa:1,oc:0,od:'50%',proy:[{n:'Parque Solar Norte',t:'\u2600\ufe0f Solar',r:'T\u00e9cnico solar',d:'01/02/2026',ded:'50%',e:'activo'}],claus:[{t:'Confidencialidad',v:'v1.0',f:'03/03/2022',ok:true},{t:'Manual convivencia',v:'v1.0',f:'15/01/2026',ok:true}],sug:[{p:'Feb 2026',cat:'SST',t:'Uso obligatorio EPP en obra',tipo:'neg',l:false}],fcaps:[{n:'Inducci\u00f3n SST',en:'ARL Sura',f:'15/01/2026',h:4,sst:true,e:'aprobado'},{n:'Trabajo en alturas',en:'ARL Sura',f:'20/08/2023',h:40,sst:true,e:'aprobado'}],fsoc:[{n:'Inducci\u00f3n SST 2026',t:'Capacitaci\u00f3n',f:'15/01/2026',dur:'4h',a:'\u2705',ev:'4.5/5'}],fest:[{niv:'T\u00e9cnico',tit:'T\u00e9cnico en Instalaciones El\u00e9ctricas',inst:'SENA',g:'Nov 2010',v:true}],prest:[{t:'Empresa',en:'IIT',cuota:'$100.000',saldo:'$600.000',e:'Al d\u00eda'}]},
+  '1020345678':{vd:12,vdis:0,vp:0,vac:[],perm:[],inc:[],he:[],caps:[],at:0,ad:0,au:'Sin accidentes',arl:[],ex:[{t:'Preocupacional',f:'25/07/2023',em:'Cl\u00ednica del Trabajo',r:'Apto',res:'Ninguna',prox:'Jul 2025'}],certs:[],inct:1,incv:'$80.000',incp:'\ud83d\udc90 Mar 8/2027',inc2:[{t:'\ud83d\udc90 D\u00eda Mujer',f:'08/03/2026',d:'Detalle especial',v:'$80.000'}],conv:[{rad:'QC-2026-002',tp:'Discriminaci\u00f3n',f:'02/05/2026',rol:'Quejosa',est:'En investigaci\u00f3n'}],manual:true,disc:[],oa:0,oc:0,od:'\u2014',proy:[],claus:[{t:'Confidencialidad',v:'v1.0',f:'01/08/2023',ok:true},{t:'Manual convivencia',v:'v1.0',f:'15/01/2026',ok:true}],sug:[],fcaps:[{n:'Inducci\u00f3n SST',en:'ARL Sura',f:'15/01/2026',h:4,sst:true,e:'aprobado'}],fsoc:[{n:'Inducci\u00f3n SST 2026',t:'Capacitaci\u00f3n',f:'15/01/2026',dur:'4h',a:'\u2705',ev:'4.8/5'}],fest:[{niv:'Profesional',tit:'Administradora Comercial',inst:'Pontificia Universidad Javeriana',g:'Jun 2015',v:true}],prest:[]},
+  '79876543':{vd:10,vdis:0,vp:1,vac:[{p:'2026',i:'26/05/2026',f:'06/06/2026',d:10,e:'aprobado'}],perm:[],inc:[],he:[{f:'10/05/2026',t:'Extra diurna 125%',h:4,v:'$60.417',e:'aprobada'}],caps:[{c:'CCNA Redes Cisco',en:'Cisco',f:'30/05/2024',h:160,cert:'CCNA-2024-321',vence:'May 2027',ok:true}],at:0,ad:0,au:'Sin accidentes',arl:[],ex:[{t:'Preocupacional',f:'10/11/2022',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Nov 2024'}],certs:[{c:'CCNA Redes Cisco',en:'Cisco',f:'30/05/2024',cert:'CCNA-2024-321',vence:'May 2027',ok:true}],inct:1,incv:'$150.000',incp:'\ud83c\udf82 Dic 15',inc2:[{t:'\u2b50 Mejor empleado',f:'30/04/2026',d:'Reconocimiento',v:'$150.000'}],conv:[],manual:true,disc:[{num:'PD-2026-002',tp:'Leve',f:'01/05/2026',est:'Descargos pendientes',san:'Por definir'}],oa:1,oc:1,od:'100%',proy:[{n:'IoT Bodega Log\u00edstica',t:'\ud83d\udce1 IoT',r:'T\u00e9c. redes',d:'01/04/2026',ded:'100%',e:'activo'},{n:'Red ACME',t:'\ud83d\udd17 Net',r:'T\u00e9c. redes',d:'01/10/2025',ded:'100%',e:'terminado'}],claus:[{t:'Confidencialidad',v:'v1.0',f:'15/11/2022',ok:true},{t:'Manual convivencia',v:'v1.0',f:'15/01/2026',ok:true}],sug:[{p:'Abr 2026',cat:'Trabajo equipo',t:'Excelente colaboraci\u00f3n Data Center',tipo:'pos',l:false}],fcaps:[{n:'Inducci\u00f3n SST',en:'ARL Sura',f:'15/01/2026',h:4,sst:true,e:'aprobado'},{n:'CCNA Cisco',en:'Cisco',f:'30/05/2024',h:160,sst:false,e:'aprobado'}],fsoc:[{n:'Inducci\u00f3n SST 2026',t:'Capacitaci\u00f3n',f:'15/01/2026',dur:'4h',a:'\u2705',ev:'4.9/5'}],fest:[{niv:'Tecn\u00f3logo',tit:'Tecn\u00f3logo en Redes',inst:'SENA',g:'Nov 2014',v:true}],prest:[]},
+  '52789012':{vd:20,vdis:0,vp:0,vac:[],perm:[],inc:[],he:[],caps:[],at:0,ad:0,au:'Sin accidentes',arl:[],ex:[{t:'Peri\u00f3dico',f:'15/01/2026',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Ene 2028'}],certs:[],inct:2,incv:'$180.000',incp:'\ud83d\udc90 Mar 8/2027',inc2:[{t:'\ud83d\udc90 D\u00eda Mujer',f:'08/03/2026',d:'Detalle',v:'$80.000'},{t:'\ud83c\udfc6 Aniversario 7 a\u00f1os',f:'15/05/2026',d:'Gift card',v:'$100.000'}],conv:[],manual:true,disc:[],oa:0,oc:0,od:'\u2014',proy:[],claus:[{t:'Confidencialidad',v:'v1.0',f:'15/05/2019',ok:true},{t:'Manual convivencia',v:'v1.0',f:'15/01/2026',ok:true}],sug:[],fcaps:[{n:'Inducci\u00f3n SST',en:'ARL Sura',f:'15/01/2026',h:4,sst:true,e:'aprobado'}],fsoc:[{n:'Inducci\u00f3n SST 2026',t:'Capacitaci\u00f3n',f:'15/01/2026',dur:'4h',a:'\u2705',ev:'5.0/5'}],fest:[{niv:'Profesional',tit:'Administradora de Empresas',inst:'EAFIT',g:'Jun 2007',v:true}],prest:[]}
 };
 
-// ── Utilidades ────────────────────────────────────────────────────
-function qp(k){return new URLSearchParams(window.location.search).get(k);}
-function fmt(s){if(!s)return '—';var d=new Date(s+'T12:00');return d.toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});}
-function fmtM(n){return '$ '+(n||0).toLocaleString('es-CO');}
-function antig(s){var h=new Date(),i=new Date(s+'T12:00'),a=h.getFullYear()-i.getFullYear(),m=h.getMonth()-i.getMonth();if(m<0){a--;m+=12;}return a+' año'+(a!==1?'s':'')+' '+m+' mes'+(m!==1?'es':'');}
-function vacio(n){return '<tr><td colspan="'+n+'" style="text-align:center;color:var(--text-muted);padding:12px">Sin registros</td></tr>';}
-var bE={aprobado:'badge-ok',disfrutado:'badge-ok',aprobada:'badge-ok',pendiente:'badge-warn',rechazado:'badge-danger'};
-
-// ── Tabs ──────────────────────────────────────────────────────────
-var ALL_TABS=['tp-personal','tp-laboral','tp-contacto','tp-docs','tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras','tp-caps','tp-sst','tp-bienestar','tp-formacion','tp-operaciones','tp-nomina'];
-function aTab(btn,id){
-  document.querySelectorAll('.tp-btn').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  ALL_TABS.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
-  document.getElementById(id).classList.remove('hidden');
-}
-var ALL_NOM=['nt-salario','nt-hextras','nt-liquidacion','nt-ss','nt-prestamos'];
-function aNomTab(btn,id){
-  document.querySelectorAll('.nom-tab').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  ALL_NOM.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
-  document.getElementById(id).classList.remove('hidden');
-}
-
-// ── Carga principal ───────────────────────────────────────────────
-
-
-
-
-// ── Sub-tabs Operaciones ──────────────────────────────────────────
-var ALL_OPS=['ops-proyectos','ops-clausulas','ops-sugerencias'];
-function aOpsTab(btn,id){
-  var container=btn.closest('.nom-tabs')||btn.parentElement;
-  container.querySelectorAll('.nom-tab').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  ALL_OPS.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
-  document.getElementById(id).classList.remove('hidden');
-}
-
-// ── DB Operaciones por empleado ───────────────────────────────────
-var DR_OPS = {
-  '1234567890':{
-    ops_activos:1, ops_completados:1, ops_dedicacion:'100%',
-    proyectos:[
-      {n:'Parque Solar Norte',t:'☀️ Solar',rol:'Técnico eléctrico',desde:'01/02/2026',ded:'100%',e:'activo'},
-      {n:'Red Empresarial ACME',t:'🔗 Networking',rol:'Técnico',desde:'01/10/2025',ded:'100%',e:'terminado'},
-    ],
-    clausulas:[
-      {t:'Confidencialidad',v:'v1.0',f:'15/03/2022',ok:true},
-      {t:'Compromisos empresa',v:'v1.0',f:'15/03/2022',ok:true},
-      {t:'Política de datos',v:'v1.0',f:'15/03/2022',ok:true},
-      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
-    ],
-    manual_ok: true,
-    sugerencias:[
-      {p:'Mayo 2026',cat:'Desempeño',t:'Excelente trabajo Parque Solar Norte',tipo:'pos',leida:true},
-      {p:'Marzo 2026',cat:'Puntualidad',t:'Tardanzas registradas en marzo',tipo:'neg',leida:true},
-    ]
-  },
-  '52456789':{
-    ops_activos:0, ops_completados:0, ops_dedicacion:'—',
-    proyectos:[],
-    clausulas:[
-      {t:'Confidencialidad',v:'v1.0',f:'02/01/2020',ok:true},
-      {t:'Compromisos empresa',v:'v1.0',f:'02/01/2020',ok:true},
-      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
-    ],
-    manual_ok: true,
-    sugerencias:[]
-  },
-  '79234567':{
-    ops_activos:2, ops_completados:1, ops_dedicacion:'100%',
-    proyectos:[
-      {n:'Parque Solar Norte',t:'☀️ Solar',rol:'Líder técnico',desde:'01/02/2026',ded:'100%',e:'activo'},
-      {n:'Data Center Bancorp',t:'💾 Data Center',rol:'Líder técnico',desde:'15/03/2026',ded:'100%',e:'activo'},
-      {n:'Inst. Eléctrica CC',t:'⚡ Eléctrico',rol:'Ingeniero',desde:'01/08/2025',ded:'100%',e:'terminado'},
-    ],
-    clausulas:[
-      {t:'Confidencialidad',v:'v1.0',f:'10/06/2021',ok:true},
-      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
-    ],
-    manual_ok: true,
-    sugerencias:[]
-  },
-  '1098765432':{
-    ops_activos:0, ops_completados:0, ops_dedicacion:'—',
-    proyectos:[],
-    clausulas:[
-      {t:'Confidencialidad',v:'v1.0',f:'15/02/2024',ok:true},
-    ],
-    manual_ok: false,
-    sugerencias:[]
-  },
-  '80123456':{
-    ops_activos:1, ops_completados:0, ops_dedicacion:'50%',
-    proyectos:[
-      {n:'Parque Solar Norte',t:'☀️ Solar',rol:'Técnico solar',desde:'01/02/2026',ded:'50%',e:'activo'},
-    ],
-    clausulas:[
-      {t:'Confidencialidad',v:'v1.0',f:'03/03/2022',ok:true},
-      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
-    ],
-    manual_ok: true,
-    sugerencias:[
-      {p:'Febrero 2026',cat:'SST',t:'Uso obligatorio EPP en obra',tipo:'neg',leida:false},
-    ]
-  },
-  '1020345678':{
-    ops_activos:0, ops_completados:0, ops_dedicacion:'—',
-    proyectos:[],
-    clausulas:[
-      {t:'Confidencialidad',v:'v1.0',f:'01/08/2023',ok:true},
-      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
-    ],
-    manual_ok: true,
-    sugerencias:[]
-  },
-  '79876543':{
-    ops_activos:1, ops_completados:1, ops_dedicacion:'100%',
-    proyectos:[
-      {n:'IoT Bodega Logística',t:'📡 IoT',rol:'Téc. redes',desde:'01/04/2026',ded:'100%',e:'activo'},
-      {n:'Red Empresarial ACME',t:'🔗 Networking',rol:'Téc. redes',desde:'01/10/2025',ded:'100%',e:'terminado'},
-    ],
-    clausulas:[
-      {t:'Confidencialidad',v:'v1.0',f:'15/11/2022',ok:true},
-      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
-    ],
-    manual_ok: true,
-    sugerencias:[
-      {p:'Abril 2026',cat:'Trabajo en equipo',t:'Excelente colaboración Data Center',tipo:'pos',leida:false},
-    ]
-  },
-  '52789012':{
-    ops_activos:0, ops_completados:0, ops_dedicacion:'—',
-    proyectos:[],
-    clausulas:[
-      {t:'Confidencialidad',v:'v1.0',f:'15/05/2019',ok:true},
-      {t:'Manual de convivencia',v:'v1.0',f:'15/01/2026',ok:true},
-    ],
-    manual_ok: true,
-    sugerencias:[]
-  }
-};
-
-function cargarOperaciones(ced) {
-  var o = DR_OPS[ced];
-  if (!o) return;
-
-  document.getElementById('ops-activos').textContent     = o.ops_activos;
-  document.getElementById('ops-completados').textContent = o.ops_completados;
-  document.getElementById('ops-dedicacion').textContent  = o.ops_dedicacion;
-
-  var bE4 = {activo:'badge-ok',terminado:'badge-muted','en pausa':'badge-warn'};
-
-  // Proyectos
-  document.getElementById('t-proyectos-emp').innerHTML = o.proyectos.length ?
-    o.proyectos.map(function(p){
-      return '<tr><td style="font-weight:500">'+p.n+'</td>'+
-        '<td><span class="badge badge-info">'+p.t+'</span></td>'+
-        '<td>'+p.rol+'</td><td>'+p.desde+'</td>'+
-        '<td><span class="badge '+(p.ded==='100%'?'badge-ok':'badge-warn')+'">'+p.ded+'</span></td>'+
-        '<td><span class="badge '+(bE4[p.e]||'badge-muted')+'">'+p.e+'</span></td></tr>';
-    }).join('') : vacio(6);
-
-  // Cláusulas
-  document.getElementById('t-clausulas-emp').innerHTML = o.clausulas.length ?
-    o.clausulas.map(function(cl){
-      return '<tr><td>'+cl.t+'</td><td style="font-family:monospace;font-size:11px">'+cl.v+'</td>'+
-        '<td>'+cl.f+'</td>'+
-        '<td><span class="badge '+(cl.ok?'badge-ok':'badge-danger')+'">'+(cl.ok?'✓ Firmada':'Pendiente')+'</span></td></tr>';
-    }).join('') : vacio(4);
-
-  document.getElementById('ops-manual-estado').innerHTML = o.manual_ok
-    ? '✅ <strong>Manual de convivencia firmado</strong> · v1.0 · Enero 2026'
-    : '⚠️ <strong>Manual pendiente de firma</strong> · <a href="/pages/convivencia.html" style="color:var(--primary)">Ir a firmar →</a>';
-
-  // Sugerencias
-  var iconTipo = {pos:'⭐',neg:'📈',urg:'🚨'};
-  document.getElementById('t-sugerencias-emp').innerHTML = o.sugerencias.length ?
-    o.sugerencias.map(function(s){
-      return '<tr><td>'+s.p+'</td><td>'+s.cat+'</td>'+
-        '<td style="font-weight:500">'+iconTipo[s.tipo]+' '+s.t+'</td>'+
-        '<td><span class="badge '+(s.tipo==='pos'?'badge-ok':s.tipo==='urg'?'badge-danger':'badge-warn')+'">'+(s.tipo==='pos'?'Reconocimiento':s.tipo==='urg'?'Urgente':'Mejora')+'</span></td>'+
-        '<td>'+(s.leida?'<span class="badge badge-ok">✓ Leída</span>':'<span class="badge badge-warn">No leída</span>')+'</td></tr>';
-    }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:12px">Sin sugerencias registradas</td></tr>';
-}
-
-// ── Sub-tabs Formación ────────────────────────────────────────────
-var ALL_FORM=['form-capacitaciones','form-cursos','form-socializacion','form-estudios'];
-function aFormTab(btn,id){
-  var container=btn.closest('.nom-tabs')||btn.parentElement;
-  container.querySelectorAll('.nom-tab').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  ALL_FORM.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
-  document.getElementById(id).classList.remove('hidden');
-}
-
-// ── DB Formación por empleado ─────────────────────────────────────
-var DR_FORM = {
-  '1234567890':{
-    fc_total:4, fc_horas:64, fc_ano:2, fc_pend:0,
-    capacitaciones:[
-      {n:'Inducción SST 2026',  en:'ARL Sura',    f:'15/01/2026',h:4, m:'Presencial',sst:true, e:'aprobado'},
-      {n:'Simulacro evacuación',en:'IIT',          f:'20/03/2026',h:1, m:'Presencial',sst:true, e:'aprobado'},
-      {n:'Trabajo en alturas',  en:'ARL Sura',     f:'10/03/2024',h:40,m:'Presencial',sst:true, e:'aprobado'},
-      {n:'Equipo eléctrico BT', en:'ICONTEC',      f:'15/07/2024',h:8, m:'Presencial',sst:false,e:'aprobado'},
-    ],
-    cursos:[
-      {c:'Trabajo en alturas avanzado',en:'ARL Sura',f:'10/03/2024',h:40,cert:'SA-2024-001',vence:'Mar 2027',ok:true},
-      {c:'Primeros auxilios básico',   en:'Cruz Roja',f:'05/06/2024',h:16,cert:'CR-2024-123',vence:'Jun 2026',ok:false},
-      {c:'Manejo equipo eléctrico BT', en:'ICONTEC', f:'15/07/2024',h:8, cert:'IC-2024-456',vence:'Jul 2026',ok:false},
-    ],
-    socializacion:[
-      {n:'Inducción SST 2026',  t:'Capacitación', f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.8/5'},
-      {n:'Simulacro evacuación',t:'Simulacro',    f:'20/03/2026',dur:'1h',m:'Presencial',asist:'✅',eval:'—'},
-    ],
-    estudios:[
-      {nivel:'Tecnólogo',titulo:'Tecnólogo en Electrónica',inst:'SENA',grado:'Nov 2012',verificado:true},
-      {nivel:'Bachiller', titulo:'Bachiller Académico',     inst:'Col. La Salle',grado:'Nov 2008',verificado:true},
-    ]
-  },
-  '52456789':{
-    fc_total:3, fc_horas:14, fc_ano:2, fc_pend:0,
-    capacitaciones:[
-      {n:'Inducción SST 2026',  en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true, e:'aprobado'},
-      {n:'Excel avanzado RRHH', en:'SENA',    f:'10/05/2026',h:8,m:'Virtual',   sst:false,e:'aprobado'},
-      {n:'Reunión Comité Conv.',en:'IIT',     f:'15/03/2026',h:2,m:'Presencial',sst:false,e:'aprobado'},
-    ],
-    cursos:[],
-    socializacion:[
-      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'5.0/5'},
-      {n:'Excel avanzado',    en:'Capacitación',f:'10/05/2026',dur:'8h',m:'Virtual',   asist:'✅',eval:'4.9/5'},
-    ],
-    estudios:[
-      {nivel:'Profesional',titulo:'Administradora de Empresas',inst:'Universidad Nacional',grado:'Jun 2008',verificado:true},
-    ]
-  },
-  '79234567':{
-    fc_total:2, fc_horas:5, fc_ano:2, fc_pend:0,
-    capacitaciones:[
-      {n:'Inducción SST 2026',  en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true,e:'aprobado'},
-      {n:'Simulacro evacuación',en:'IIT',     f:'20/03/2026',h:1,m:'Presencial',sst:true,e:'aprobado'},
-    ],
-    cursos:[
-      {c:'PMP Gestión de Proyectos',en:'PMI',f:'15/06/2023',h:120,cert:'PMP-2023-789',vence:'—',ok:true},
-    ],
-    socializacion:[
-      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.7/5'},
-    ],
-    estudios:[
-      {nivel:'Profesional',titulo:'Ingeniero Eléctrico',inst:'Universidad de Antioquia',grado:'Dic 2013',verificado:true},
-    ]
-  },
-  '1098765432':{
-    fc_total:2, fc_horas:12, fc_ano:2, fc_pend:1,
-    capacitaciones:[
-      {n:'Inducción SST 2026',en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true,e:'aprobado'},
-      {n:'Excel avanzado RRHH',en:'SENA',   f:'10/05/2026',h:8,m:'Virtual',   sst:false,e:'aprobado'},
-    ],
-    cursos:[],
-    socializacion:[
-      {n:'Excel avanzado',en:'Capacitación',f:'10/05/2026',dur:'8h',m:'Virtual',asist:'✅',eval:'4.6/5'},
-    ],
-    estudios:[
-      {nivel:'Tecnólogo',titulo:'Tecnólogo en RRHH',inst:'SENA',grado:'Jun 2023',verificado:true},
-    ]
-  },
-  '80123456':{
-    fc_total:3, fc_horas:45, fc_ano:1, fc_pend:0,
-    capacitaciones:[
-      {n:'Inducción SST 2026',  en:'ARL Sura',f:'15/01/2026',h:4, m:'Presencial',sst:true,e:'aprobado'},
-      {n:'Trabajo en alturas',  en:'ARL Sura',f:'20/08/2023',h:40,m:'Presencial',sst:true,e:'aprobado'},
-      {n:'Simulacro evacuación',en:'IIT',     f:'20/03/2026',h:1, m:'Presencial',sst:true,e:'aprobado'},
-    ],
-    cursos:[
-      {c:'Trabajo en alturas avanzado',en:'ARL Sura',f:'20/08/2023',h:40,cert:'SA-2023-456',vence:'Ago 2026',ok:false},
-    ],
-    socializacion:[
-      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.5/5'},
-    ],
-    estudios:[
-      {nivel:'Técnico',titulo:'Técnico en Instalaciones Eléctricas',inst:'SENA',grado:'Nov 2010',verificado:true},
-    ]
-  },
-  '1020345678':{
-    fc_total:1, fc_horas:4, fc_ano:1, fc_pend:0,
-    capacitaciones:[
-      {n:'Inducción SST 2026',en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true,e:'aprobado'},
-    ],
-    cursos:[],
-    socializacion:[
-      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.8/5'},
-    ],
-    estudios:[
-      {nivel:'Profesional',titulo:'Administradora Comercial',inst:'Pontificia Universidad Javeriana',grado:'Jun 2015',verificado:true},
-    ]
-  },
-  '79876543':{
-    fc_total:2, fc_horas:164, fc_ano:1, fc_pend:0,
-    capacitaciones:[
-      {n:'Inducción SST 2026',en:'ARL Sura',f:'15/01/2026',h:4,  m:'Presencial',sst:true, e:'aprobado'},
-      {n:'CCNA Redes Cisco',  en:'Cisco',   f:'30/05/2024',h:160,m:'Virtual',   sst:false,e:'aprobado'},
-    ],
-    cursos:[
-      {c:'CCNA Redes Cisco',en:'Cisco',f:'30/05/2024',h:160,cert:'CCNA-2024-321',vence:'May 2027',ok:true},
-    ],
-    socializacion:[
-      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'4.9/5'},
-    ],
-    estudios:[
-      {nivel:'Tecnólogo',titulo:'Tecnólogo en Redes',inst:'SENA',grado:'Nov 2014',verificado:true},
-    ]
-  },
-  '52789012':{
-    fc_total:1, fc_horas:4, fc_ano:1, fc_pend:0,
-    capacitaciones:[
-      {n:'Inducción SST 2026',en:'ARL Sura',f:'15/01/2026',h:4,m:'Presencial',sst:true,e:'aprobado'},
-    ],
-    cursos:[],
-    socializacion:[
-      {n:'Inducción SST 2026',en:'Capacitación',f:'15/01/2026',dur:'4h',m:'Presencial',asist:'✅',eval:'5.0/5'},
-    ],
-    estudios:[
-      {nivel:'Profesional',titulo:'Administradora de Empresas',inst:'EAFIT',grado:'Jun 2007',verificado:true},
-    ]
-  }
-};
-
-function cargarFormacion(ced) {
-  var f = DR_FORM[ced];
-  if (!f) return;
-
-  document.getElementById('fc-total').textContent = f.fc_total;
-  document.getElementById('fc-horas').textContent = f.fc_horas + 'h';
-  document.getElementById('fc-ano').textContent   = f.fc_ano;
-  document.getElementById('fc-pend').textContent  = f.fc_pend;
-
-  var iconoSst = function(s){ return s ? '<span class="badge badge-ok">SST</span>' : '<span class="badge badge-muted">No</span>'; };
-  var bE3 = {aprobado:'badge-ok',pendiente:'badge-warn',reprobado:'badge-danger'};
-
-  // Capacitaciones
-  document.getElementById('t-form-caps').innerHTML = f.capacitaciones.length ?
-    f.capacitaciones.map(function(x){
-      return '<tr><td style="font-weight:500">'+x.n+'</td><td>'+x.en+'</td><td>'+x.f+'</td>'+
-        '<td>'+x.h+'h</td><td>'+x.m+'</td><td>'+iconoSst(x.sst)+'</td>'+
-        '<td><span class="badge '+(bE3[x.e]||'badge-muted')+'">'+x.e+'</span></td></tr>';
-    }).join('') : vacio(7);
-
-  // Cursos y certs
-  document.getElementById('t-form-certs').innerHTML = f.cursos.length ?
-    f.cursos.map(function(x){
-      var vig = x.ok
-        ? '<span class="badge badge-ok">✓ Vigente</span>'
-        : '<span class="badge badge-danger">⚠ Por vencer</span>';
-      return '<tr><td>'+x.c+'</td><td>'+x.en+'</td><td>'+x.f+'</td><td>'+x.h+'h</td>'+
-        '<td style="font-family:monospace;font-size:11px">'+x.cert+'</td>'+
-        '<td>'+x.vence+'</td><td>'+vig+'</td></tr>';
-    }).join('') : vacio(7);
-
-  // Socialización
-  document.getElementById('t-form-soc').innerHTML = f.socializacion.length ?
-    f.socializacion.map(function(x){
-      return '<tr><td style="font-weight:500">'+x.n+'</td>'+
-        '<td><span class="badge badge-info">'+x.t+'</span></td>'+
-        '<td>'+x.f+'</td><td>'+x.dur+'</td><td>'+x.m+'</td>'+
-        '<td>'+x.asist+'</td><td>'+x.eval+'</td></tr>';
-    }).join('') : vacio(7);
-
-  // Estudios académicos
-  var colores=['#0078d4','#107c10','#797600','#8764b8'];
-  document.getElementById('lista-estudios').innerHTML = f.estudios.length ?
-    f.estudios.map(function(x,i){
-      return '<div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;display:flex;gap:14px;align-items:center">'+
-        '<div style="width:40px;height:40px;border-radius:50%;background:'+colores[i%4]+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🎓</div>'+
-        '<div style="flex:1">'+
-          '<div style="font-weight:600;font-size:13px">'+x.titulo+'</div>'+
-          '<div style="font-size:12px;color:var(--text-muted)">'+x.inst+' · Grado: '+x.grado+'</div>'+
-          '<div style="margin-top:4px"><span class="badge badge-info">'+x.nivel+'</span></div>'+
-        '</div>'+
-        (x.verificado ? '<span class="badge badge-ok">✓ Verificado</span>' : '<span class="badge badge-warn">Pendiente</span>')+
-      '</div>';
-    }).join('') : '<div class="alert alert-info">Sin estudios académicos registrados.</div>';
-}
-
-// ── Sub-tabs Bienestar ────────────────────────────────────────────
-var ALL_BIEN=['bien-incentivos','bien-convivencia','bien-disciplinario'];
-function aBienTab(btn,id){
-  // Buscar el contenedor .nom-tabs padre de este botón
-  var container = btn.closest('.nom-tabs') || btn.parentElement;
-  container.querySelectorAll('.nom-tab').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  ALL_BIEN.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
-  document.getElementById(id).classList.remove('hidden');
-}
-
-// ── DB Bienestar por empleado ─────────────────────────────────────
-var DR_BIEN = {
-  '1234567890':{
-    incentivos:[
-      {t:'🎂 Cumpleaños',f:'14/06/2025',d:'Gift card',v:'$50.000',e:'entregado'},
-      {t:'⭐ Mejor empleado',f:'30/04/2026',d:'Bono almuerzo equipo',v:'$150.000',e:'entregado'},
-    ],
-    bi_total:2, bi_valor:'$200.000', bi_prox:'🎂 Jun 14',
-    convivencia:[],
-    manual_firmado: true,
-    disciplinario:[
-    ],
-    seguridad:{tipo:'Ingreso',empresa:'Seguridad Total SAS',fecha:'10/03/2022',resultado:'Apto',riesgo:'Bajo',prox:'Mar 2024'},
-    validacion:[
-      {t:'Ingreso',f:'15/03/2022',doc:'✅',bio:'✅',score:'96.5',r:'Validado'},
-    ]
-  },
-  '52456789':{
-    incentivos:[
-      {t:'💐 Día Mujer',f:'08/03/2026',d:'Detalle especial + jornada',v:'$80.000',e:'entregado'},
-      {t:'🏆 Aniversario 6 años',f:'02/01/2026',d:'Gift card',v:'$100.000',e:'entregado'},
-    ],
-    bi_total:2, bi_valor:'$180.000', bi_prox:'💐 Mar 8/2027',
-    convivencia:[],
-    manual_firmado: true,
-    disciplinario:[],
-    seguridad:{tipo:'Ingreso',empresa:'Risk & Security Ltda.',fecha:'02/01/2020',resultado:'Apto',riesgo:'Bajo',prox:'Ene 2022'},
-    validacion:[{t:'Ingreso',f:'02/01/2020',doc:'✅',bio:'✅',score:'94.2',r:'Validado'}]
-  },
-  '79234567':{
-    incentivos:[
-      {t:'⭐ Mejor empleado',f:'30/04/2026',d:'Bono almuerzo equipo',v:'$150.000',e:'entregado'},
-    ],
-    bi_total:1, bi_valor:'$150.000', bi_prox:'💪 Nov 19',
-    convivencia:[],
-    manual_firmado: true,
-    disciplinario:[],
-    seguridad:{tipo:'Ingreso',empresa:'Seguridad Total SAS',fecha:'05/06/2021',resultado:'Apto',riesgo:'Medio',prox:'Jun 2023'},
-    validacion:[{t:'Ingreso',f:'10/06/2021',doc:'✅',bio:'✅',score:'91.8',r:'Validado'}]
-  },
-  '1098765432':{
-    incentivos:[
-      {t:'💐 Día Mujer',f:'08/03/2026',d:'Detalle especial',v:'$80.000',e:'entregado'},
-    ],
-    bi_total:1, bi_valor:'$80.000', bi_prox:'🎂 Nov 28',
-    convivencia:[],
-    manual_firmado: false,
-    disciplinario:[],
-    seguridad:{tipo:'Ingreso',empresa:'Risk & Security Ltda.',fecha:'10/02/2024',resultado:'Apto',riesgo:'Bajo',prox:'Feb 2026'},
-    validacion:[{t:'Ingreso',f:'15/02/2024',doc:'✅',bio:'✅',score:'97.1',r:'Validado'}]
-  },
-  '80123456':{
-    incentivos:[],
-    bi_total:0, bi_valor:'$0', bi_prox:'🎂 Ago 3',
-    convivencia:[],
-    manual_firmado: true,
-    disciplinario:[
-      {num:'PD-2026-001',tipo:'Grave',fecha:'15/02/2026',estado:'Resuelto',sancion:'Amonestación escrita'},
-    ],
-    seguridad:{tipo:'Especial',empresa:'Colombia Segura SAS',fecha:'01/03/2026',resultado:'Condicionado',riesgo:'Medio',prox:'Sep 2026'},
-    validacion:[{t:'Especial',f:'01/03/2026',doc:'✅',bio:'✅',score:'88.3',r:'Validado'}]
-  },
-  '1020345678':{
-    incentivos:[
-      {t:'💐 Día Mujer',f:'08/03/2026',d:'Detalle especial + jornada',v:'$80.000',e:'entregado'},
-    ],
-    bi_total:1, bi_valor:'$80.000', bi_prox:'💐 Mar 8/2027',
-    convivencia:[
-      {rad:'QC-2026-002',tipo:'Discriminación',fecha:'02/05/2026',rol:'Quejosa',estado:'En investigación',res:'Pendiente'},
-    ],
-    manual_firmado: true,
-    disciplinario:[],
-    seguridad:{tipo:'Ingreso',empresa:'Seguridad Total SAS',fecha:'25/07/2023',resultado:'Apto',riesgo:'Bajo',prox:'Jul 2025'},
-    validacion:[{t:'Ingreso',f:'01/08/2023',doc:'✅',bio:'✅',score:'95.7',r:'Validado'}]
-  },
-  '79876543':{
-    incentivos:[
-      {t:'⭐ Mejor empleado',f:'30/04/2026',d:'Reconocimiento',v:'$150.000',e:'entregado'},
-    ],
-    bi_total:1, bi_valor:'$150.000', bi_prox:'🎂 Dic 15',
-    convivencia:[],
-    manual_firmado: true,
-    disciplinario:[
-      {num:'PD-2026-002',tipo:'Leve',fecha:'01/05/2026',estado:'Descargos pendientes',sancion:'Por definir'},
-    ],
-    seguridad:{tipo:'Periódico',empresa:'Risk & Security Ltda.',fecha:'10/11/2024',resultado:'Apto',riesgo:'Bajo',prox:'Nov 2026'},
-    validacion:[{t:'Periódico',f:'15/11/2024',doc:'✅',bio:'✅',score:'93.4',r:'Validado'}]
-  },
-  '52789012':{
-    incentivos:[
-      {t:'💐 Día Mujer',f:'08/03/2026',d:'Detalle especial + jornada',v:'$80.000',e:'entregado'},
-      {t:'🏆 Aniversario 7 años',f:'15/05/2026',d:'Gift card premium',v:'$100.000',e:'entregado'},
-    ],
-    bi_total:2, bi_valor:'$180.000', bi_prox:'💐 Mar 8/2027',
-    convivencia:[],
-    manual_firmado: true,
-    disciplinario:[],
-    seguridad:{tipo:'Ingreso',empresa:'Seguridad Total SAS',fecha:'10/05/2019',resultado:'Apto',riesgo:'Bajo',prox:'May 2021'},
-    validacion:[{t:'Periódico',f:'15/01/2026',doc:'✅',bio:'✅',score:'93.4',r:'Validado'}]
-  }
-};
-
-function cargarBienestar(ced) {
-  var b = DR_BIEN[ced];
-  if (!b) return;
-
-  // Métricas incentivos
-  document.getElementById('bi-total').textContent = b.bi_total;
-  document.getElementById('bi-valor').textContent = b.bi_valor;
-  document.getElementById('bi-prox').textContent  = b.bi_prox;
-
-  var bE2={entregado:'badge-ok',pendiente:'badge-warn',cancelado:'badge-danger'};
-  var bD={Resuelto:'badge-ok','En investigación':'badge-warn','Descargos pendientes':'badge-warn',Archivado:'badge-muted'};
-  var bConv={Resuelta:'badge-ok','En investigación':'badge-warn',Recibida:'badge-info',Archivada:'badge-muted'};
-
-  // Incentivos
-  document.getElementById('t-incentivos').innerHTML = b.incentivos.length ?
-    b.incentivos.map(function(i){
-      return '<tr><td>'+i.t+'</td><td>'+i.f+'</td><td>'+i.d+'</td>'+
-        '<td style="font-weight:500;color:#107c10">'+i.v+'</td>'+
-        '<td><span class="badge '+(bE2[i.e]||'badge-muted')+'">'+i.e+'</span></td></tr>';
-    }).join('') : vacio(5);
-
-  // Convivencia
-  document.getElementById('t-convivencia').innerHTML = b.convivencia.length ?
-    b.convivencia.map(function(q){
-      return '<tr><td style="font-family:monospace;font-size:11px">'+q.rad+'</td>'+
-        '<td><span class="badge badge-danger">'+q.tipo+'</span></td>'+
-        '<td>'+q.fecha+'</td><td><span class="badge badge-info">'+q.rol+'</span></td>'+
-        '<td><span class="badge '+(bConv[q.estado]||'badge-muted')+'">'+q.estado+'</span></td>'+
-        '<td style="font-size:11px">'+q.res+'</td></tr>';
-    }).join('') : vacio(6);
-
-  // Manual firmado
-  document.getElementById('bien-manual-txt').innerHTML = b.manual_firmado
-    ? '✅ <strong>Manual de convivencia firmado</strong> · Versión v1.0 · Enero 2026'
-    : '⚠️ <strong>Manual de convivencia pendiente de firma</strong> · <a href="/pages/convivencia.html" style="color:var(--primary)">Ir a firmar →</a>';
-
-  // Disciplinario
-  document.getElementById('t-disciplinario').innerHTML = b.disciplinario.length ?
-    b.disciplinario.map(function(d){
-      return '<tr><td style="font-family:monospace;font-size:11px">'+d.num+'</td>'+
-        '<td><span class="badge badge-warn">'+d.tipo+'</span></td>'+
-        '<td>'+d.fecha+'</td>'+
-        '<td><span class="badge '+(bD[d.estado]||'badge-muted')+'">'+d.estado+'</span></td>'+
-        '<td style="font-size:11px">'+d.sancion+'</td></tr>';
-    }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:12px">✅ Sin procesos disciplinarios</td></tr>';
-
-}
-
-// ── Sub-tabs SST ─────────────────────────────────────────────────
-var ALL_SST=['sst-arl','sst-examenes','sst-cursos'];
-function aSstTab(btn,id){
-  document.querySelectorAll('.nom-tabs .nom-tab').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  ALL_SST.forEach(function(t){var el=document.getElementById(t);if(el)el.classList.add('hidden');});
-  document.getElementById(id).classList.remove('hidden');
-}
-
-// ── DB SST por empleado ───────────────────────────────────────────
-var DR_SST = {
-  '1234567890':{
-    accidentes:[
-      {f:'15/03/2026',t:'Trabajo',l:'Esguince espalda',p:'Espalda baja',g:'Leve',d:2,furat:'✓ Enviado'},
-    ],
-    arl_total:1, arl_dias:2, arl_ultimo:'Mar 2026',
-    examenes:[
-      {t:'Preocupacional',f:'15/03/2022',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Mar 2024'},
-    ],
-    certs_sst:[
-      {c:'Trabajo en alturas avanzado',en:'ARL Sura',f:'10/03/2024',h:40,cert:'SA-2024-001',vence:'Mar 2027',ok:true},
-      {c:'Primeros auxilios básico',en:'Cruz Roja',f:'05/06/2024',h:16,cert:'CR-2024-123',vence:'Jun 2026',ok:false},
-      {c:'Manejo equipo eléctrico BT',en:'ICONTEC',f:'15/07/2024',h:8,cert:'IC-2024-456',vence:'Jul 2026',ok:false},
-    ]
-  },
-  '52456789':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
-    examenes:[{t:'Preocupacional',f:'02/01/2020',em:'Clínica del Trabajo',r:'Apto',res:'Ninguna',prox:'Ene 2022'}],
-    certs_sst:[]
-  },
-  '79234567':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
-    examenes:[{t:'Periódico',f:'10/06/2024',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Jun 2026'}],
-    certs_sst:[{c:'PMP Gestión Proyectos',en:'PMI',f:'15/06/2023',h:120,cert:'PMP-2023-789',vence:'—',ok:true}]
-  },
-  '1098765432':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
-    examenes:[{t:'Preocupacional',f:'10/02/2024',em:'Clínica del Trabajo',r:'Apto',res:'Ninguna',prox:'Feb 2026'}],
-    certs_sst:[]
-  },
-  '80123456':{
-    accidentes:[
-      {f:'02/04/2026',t:'Trabajo',l:'Contusión mano',p:'Mano derecha',g:'Moderado',d:4,furat:'✓ Enviado'},
-    ],
-    arl_total:1, arl_dias:4, arl_ultimo:'Abr 2026',
-    examenes:[
-      {t:'Preocupacional',f:'03/03/2022',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Mar 2024'},
-      {t:'Post-incapacidad',f:'05/05/2026',em:'Salud Ocupacional SAS',r:'Apto con restricciones',res:'No levantar >5kg',prox:'Nov 2026'},
-    ],
-    certs_sst:[
-      {c:'Trabajo en alturas avanzado',en:'ARL Sura',f:'20/08/2023',h:40,cert:'SA-2023-456',vence:'Ago 2026',ok:false},
-    ]
-  },
-  '1020345678':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
-    examenes:[{t:'Preocupacional',f:'25/07/2023',em:'Clínica del Trabajo',r:'Apto',res:'Ninguna',prox:'Jul 2025'}],
-    certs_sst:[]
-  },
-  '79876543':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
-    examenes:[{t:'Preocupacional',f:'10/11/2022',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Nov 2024'}],
-    certs_sst:[{c:'CCNA Redes Cisco',en:'Cisco',f:'30/05/2024',h:160,cert:'CCNA-2024-321',vence:'May 2027',ok:true}]
-  },
-  '52789012':{accidentes:[],arl_total:0,arl_dias:0,arl_ultimo:'Sin accidentes',
-    examenes:[{t:'Periódico',f:'15/01/2026',em:'Salud Ocupacional SAS',r:'Apto',res:'Ninguna',prox:'Ene 2028'}],
-    certs_sst:[]
-  }
-};
-
-function cargarSST(ced) {
-  var s = DR_SST[ced];
-  if (!s) return;
-
-  // Métricas ARL
-  document.getElementById('arl-total').textContent = s.arl_total;
-  document.getElementById('arl-dias').textContent  = s.arl_dias;
-  document.getElementById('arl-ultimo').textContent= s.arl_ultimo;
-
-  var gc={Leve:'gravedad-leve',Moderado:'gravedad-moderado',Grave:'gravedad-grave'};
-
-  // Tabla accidentes
-  document.getElementById('t-arl').innerHTML = s.accidentes.length ?
-    s.accidentes.map(function(a){
-      return '<tr><td>'+a.f+'</td><td><span class="badge badge-warn">'+a.t+'</span></td>'+
-        '<td>'+a.l+'</td><td>'+a.p+'</td>'+
-        '<td><span class="badge '+(gc[a.g]||'badge-muted')+'">'+a.g+'</span></td>'+
-        '<td>'+a.d+' días</td><td><span class="badge badge-ok">'+a.furat+'</span></td></tr>';
-    }).join('') : vacio(7);
-
-  // Tabla exámenes
-  var re={Apto:'badge-ok','Apto con restricciones':'badge-warn','No apto':'badge-danger'};
-  document.getElementById('t-examenes').innerHTML = s.examenes.length ?
-    s.examenes.map(function(e){
-      return '<tr><td><span class="badge badge-info">'+e.t+'</span></td><td>'+e.f+'</td>'+
-        '<td>'+e.em+'</td>'+
-        '<td><span class="badge '+(re[e.r]||'badge-muted')+'">'+e.r+'</span></td>'+
-        '<td style="font-size:11px;color:var(--text-muted)">'+e.res+'</td><td>'+e.prox+'</td></tr>';
-    }).join('') : vacio(6);
-
-  // Tabla certs SST
-  document.getElementById('t-sst-certs').innerHTML = s.certs_sst.length ?
-    s.certs_sst.map(function(x){
-      var estado = x.ok
-        ? '<span class="badge badge-ok">✓ Vigente</span>'
-        : '<span class="badge badge-danger">⚠ Por vencer</span>';
-      return '<tr><td>'+x.c+'</td><td>'+x.en+'</td><td>'+x.f+'</td><td>'+x.h+'h</td>'+
-        '<td style="font-family:monospace;font-size:11px">'+x.cert+'</td>'+
-        '<td>'+x.vence+'</td><td>'+estado+'</td></tr>';
-    }).join('') : vacio(7);
-}
-
-
-// ── Sidebar personalizado para el perfil ─────────────────────────
-function buildProfileSidebar(rol) {
-  var cedula = new URLSearchParams(window.location.search).get('cedula') || '';
-  var base   = '/pages/mi-perfil.html' + (cedula ? '?cedula=' + cedula : '');
-
-  function goTab(tab) {
-    return "event.preventDefault(); irTab('" + tab + "')";
-  }
-
-  var html = '';
-
-  // Principal
-  html += '<div class="nav-section">Principal</div>';
-  html += '<a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>';
-
-  // Empleados
-  if (rol !== 'empleado') {
-    html += '<div class="nav-section">Empleados</div>';
-    html += '<a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">👥</span> Empleados</a>';
-    if (rol === 'administrador' || rol === 'empresa') {
-      html += '<a class="nav-item" href="/pages/nuevo-empleado.html"><span class="nav-icon">➕</span> Nuevo empleado</a>';
-      html += '<a class="nav-item" href="/pages/sabana.html"><span class="nav-icon">📋</span> Sábana general</a>';
-    }
-  }
-
-  // Mi información
-  html += '<div class="nav-section">Mi información</div>';
-  html += '<a class="nav-item active" href="' + base + '"><span class="nav-icon">👤</span> Mi perfil</a>';
-  html += '<a class="nav-item" href="#" onclick="' + goTab('tp-docs') + '"><span class="nav-icon">📁</span> Mis documentos</a>';
-
-  // TIEMPO — desplegable → pestañas del perfil
-  html += buildGrupoPerfil('🕐 Tiempo', [
-    { icon:'🏖',  label:'Vacaciones',           tab:'tp-vacaciones'    },
-    { icon:'⏸',  label:'Permisos',             tab:'tp-permisos'      },
-    { icon:'⏸',  label:'Permisos remunerados', tab:'tp-permisos'      },
-    { icon:'🚫', label:'Ausencias',            tab:'tp-permisos'      },
-    { icon:'🏥', label:'Incapacidades',        tab:'tp-incapacidades' },
-    { icon:'📋', label:'Licencias',            tab:'tp-permisos'      },
-    { icon:'🕐', label:'Asistencia',           tab:'tp-hextras'       },
-  ], ['tp-vacaciones','tp-permisos','tp-incapacidades','tp-hextras']);
-
-  // NÓMINA — desplegable → pestañas nómina del perfil
-  if (rol === 'administrador' || rol === 'empresa') {
-    html += buildGrupoPerfil('💰 Nómina', [
-      { icon:'💰', label:'Nómina',       tab:'tp-nomina', subtab:'nt-salario'    },
-      { icon:'⏰', label:'Horas extras', tab:'tp-hextras'                        },
-      { icon:'💼', label:'Liquidación',  tab:'tp-nomina', subtab:'nt-liquidacion'},
-      { icon:'❤️', label:'Seg. social',  tab:'tp-nomina', subtab:'nt-ss'         },
-      { icon:'🏦', label:'Préstamos',    tab:'tp-nomina', subtab:'nt-prestamos'  },
-    ], ['tp-nomina','tp-hextras']);
-  }
-
-  // SST
-  html += buildGrupoPerfil('🦺 SST', [
-    { icon:'🦺', label:'ARL · Accidentes', tab:'tp-sst', subtab:'sst-arl'      },
-    { icon:'🩺', label:'Exámenes médicos', tab:'tp-sst', subtab:'sst-examenes' },
-  ], ['tp-sst']);
-
-  // BIENESTAR
-  html += buildGrupoPerfil('🎁 Bienestar', [
-    { icon:'🎁', label:'Incentivos',    tab:'tp-bienestar', subtab:'bien-incentivos'   },
-    { icon:'⚖️', label:'Convivencia',   tab:'tp-bienestar', subtab:'bien-convivencia'  },
-    { icon:'📜', label:'Disciplinario', tab:'tp-bienestar', subtab:'bien-disciplinario'},
-  ], ['tp-bienestar']);
-
-  // FORMACIÓN
-  html += buildGrupoPerfil('🎓 Formación', [
-    { icon:'🎓', label:'Capacitaciones', tab:'tp-formacion', subtab:'form-capacitaciones'},
-    { icon:'📜', label:'Cursos y certs', tab:'tp-caps'                                   },
-    { icon:'📢', label:'Socialización',  tab:'tp-formacion', subtab:'form-socializacion' },
-    { icon:'🏫', label:'Estudios',       tab:'tp-formacion', subtab:'form-estudios'      },
-  ], ['tp-formacion','tp-caps']);
-
-  // OPERACIONES
-  html += buildGrupoPerfil('🏗️ Operaciones', [
-    { icon:'🏗️', label:'Proyectos',        tab:'tp-operaciones', subtab:'ops-proyectos'  },
-    { icon:'📋', label:'Cláusulas',        tab:'tp-operaciones', subtab:'ops-clausulas'  },
-    { icon:'💬', label:'Sugerencias jefe', tab:'tp-operaciones', subtab:'ops-sugerencias'},
-  ], ['tp-operaciones']);
-
-  // Sistema
-  if (rol === 'administrador' || rol === 'empresa') {
-    html += '<div class="nav-section">Sistema</div>';
-    html += '<a class="nav-item" href="/pages/informes.html"><span class="nav-icon">📈</span> Informes</a>';
-    html += '<a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">⚙️</span> Configuración</a>';
-  }
-  if (rol === 'empresa') {
-    html += '<a class="nav-item" href="/pages/auditoria.html"><span class="nav-icon">📜</span> Auditoría</a>';
-  }
-
-  html += '<div class="nav-section">Sesión</div>';
-  html += '<a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">🚪</span> Cerrar sesión</a>';
-
-  return html;
-}
-
-function buildGrupoPerfil(titulo, items, tabsActivos) {
-  var abierto = false; // cerrado por defecto, el usuario abre
-
-  var html = '<div class="nav-grupo">';
-  html += '<div class="nav-grupo-header' + (abierto ? ' abierto' : '') + '" onclick="Sidebar.toggleGrupo(this)">';
-  html += '<span class="nav-section-label">' + titulo + '</span>';
-  html += '<span class="nav-chevron">▾</span>';
-  html += '</div>';
-  html += '<div class="nav-grupo-items' + (abierto ? ' abierto' : '') + '"' +
-          (abierto ? ' style="max-height:600px"' : '') + '>';
-
-  items.forEach(function(item) {
-    var onclick = '';
-    if (item.subtab) {
-      onclick = ' onclick="event.preventDefault(); irTab('' + item.tab + '', '' + item.subtab + '')"';
-    } else {
-      onclick = ' onclick="event.preventDefault(); irTab('' + item.tab + '')"';
-    }
-    html += '<a class="nav-item" href="#"' + onclick + '>';
-    html += '<span class="nav-icon">' + item.icon + '</span> ' + item.label;
-    html += '</a>';
-  });
-
-  html += '</div></div>';
-  return html;
-}
-
-function irTab(tabId, subtabId) {
-  // Activar tab principal
-  var btns = document.querySelectorAll('.tp-btn');
-  btns.forEach(function(b) { b.classList.remove('active'); });
-
-  ALL_TABS.forEach(function(t) {
-    var el = document.getElementById(t);
-    if (el) el.classList.add('hidden');
-  });
-
-  var tabEl = document.getElementById(tabId);
-  if (tabEl) tabEl.classList.remove('hidden');
-
-  // Marcar botón activo
-  btns.forEach(function(b) {
-    if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf(tabId) !== -1) {
-      b.classList.add('active');
-    }
-  });
-
-  // Activar subtab si existe
-  if (subtabId) {
-    setTimeout(function() {
-      // Buscar el botón del subtab dentro del tab activo
-      var subBtns = tabEl ? tabEl.querySelectorAll('.nom-tab') : [];
-      subBtns.forEach(function(b) { b.classList.remove('active'); });
-
-      var allSubIds = [];
-      if (tabEl) {
-        tabEl.querySelectorAll('[id^="nt-"],[id^="sst-"],[id^="bien-"],[id^="form-"],[id^="ops-"]').forEach(function(el) {
-          el.classList.add('hidden');
-          allSubIds.push(el.id);
-        });
-      }
-
-      var subEl = document.getElementById(subtabId);
-      if (subEl) subEl.classList.remove('hidden');
-
-      // Marcar botón subtab activo
-      subBtns.forEach(function(b) {
-        if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf(subtabId) !== -1) {
-          b.classList.add('active');
-        }
-      });
-    }, 50);
-  }
-
-  // Scroll al contenido
-  window.scrollTo({ top: 100, behavior: 'smooth' });
-
-  // Reconstruir sidebar para reflejar tab activo
-  var nav = document.getElementById('main-sidebar');
-  if (nav && session) {
-    nav.innerHTML = buildProfileSidebar(session.rol);
-    Sidebar.inyectarEstilosGlobal();
-  }
-}
-
-function initProfileSidebar() {
-  var nav = document.getElementById('main-sidebar');
-  if (!nav || !session) return;
-  // Inyectar estilos del sidebar desplegable
-  Sidebar.inyectarEstilosGlobal();
-  nav.innerHTML = buildProfileSidebar(session.rol);
-}
+function qp(k){ return new URLSearchParams(window.location.search).get(k) || ''; }
+function fmtM(n){ return '$' + (n||0).toLocaleString('es-CO'); }
+function fmtF(s){ if(!s) return '\u2014'; var d = new Date(s+'T12:00'); return d.toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'}); }
+function antig(s){ var h=new Date(), i=new Date(s+'T12:00'), a=h.getFullYear()-i.getFullYear(), m=h.getMonth()-i.getMonth(); if(m<0){a--;m+=12;} return a+' a\u00f1o'+(a!==1?'s':'')+' '+m+' mes'+(m!==1?'es':''); }
+function vacio(n){ return '<tr><td colspan="'+n+'" style="text-align:center;color:var(--text-muted);padding:12px">Sin registros</td></tr>'; }
+var bE = {aprobado:'badge-ok',aprobada:'badge-ok',disfrutado:'badge-ok',pendiente:'badge-warn',rechazado:'badge-danger',terminado:'badge-muted'};
+function tx(id,v){ document.getElementById(id).textContent = v||'\u2014'; }
+function row(arr,fn){ return arr&&arr.length ? arr.map(fn).join('') : vacio(6); }
 
 function cargar(){
-  // 1. Intentar obtener cédula de la URL (viene de empleados.html)
-  var ced = qp('cedula') || '';
-  // 2. Limpiar puntos y espacios para comparar
-  var ced2 = ced.replace(/[\.\s]/g,'');
-  var e = null;
-  // 3. Buscar por cédula limpia
-  if(ced2) {
-    e = DB.find(function(x){ return x.cedula.replace(/[\.\s]/g,'') === ced2; });
+  var ced = qp('cedula').replace(/[\.\s]/g,'');
+  var e = DB.find(function(x){ return x.ced === ced; });
+  if(!e && session) e = DB.find(function(x){ return x.ecorp === session.email; });
+  if(!e){
+    document.querySelector('.main-content').innerHTML = '<div class="alert alert-error" style="margin:40px">\u26a0\ufe0f Empleado no encontrado ('+ced+'). <a href="/pages/empleados.html">\u2190 Volver</a></div>';
+    return;
   }
-  // 4. Si no hay cedula en URL, buscar por email del usuario logueado
-  if(!e && session) {
-    e = DB.find(function(x){ return x.email_corp === session.email; });
+  var ini = (e.nom.split(' ')[0][0] + e.ape.split(' ')[0][0]).toUpperCase();
+  var ant = antig(e.ing);
+  document.getElementById('bc').textContent = e.nom+' '+e.ape;
+  document.getElementById('ai').textContent = ini;
+  document.getElementById('av').style.background = e.col;
+  tx('hn', e.nom+' '+e.ape); tx('hc',e.cargo); tx('hd',e.depto+' \u00b7 '+e.sede);
+  tx('hci',e.ciudad); tx('he',e.ecorp); tx('ht',e.tel);
+  tx('hi',fmtF(e.ing)); tx('ha',ant);
+  document.title = e.nom+' '+e.ape+' \u2014 IIT RRHH';
+  tx('d0',e.tipodoc); tx('d1',e.ced); tx('d2',fmtF(e.nac)); tx('d3',e.lugarnac); tx('d4',e.gen); tx('d5',e.civil);
+  tx('d6',e.edu); tx('d7',e.tit); tx('d8',e.inst);
+  tx('l0',e.cod); tx('l1',e.vinc); tx('l2',e.cargo); tx('l3',e.depto); tx('l4',e.sede);
+  tx('l5',fmtF(e.ing)); tx('l6',ant); tx('l7',e.est);
+  tx('c0',e.ecorp); tx('c1',e.epes); tx('c2',e.tel); tx('c3',e.dir); tx('c4',e.barrio+' \u00b7 '+e.ciudad);
+  tx('e0',e.cem); tx('e1',e.etel); tx('e2',e.eparent);
+  var isAdmin = Auth.isAdmin && Auth.isAdmin();
+  if(isAdmin){
+    document.getElementById('tbn').style.display='block';
+    document.getElementById('hadm').style.display='flex';
+    var anos=(new Date()-new Date(e.ing+'T12:00'))/(1000*60*60*24*365);
+    tx('ns',fmtM(e.sal)); tx('na',e.aux>0?fmtM(e.aux):'No aplica');
+    tx('nd',fmtM(e.sal+e.aux)); tx('nsa','-'+fmtM(e.sal*0.04)); tx('np','-'+fmtM(e.sal*0.04));
+    tx('nn',fmtM(e.sal+e.aux-e.sal*0.08)); tx('nb',e.banco); tx('ncu',e.cta);
+    tx('ss0',e.eps); tx('ss1',e.pen); tx('ss2',e.arl); tx('ss3',e.riesgo); tx('ss4',e.caja); tx('ss5',e.fces);
+    tx('nlp',fmtM((e.sal+e.aux)/12*anos)); tx('nlc',fmtM((e.sal+e.aux)/12*anos));
+    tx('nli',fmtM((e.sal+e.aux)/12*anos*0.12)); tx('nlv',fmtM(e.sal/24*anos));
   }
-  // 5. Si es empleado, mostrar su propio perfil
-  if(!e && session && session.cedula) {
-    var ced3aux = (session.cedula+'').replace(/[\.\s]/g,'');
-    e = DB.find(function(x){ return x.cedula.replace(/[\.\s]/g,'') === ced3aux; });
-  }
-  if(!e){document.querySelector('.main-content').innerHTML='<div class="alert alert-error" style="margin:40px">⚠️ Empleado no encontrado. <a href="/pages/empleados.html">← Volver</a></div>';return;}
-
-  var ini=(e.nombres.split(' ')[0][0]+e.apellidos.split(' ')[0][0]).toUpperCase();
-  var ant=antig(e.ingreso);
-
-  // Header
-  document.getElementById('bc-nombre').textContent=e.nombres+' '+e.apellidos;
-  document.getElementById('av-ini').textContent=ini;
-  document.getElementById('av-perfil').style.background=e.color;
-  document.getElementById('h-nombre').textContent=e.nombres+' '+e.apellidos;
-  document.getElementById('h-cargo').textContent=e.cargo;
-  document.getElementById('h-depto').textContent=e.depto+' · '+e.sede;
-  document.getElementById('h-ciudad').textContent=e.ciudad;
-  document.getElementById('h-email').textContent=e.email_corp;
-  document.getElementById('h-tel').textContent=e.tel;
-  document.getElementById('h-ingreso').textContent=fmt(e.ingreso);
-  document.getElementById('h-antig').textContent=ant;
-  document.title=e.nombres+' '+e.apellidos+' — IIT RRHH';
-
-  // Tab personal
-  document.getElementById('d-tipodoc').textContent=e.tipodoc;
-  document.getElementById('d-cedula').textContent=e.cedula;
-  document.getElementById('d-nac').textContent=fmt(e.nac);
-  document.getElementById('d-lugarnac').textContent=e.lugarnac;
-  document.getElementById('d-genero').textContent=e.genero;
-  document.getElementById('d-civil').textContent=e.civil;
-  document.getElementById('d-edu').textContent=e.edu;
-  document.getElementById('d-titulo').textContent=e.titulo;
-  document.getElementById('d-inst').textContent=e.inst;
-
-  // Tab laboral
-  document.getElementById('l-codigo').textContent=e.codigo;
-  document.getElementById('l-vinc').textContent=e.vinc;
-  document.getElementById('l-cargo').textContent=e.cargo;
-  document.getElementById('l-depto').textContent=e.depto;
-  document.getElementById('l-sede').textContent=e.sede;
-  document.getElementById('l-ingreso').textContent=fmt(e.ingreso);
-  document.getElementById('l-antig').textContent=ant;
-  document.getElementById('l-estado').textContent=e.estado;
-
-  // Tab contacto
-  document.getElementById('c-ecorp').textContent=e.email_corp;
-  document.getElementById('c-epers').textContent=e.email_pers;
-  document.getElementById('c-tel').textContent=e.tel;
-  document.getElementById('c-dir').textContent=e.dir;
-  document.getElementById('c-ciudad').textContent=e.barrio+' · '+e.ciudad;
-  document.getElementById('e-nombre').textContent=e.cem;
-  document.getElementById('e-tel').textContent=e.etel;
-  document.getElementById('e-parent').textContent=e.eparent;
-
-  // Admin: acciones + tab nómina
-  var esAdmin=Auth.isAdmin&&Auth.isAdmin();
-  if(esAdmin){
-    document.getElementById('h-acciones').style.display='flex';
-    document.getElementById('tb-nomina').style.display='block';
-    // Salario
-    var sal=e.salario,aux=e.aux;
-    document.getElementById('n-salario').textContent=fmtM(sal);
-    document.getElementById('n-aux').textContent=aux>0?fmtM(aux):'No aplica';
-    document.getElementById('n-devengado').textContent=fmtM(sal+aux);
-    document.getElementById('n-salud').textContent='-'+fmtM(sal*0.04);
-    document.getElementById('n-pension').textContent='-'+fmtM(sal*0.04);
-    document.getElementById('n-neto').textContent=fmtM(sal+aux-(sal*0.08));
-    document.getElementById('n-banco').textContent=e.banco;
-    document.getElementById('n-cuenta').textContent=e.cuenta;
-    // Seg. social
-    document.getElementById('ss-eps').textContent=e.eps;
-    document.getElementById('ss-pen').textContent=e.pension;
-    document.getElementById('ss-arl').textContent=e.arl;
-    document.getElementById('ss-riesgo').textContent=e.riesgo;
-    document.getElementById('ss-caja').textContent=e.caja;
-    document.getElementById('ss-ces').textContent=e.fces;
-    // Liquidación estimada
-    var ing=new Date(e.ingreso+'T12:00');
-    var anos=(new Date()-ing)/(1000*60*60*24*365);
-    document.getElementById('liq-prima').textContent=fmtM((sal+aux)/12*anos);
-    document.getElementById('liq-ces').textContent=fmtM((sal+aux)/12*anos);
-    document.getElementById('liq-intces').textContent=fmtM((sal+aux)/12*anos*0.12);
-    document.getElementById('liq-vac').textContent=fmtM(sal/24*anos);
-  }
-
-  // Registros del empleado
-  var ced3=e.cedula.replace(/[.\s]/g,'');
-  var r=DR[ced3]||{vac_disp:0,vac_dis:0,vac_pend:0,vacaciones:[],permisos:[],incap:[],he:[],caps:[],prestamos:[]};
-
-  document.getElementById('v-disp').textContent=r.vac_disp;
-  document.getElementById('v-dis').textContent=r.vac_dis;
-  document.getElementById('v-pend').textContent=r.vac_pend;
-
-  document.getElementById('t-vac').innerHTML=r.vacaciones.length?r.vacaciones.map(function(v){return '<tr><td>'+v.p+'</td><td>'+v.i+'</td><td>'+v.f+'</td><td>'+v.d+'</td><td><span class="badge '+(bE[v.e]||'badge-muted')+'">'+v.e+'</span></td></tr>';}).join(''):vacio(5);
-  document.getElementById('t-perm').innerHTML=r.permisos.length?r.permisos.map(function(p){return '<tr><td>'+p.t+'</td><td>'+p.f+'</td><td>'+p.h+'h</td><td>'+p.m+'</td><td><span class="badge '+(bE[p.e]||'badge-muted')+'">'+p.e+'</span></td></tr>';}).join(''):vacio(5);
-  document.getElementById('t-inc').innerHTML=r.incap.length?r.incap.map(function(i){return '<tr><td>'+i.dx+'</td><td>'+i.i+'</td><td>'+i.f+'</td><td>'+i.d+'</td><td>'+i.en+'</td></tr>';}).join(''):vacio(5);
-  document.getElementById('t-he').innerHTML=r.he.length?r.he.map(function(h){return '<tr><td>'+h.f+'</td><td>'+h.t+'</td><td>'+h.h+'h</td><td style="color:#107c10;font-weight:500">'+h.v+'</td><td><span class="badge '+(bE[h.e]||'badge-muted')+'">'+h.e+'</span></td></tr>';}).join(''):vacio(5);
-  document.getElementById('t-cap').innerHTML=r.caps.length?r.caps.map(function(c){return '<tr><td>'+c.c+'</td><td>'+c.en+'</td><td>'+c.f+'</td><td>'+c.h+'h</td><td style="font-family:monospace;font-size:11px">'+c.cert+'</td><td>'+c.vence+'</td></tr>';}).join(''):vacio(6);
-
-  // SST
-  cargarSST(ced3);
-
-  // Bienestar
-  cargarBienestar(ced3);
-
-  // Formación
-  cargarFormacion(ced3);
-
-  // Operaciones
-  cargarOperaciones(ced3);
-
-
-  if(esAdmin){
-    document.getElementById('t-he-nom').innerHTML=document.getElementById('t-he').innerHTML;
-    document.getElementById('t-prest').innerHTML=r.prestamos.length?r.prestamos.map(function(p){return '<tr><td><span class="badge badge-info">'+p.t+'</span></td><td>'+p.en+'</td><td>'+p.cuota+'</td><td style="color:#c50f1f;font-weight:500">'+p.saldo+'</td><td><span class="badge badge-ok">'+p.e+'</span></td></tr>';}).join(''):vacio(5);
+  var r = DR[e.ced] || {};
+  tx('vd',r.vd||0); tx('vdis',r.vdis||0); tx('vp',r.vp||0);
+  document.getElementById('tv').innerHTML = row(r.vac,function(v){ return '<tr><td>'+v.p+'</td><td>'+v.i+'</td><td>'+v.f+'</td><td>'+v.d+'</td><td><span class="badge '+(bE[v.e]||'badge-muted')+'">'+v.e+'</span></td></tr>'; });
+  document.getElementById('tperm').innerHTML = row(r.perm,function(p){ return '<tr><td>'+p.t+'</td><td>'+p.f+'</td><td>'+p.h+'h</td><td>'+p.m+'</td><td><span class="badge '+(bE[p.e]||'badge-muted')+'">'+p.e+'</span></td></tr>'; });
+  document.getElementById('tinc').innerHTML = row(r.inc,function(i){ return '<tr><td>'+i.dx+'</td><td>'+i.i+'</td><td>'+i.f+'</td><td>'+i.d+'</td><td>'+i.en+'</td></tr>'; });
+  document.getElementById('the').innerHTML = row(r.he,function(h){ return '<tr><td>'+h.f+'</td><td>'+h.t+'</td><td>'+h.h+'h</td><td style="color:#107c10;font-weight:500">'+h.v+'</td><td><span class="badge '+(bE[h.e]||'badge-muted')+'">'+h.e+'</span></td></tr>'; });
+  document.getElementById('tcap').innerHTML = row(r.caps,function(x){ return '<tr><td>'+x.c+'</td><td>'+x.en+'</td><td>'+x.f+'</td><td>'+(x.h||'\u2014')+'h</td><td style="font-family:monospace;font-size:11px">'+x.cert+'</td><td>'+x.vence+'</td></tr>'; });
+  tx('at',r.at||0); tx('ad',r.ad||0); tx('au',r.au||'\u2014');
+  document.getElementById('tarl').innerHTML = row(r.arl,function(a){ return '<tr><td>'+a.f+'</td><td><span class="badge badge-warn">'+a.t+'</span></td><td>'+a.l+'</td><td><span class="badge badge-warn">'+a.g+'</span></td><td>'+a.d+'</td><td><span class="badge badge-ok">'+a.fu+'</span></td></tr>'; });
+  document.getElementById('tex').innerHTML = row(r.ex,function(x){ var br={Apto:'badge-ok','Apto con restricciones':'badge-warn','No apto':'badge-danger'}; return '<tr><td><span class="badge badge-info">'+x.t+'</span></td><td>'+x.f+'</td><td>'+x.em+'</td><td><span class="badge '+(br[x.r]||'badge-muted')+'">'+x.r+'</span></td><td style="font-size:11px">'+x.res+'</td><td>'+x.prox+'</td></tr>'; });
+  document.getElementById('tcer').innerHTML = row(r.certs,function(x){ return '<tr><td>'+x.c+'</td><td>'+x.en+'</td><td>'+x.f+'</td><td style="font-family:monospace;font-size:11px">'+x.cert+'</td><td>'+x.vence+'</td><td><span class="badge '+(x.ok?'badge-ok':'badge-danger')+'">'+(x.ok?'\u2713 Vigente':'\u26a0 Por vencer')+'</span></td></tr>'; });
+  tx('inct',r.inct||0); tx('incv',r.incv||'$0'); tx('incp',r.incp||'\u2014');
+  document.getElementById('tincentivos').innerHTML = row(r.inc2,function(i){ return '<tr><td>'+i.t+'</td><td>'+i.f+'</td><td>'+i.d+'</td><td style="font-weight:500;color:#107c10">'+i.v+'</td></tr>'; });
+  document.getElementById('tconv').innerHTML = row(r.conv,function(q){ return '<tr><td style="font-family:monospace;font-size:11px">'+q.rad+'</td><td><span class="badge badge-danger">'+q.tp+'</span></td><td>'+q.f+'</td><td><span class="badge badge-info">'+q.rol+'</span></td><td><span class="badge badge-warn">'+q.est+'</span></td></tr>'; });
+  document.getElementById('manual-txt').innerHTML = r.manual ? '\u2705 <strong>Manual de convivencia firmado</strong> \u00b7 v1.0 \u00b7 Ene 2026' : '\u26a0\ufe0f <strong>Manual pendiente de firma</strong> \u00b7 <a href="/pages/convivencia.html" style="color:var(--primary)">Firmar \u2192</a>';
+  document.getElementById('tdisc').innerHTML = r.disc&&r.disc.length ? r.disc.map(function(d){ return '<tr><td style="font-family:monospace;font-size:11px">'+d.num+'</td><td><span class="badge badge-warn">'+d.tp+'</span></td><td>'+d.f+'</td><td><span class="badge badge-warn">'+d.est+'</span></td><td>'+d.san+'</td></tr>'; }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:12px">\u2705 Sin procesos disciplinarios</td></tr>';
+  document.getElementById('tfcap').innerHTML = row(r.fcaps,function(x){ return '<tr><td>'+x.n+'</td><td>'+x.en+'</td><td>'+x.f+'</td><td>'+x.h+'h</td><td>'+(x.sst?'<span class="badge badge-ok">SST</span>':'<span class="badge badge-muted">No</span>')+'</td><td><span class="badge '+(bE[x.e]||'badge-muted')+'">'+x.e+'</span></td></tr>'; });
+  document.getElementById('tfsoc').innerHTML = row(r.fsoc,function(x){ return '<tr><td>'+x.n+'</td><td><span class="badge badge-info">'+x.t+'</span></td><td>'+x.f+'</td><td>'+x.dur+'</td><td>'+x.a+'</td><td>'+x.ev+'</td></tr>'; });
+  var cols=['#0078d4','#107c10','#797600','#8764b8'];
+  document.getElementById('festudios').innerHTML = r.fest&&r.fest.length ? r.fest.map(function(x,i){ return '<div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;display:flex;gap:12px;align-items:center"><div style="width:36px;height:36px;border-radius:50%;background:'+cols[i%4]+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">\ud83c\udf93</div><div style="flex:1"><div style="font-weight:600;font-size:13px">'+x.tit+'</div><div style="font-size:11px;color:var(--text-muted)">'+x.inst+' \u00b7 '+x.g+'</div><span class="badge badge-info">'+x.niv+'</span></div>'+(x.v?'<span class="badge badge-ok">\u2713 Verificado</span>':'<span class="badge badge-warn">Pendiente</span>')+'</div>'; }).join('') : '<div class="alert alert-info">Sin estudios registrados.</div>';
+  tx('oa',r.oa||0); tx('oc',r.oc||0); tx('od',r.od||'\u2014');
+  document.getElementById('tproy').innerHTML = row(r.proy,function(p){ return '<tr><td style="font-weight:500">'+p.n+'</td><td><span class="badge badge-info">'+p.t+'</span></td><td>'+p.r+'</td><td>'+p.d+'</td><td><span class="badge '+(p.ded==='100%'?'badge-ok':'badge-warn')+'">'+p.ded+'</span></td><td><span class="badge '+(bE[p.e]||'badge-muted')+'">'+p.e+'</span></td></tr>'; });
+  document.getElementById('tclaus').innerHTML = row(r.claus,function(cl){ return '<tr><td>'+cl.t+'</td><td style="font-family:monospace;font-size:11px">'+cl.v+'</td><td>'+cl.f+'</td><td><span class="badge '+(cl.ok?'badge-ok':'badge-danger')+'">'+(cl.ok?'\u2713 Firmada':'Pendiente')+'</span></td></tr>'; });
+  var it2={pos:'\u2b50 Reconocimiento',neg:'\ud83d\udcc8 Mejora',urg:'\ud83d\udea8 Urgente'};
+  document.getElementById('tsug').innerHTML = r.sug&&r.sug.length ? r.sug.map(function(s){ return '<tr><td>'+s.p+'</td><td>'+s.cat+'</td><td>'+s.t+'</td><td><span class="badge '+(s.tipo==='pos'?'badge-ok':s.tipo==='urg'?'badge-danger':'badge-warn')+'">'+it2[s.tipo]+'</span></td><td>'+(s.l?'<span class="badge badge-ok">\u2713 Le\u00edda</span>':'<span class="badge badge-warn">No le\u00edda</span>')+'</td></tr>'; }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:12px">Sin sugerencias</td></tr>';
+  if(isAdmin){
+    document.getElementById('nhe').innerHTML = document.getElementById('the').innerHTML;
+    document.getElementById('nprest').innerHTML = row(r.prest,function(p){ return '<tr><td><span class="badge badge-info">'+p.t+'</span></td><td>'+p.en+'</td><td>'+p.cuota+'</td><td style="color:#c50f1f;font-weight:500">'+p.saldo+'</td><td><span class="badge badge-ok">'+p.e+'</span></td></tr>'; });
   }
 }
 
-function previewFoto(input){
-  if(!input.files||!input.files[0])return;
-  var r=new FileReader();
-  r.onload=function(e){
-    var av=document.getElementById('av-perfil');
-    av.style.backgroundImage='url('+e.target.result+')';
-    av.style.backgroundSize='cover';
-    document.getElementById('av-ini').style.display='none';
-  };
-  r.readAsDataURL(input.files[0]);
-}
-
-function editarPerfil(){alert('Edición de perfil disponible con API backend conectada.');}
+function prevFoto(input){ if(!input.files||!input.files[0])return; var r=new FileReader(); r.onload=function(ev){ var a=document.getElementById('av'); a.style.backgroundImage='url('+ev.target.result+')'; a.style.backgroundSize='cover'; document.getElementById('ai').style.display='none'; }; r.readAsDataURL(input.files[0]); }
 
 cargar();
-initProfileSidebar();
 </script>
 </body>
 </html>
