@@ -685,13 +685,13 @@ var DB_EQUIPOS = {
   '52789012': {
     total:1, tickets_ab:0, ultimo:'Sin tickets',
     equipos:[
-      {tipo:'Tablet',marca:'Apple iPad Pro 11"',serial:'AP-2023-TAB-001',estado:'En uso',desde:'05/07/2023'},
+      {tipo:'Tablet',marca:'Apple iPad Pro 11',serial:'AP-2023-TAB-001',estado:'En uso',desde:'05/07/2023'},
     ],
     tickets:[]
   }
 };
 
-var iconoTipo = {'Laptop':'💻','Desktop':'🖥️','Monitor':'🖥️','Impresora':'🖨️','Tablet':'📱','Otro':'🔌'};
+var iconoTipo = {'Laptop':'&#x1F4BB;','Desktop':'&#x1F5A5;','Monitor':'&#x1F5A5;','Impresora':'&#x1F5A8;','Tablet':'&#x1F4F1;','Otro':'&#x1F50C;'};
 var colPrioridad = {'Alta':'badge-danger','Media':'badge-warn','Baja':'badge-muted'};
 var colEstTicket = {'Pendiente':'badge-warn','En proceso':'badge-info','Resuelto':'badge-ok'};
 
@@ -709,12 +709,12 @@ function cargarTI(ced) {
   document.getElementById('t-ti-equipos').innerHTML = d.equipos.length
     ? d.equipos.map(function(eq){
         return '<tr>' +
-          '<td>' + (iconoTipo[eq.tipo]||'🔌') + ' ' + eq.tipo + '</td>' +
+          '<td>' + (iconoTipo[eq.tipo]||'&#x1F50C;') + ' ' + eq.tipo + '</td>' +
           '<td><strong>' + eq.marca + '</strong></td>' +
           '<td style="font-family:monospace;font-size:11px">' + eq.serial + '</td>' +
           '<td><span class="badge ' + (bEq[eq.estado]||'badge-muted') + '">' + eq.estado + '</span></td>' +
           '<td>' + eq.desde + '</td>' +
-          '<td><button class="btn-secondary btn-sm" onclick="window.location='/pages/inventario-equipos.html'">🎫 Ticket</button></td>' +
+          '<td><button class="btn-secondary btn-sm" onclick="window.location='/pages/inventario-equipos.html'"># Ticket</button></td>' +
         '</tr>';
       }).join('')
     : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px">Sin equipos asignados</td></tr>';
@@ -734,6 +734,8 @@ function cargarTI(ced) {
     : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px">Sin tickets registrados</td></tr>';
 }
 
+
+function irInventario(){ window.location='/pages/inventario-equipos.html'; }
 
 function cargar(){
   var ced = qp('cedula').replace(/[\.\s]/g,'');
