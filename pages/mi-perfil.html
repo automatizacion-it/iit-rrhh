@@ -347,12 +347,12 @@ function buildPerfilSidebar() {
   if (!document.getElementById('sb-styles')) {
     var st = document.createElement('style');
     st.id = 'sb-styles';
-    st.textContent = '.sg-h{display:flex;align-items:center;justify-content:space-between;padding:4px 16px;cursor:pointer;transition:background .15s}.sg-h:hover{background:var(--primary-light)}.sg-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}.sg-arr{font-size:10px;color:var(--text-muted);transition:transform .2s}.sg-h.open .sg-arr{transform:rotate(180deg)}.sg-items{overflow:hidden;max-height:0;transition:max-height .25s ease}.sg-items.open{max-height:600px}.sg-items .nav-item{padding-left:24px}';
+    st.textContent = '.sg-h{display:flex;align-items:center;justify-content:space-between;padding:4px 16px;cursor:pointer;transition:background .15s}.sg-h:hover{background:var(--primary-light)}.sg-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}.sg-arr{font-size:10px;color:var(--text-muted);transition:transform .2s}.sg-h.open .sg-arr{transform:rotate(180deg)}.sg-items{overflow:hidden;max-height:0;transition:max-height .25s ease}.sg-items.open{max-height:9999px}.sg-items .nav-item{padding-left:24px}';
     document.head.appendChild(st);
   }
   function grp(label, items) {
-    var h = '<div class="sg-h" onclick="tgl(this)"><span class="sg-lbl">' + label + '</span><span class="sg-arr">&#9662;</span></div>';
-    var body = '<div class="sg-items open" style="max-height:600px">';
+    var h = '<div class="sg-h"><span class="sg-lbl">' + label + '</span><span class="sg-arr">&#9662;</span></div>';
+    var body = '<div class="sg-items open" style="max-height:9999px">';
     items.forEach(function(it) {
       var dtab = it.tab ? ' data-tab="' + it.tab + '"' : '';
       var dsub = it.sub ? ' data-sub="' + it.sub + '"' : '';
@@ -448,8 +448,13 @@ function tgl(header) {
   header.classList.toggle('open');
   var items = header.nextElementSibling;
   if (items) {
-    items.classList.toggle('open');
-    items.style.maxHeight = items.classList.contains('open') ? items.scrollHeight + 'px' : '0';
+    if (items.classList.contains('open')) {
+      items.classList.remove('open');
+      items.style.maxHeight = '0';
+    } else {
+      items.classList.add('open');
+      items.style.maxHeight = '9999px';
+    }
   }
 }
 
