@@ -371,6 +371,7 @@
   </main>
 </div>
 <script src="/js/auth.js"></script>
+
 <script>
 var session = Auth.requireAuth();
 if (session) { Auth.renderUserBar(session); }
@@ -539,8 +540,7 @@ function aST(btn, id) {
   });
   document.getElementById(id).classList.remove('hidden');
 }
-</script>
-<script>
+
 var DB = [
   {ced:'1234567890',tipodoc:'CC',cod:'EMP-0001',nom:'Carlos Andr\u00e9s',ape:'Rodr\u00edguez G\u00f3mez',nac:'1990-06-14',lugarnac:'Bogot\u00e1',gen:'Masculino',civil:'Casado',edu:'Tecn\u00f3logo',tit:'Tecn\u00f3logo en Electr\u00f3nica',inst:'SENA',ecorp:'c.rodriguez@iit.com.co',epes:'carlosandres90@gmail.com',tel:'+57 310 456 7890',dir:'Cra 7 # 45-23',barrio:'Chapinero',ciudad:'Bogot\u00e1',cem:'Mar\u00eda Rodr\u00edguez',etel:'+57 311 234 5678',eparent:'C\u00f3nyuge',cargo:'T\u00e9cnico Instalaciones El\u00e9ctricas',depto:'Instalaciones',sede:'Bogot\u00e1',vinc:'Directo',ing:'2022-03-15',est:'activo',sal:2800000,aux:200000,banco:'Bancolombia',cta:'7894521036',eps:'Sanitas',pen:'Porvenir',arl:'Sura',riesgo:'Clase III',caja:'Compensar',fces:'Porvenir',col:'#0078d4'},
   {ced:'52456789',tipodoc:'CC',cod:'EMP-0002',nom:'Mar\u00eda Fernanda',ape:'L\u00f3pez Castillo',nac:'1985-04-15',lugarnac:'Bogot\u00e1',gen:'Femenino',civil:'Casada',edu:'Profesional',tit:'Administradora de Empresas',inst:'Universidad Nacional',ecorp:'m.lopez@iit.com.co',epes:'mflopez85@gmail.com',tel:'+57 311 234 5678',dir:'Calle 72 # 11-25',barrio:'Chapinero',ciudad:'Bogot\u00e1',cem:'Roberto L\u00f3pez',etel:'+57 312 345 6789',eparent:'Esposo',cargo:'Coordinadora RRHH',depto:'RRHH',sede:'Bogot\u00e1',vinc:'Directo',ing:'2020-01-02',est:'activo',sal:4500000,aux:0,banco:'Davivienda',cta:'9874563210',eps:'Sanitas',pen:'Protecci\u00f3n',arl:'Sura',riesgo:'Clase I',caja:'Compensar',fces:'Protecci\u00f3n',col:'#107c10'},
@@ -662,12 +662,7 @@ document.addEventListener('click', function(e) {
 });
 
 cargar();
-// Llamar sidebar despues de que el DOM este completamente listo
-if (document.readyState === 'complete') {
-  buildPerfilSidebar();
-} else {
-  window.addEventListener('load', buildPerfilSidebar);
-}
+buildPerfilSidebar();
 </script>
 </body>
 </html>
