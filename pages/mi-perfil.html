@@ -482,8 +482,7 @@ function buildPerfilSidebar() {
     {icon:'&#128203;', label:'Cl&#225;usulas',    tab:'t12', sub:'o1'},
     {icon:'&#128172;', label:'Sugerencias jefe',  tab:'t12', sub:'o2'},
   ]);
-  if (rol === 'administrador' || rol === 'empresa') {
-    html += '<div class="nav-section">TI &#183; Bienestar</div>';
+  html += '<div class="nav-section">TI &#183; Bienestar</div>';
   html += '<a class="nav-item" href="/pages/inventario-equipos.html"><span class="nav-icon">&#x1F4BB;</span> Mis equipos</a>';
   if (rol === 'administrador' || rol === 'empresa') {
     html += '<a class="nav-item" href="/pages/visita-domiciliaria.html"><span class="nav-icon">&#x1F3E0;</span> Visita domiciliaria</a>';
