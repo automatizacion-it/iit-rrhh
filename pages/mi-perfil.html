@@ -29,6 +29,35 @@
 .stt{padding:4px 12px;font-size:11px;border-radius:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;color:var(--text-muted);transition:var(--transition)}
 .stt:hover{border-color:var(--primary);color:var(--primary)}
 .stt.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.tb-dropdown { position: relative; }
+.tb-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  z-index: 200;
+  min-width: 200px;
+  padding: 4px 0;
+}
+.tb-dropdown-menu.open { display: block; }
+.tb-dropdown-menu a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text);
+  text-decoration: none;
+  transition: background .15s;
+}
+.tb-dropdown-menu a:hover { background: var(--primary-light); color: var(--primary); }
+.tb.tiempo-active { color: var(--primary); font-weight: 600; border-bottom-color: var(--primary); }
+
 </style>
 </head>
 <body>
@@ -80,11 +109,18 @@
       <button class="tb" onclick="aTab(this,'t1')">&#x1F4BC; Laboral</button>
       <button class="tb" onclick="aTab(this,'t2')">&#x1F4DE; Contacto</button>
       <button class="tb" onclick="aTab(this,'t3')">&#x1F4C1; Docs</button>
-      
-      
-      
-      
-      
+      <div class="tb-dropdown" id="dd-tiempo">
+        <button class="tb" onclick="toggleTiempo(event)">&#x1F550; Tiempo &#9662;</button>
+        <div class="tb-dropdown-menu" id="dd-tiempo-menu">
+          <a href="#" onclick="event.preventDefault();goTab('t4');closeTiempo()">&#x1F3D6; Vacaciones</a>
+          <a href="#" onclick="event.preventDefault();goTab('t5','t5-permisos');closeTiempo()">&#x23F8; Permisos</a>
+          <a href="#" onclick="event.preventDefault();goTab('t5','t5-permrem');closeTiempo()">&#x23F8; Permisos remunerados</a>
+          <a href="#" onclick="event.preventDefault();goTab('t5','t5-ausencias');closeTiempo()">&#x1F6AB; Ausencias</a>
+          <a href="#" onclick="event.preventDefault();goTab('t6');closeTiempo()">&#x1F3E5; Incapacidades</a>
+          <a href="#" onclick="event.preventDefault();goTab('t5','t5-licencias');closeTiempo()">&#x1F4CB; Licencias</a>
+          <a href="#" onclick="event.preventDefault();goTab('t7','t7-asistencia');closeTiempo()">&#x1F550; Asistencia</a>
+        </div>
+      </div>
       <button class="tb" onclick="aTab(this,'t9')">&#x1F9BA; SST</button>
       <button class="tb" onclick="aTab(this,'t10')">&#x1F381; Bienestar</button>
       <button class="tb" onclick="aTab(this,'t11')">&#x1F393; Formaci&#xF3;n</button>
@@ -607,6 +643,23 @@ function cargar(){
 }
 
 function prevFoto(input){ if(!input.files||!input.files[0])return; var r=new FileReader(); r.onload=function(ev){ var a=document.getElementById('av'); a.style.backgroundImage='url('+ev.target.result+')'; a.style.backgroundSize='cover'; document.getElementById('ai').style.display='none'; }; r.readAsDataURL(input.files[0]); }
+
+
+function toggleTiempo(e) {
+  e.stopPropagation();
+  var menu = document.getElementById('dd-tiempo-menu');
+  menu.classList.toggle('open');
+}
+function closeTiempo() {
+  var menu = document.getElementById('dd-tiempo-menu');
+  if (menu) menu.classList.remove('open');
+}
+// Cerrar al hacer click fuera
+document.addEventListener('click', function(e) {
+  if (!document.getElementById('dd-tiempo').contains(e.target)) {
+    closeTiempo();
+  }
+});
 
 cargar();
 // Llamar sidebar despues de que el DOM este completamente listo
