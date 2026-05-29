@@ -696,46 +696,56 @@ var colPrioridad = {'Alta':'badge-danger','Media':'badge-warn','Baja':'badge-mut
 var colEstTicket = {'Pendiente':'badge-warn','En proceso':'badge-info','Resuelto':'badge-ok'};
 
 function cargarTI(ced) {
-  var d = DB_EQUIPOS[ced];
-  if (!d) { d = {total:0, tickets_ab:0, ultimo:'Sin registros', equipos:[], tickets:[]}; }
+  var d = DB_EQUIPOS[ced] || {total:0, tickets_ab:0, ultimo:'Sin registros', equipos:[], tickets:[]};
 
-  // Métricas
   document.getElementById('ti-total').textContent   = d.total;
   document.getElementById('ti-tickets').textContent = d.tickets_ab;
   document.getElementById('ti-ultimo').textContent  = d.ultimo;
 
-  // Tabla equipos
   var bEq = {'En uso':'badge-ok','Disponible':'badge-info','Mantenimiento':'badge-warn','Dado de baja':'badge-danger'};
-  document.getElementById('t-ti-equipos').innerHTML = d.equipos.length
-    ? d.equipos.map(function(eq){
-        return '<tr>' +
-          '<td>' + (iconoTipo[eq.tipo]||'&#x1F50C;') + ' ' + eq.tipo + '</td>' +
-          '<td><strong>' + eq.marca + '</strong></td>' +
-          '<td style="font-family:monospace;font-size:11px">' + eq.serial + '</td>' +
-          '<td><span class="badge ' + (bEq[eq.estado]||'badge-muted') + '">' + eq.estado + '</span></td>' +
-          '<td>' + eq.desde + '</td>' +
-          '<td><button class="btn-secondary btn-sm" onclick="window.location='/pages/inventario-equipos.html'"># Ticket</button></td>' +
-        '</tr>';
-      }).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px">Sin equipos asignados</td></tr>';
+  var vacio6 = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px">Sin registros</td></tr>';
 
-  // Tabla tickets
-  document.getElementById('t-ti-tickets').innerHTML = d.tickets.length
-    ? d.tickets.map(function(tk){
-        return '<tr>' +
-          '<td style="font-family:monospace;font-size:11px">' + tk.id + '</td>' +
-          '<td>' + tk.equipo + '</td>' +
-          '<td>' + tk.falla + '</td>' +
-          '<td><span class="badge ' + (colPrioridad[tk.prioridad]||'badge-muted') + '">' + tk.prioridad + '</span></td>' +
-          '<td>' + tk.fecha + '</td>' +
-          '<td><span class="badge ' + (colEstTicket[tk.estado]||'badge-muted') + '">' + tk.estado + '</span></td>' +
-        '</tr>';
-      }).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px">Sin tickets registrados</td></tr>';
+  // Equipos
+  var tbEq = document.getElementById('t-ti-equipos');
+  if (!d.equipos.length) { tbEq.innerHTML = vacio6; }
+  else {
+    tbEq.innerHTML = '';
+    d.equipos.forEach(function(eq) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + (iconoTipo[eq.tipo] || '') + ' ' + eq.tipo + '</td>' +
+        '<td><strong>' + eq.marca + '</strong></td>' +
+        '<td style="font-family:monospace;font-size:11px">' + eq.serial + '</td>' +
+        '<td><span class="badge ' + (bEq[eq.estado]||'badge-muted') + '">' + eq.estado + '</span></td>' +
+        '<td>' + eq.desde + '</td>';
+      var tdBtn = document.createElement('td');
+      var btn = document.createElement('button');
+      btn.className = 'btn-secondary btn-sm';
+      btn.textContent = 'Ticket';
+      btn.addEventListener('click', function(){ window.location = '/pages/inventario-equipos.html'; });
+      tdBtn.appendChild(btn);
+      tr.appendChild(tdBtn);
+      tbEq.appendChild(tr);
+    });
+  }
+
+  // Tickets
+  var tbTk = document.getElementById('t-ti-tickets');
+  if (!d.tickets.length) { tbTk.innerHTML = vacio6; }
+  else {
+    tbTk.innerHTML = d.tickets.map(function(tk) {
+      return '<tr>' +
+        '<td style="font-family:monospace;font-size:11px">' + tk.id + '</td>' +
+        '<td>' + tk.equipo + '</td>' +
+        '<td>' + tk.falla + '</td>' +
+        '<td><span class="badge ' + (colPrioridad[tk.prioridad]||'badge-muted') + '">' + tk.prioridad + '</span></td>' +
+        '<td>' + tk.fecha + '</td>' +
+        '<td><span class="badge ' + (colEstTicket[tk.estado]||'badge-muted') + '">' + tk.estado + '</span></td>' +
+      '</tr>';
+    }).join('');
+  }
 }
 
-
-function irInventario(){ window.location='/pages/inventario-equipos.html'; }
 
 function cargar(){
   var ced = qp('cedula').replace(/[\.\s]/g,'');
