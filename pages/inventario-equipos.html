@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventario de Equipos — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+<style>
+.eq-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;display:flex;flex-direction:column;gap:8px;transition:box-shadow .2s;background:var(--bg-card)}
+.eq-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.eq-icon{width:48px;height:48px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.eq-badge-ok{background:#dff6dd;color:#107c10;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.eq-badge-warn{background:#fff4ce;color:#797600;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.eq-badge-err{background:#fde7e9;color:#c50f1f;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.eq-badge-info{background:#dce3f8;color:#0078d4;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.tab-sec{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:14px}
+.tab-sec button{padding:8px 16px;font-size:12px;border:none;background:none;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-sec button:hover{color:var(--primary)}
+.tab-sec button.active{color:var(--primary);font-weight:600;border-bottom-color:var(--primary)}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;color:var(--text-muted)}
+.upload-zone:hover{border-color:var(--primary);color:var(--primary)}
+.ticket-card{border-left:3px solid var(--primary);padding:10px 14px;background:var(--bg);border-radius:0 var(--radius) var(--radius) 0;margin-bottom:8px}
+.prioridad-alta{border-left-color:#c50f1f}
+.prioridad-media{border-left-color:#797600}
+.prioridad-baja{border-left-color:#107c10}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
+    </div>
+  </header>
+  <nav class="sidebar" id="main-sidebar"></nav>
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">&#x1F4BB; Inventario de Equipos</div>
+        <div class="page-sub">Control de activos tecnol&#xF3;gicos · Soporte · Facturas</div>
+      </div>
+      <button class="btn-primary" onclick="abrirModal('modal-equipo')">&#x2795; Nuevo equipo</button>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card"><div class="metric-label">Total equipos</div><div class="metric-value" style="color:#0078d4">24</div></div>
+      <div class="metric-card"><div class="metric-label">En uso</div><div class="metric-value" style="color:#107c10">18</div></div>
+      <div class="metric-card"><div class="metric-label">En mantenimiento</div><div class="metric-value" style="color:#797600">3</div></div>
+      <div class="metric-card"><div class="metric-label">Tickets abiertos</div><div class="metric-value" style="color:#c50f1f">5</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-sec">
+      <button class="active" onclick="aTab(this,'sec-equipos')">&#x1F4BB; Equipos</button>
+      <button onclick="aTab(this,'sec-tickets')">&#x1F9FE; Tickets soporte</button>
+      <button onclick="aTab(this,'sec-facturas')">&#x1F4C4; Facturas</button>
+    </div>
+
+    <!-- SEC EQUIPOS -->
+    <div id="sec-equipos">
+      <!-- Filtros -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <input type="text" class="field-input" style="max-width:220px" placeholder="&#x1F50D; Buscar equipo..." id="buscar-eq" oninput="filtrarEquipos()">
+        <select class="field-input" style="max-width:160px" id="filtro-tipo" onchange="filtrarEquipos()">
+          <option value="">Todos los tipos</option>
+          <option>Laptop</option><option>Desktop</option><option>Monitor</option>
+          <option>Impresora</option><option>Tel&#xE9;fono IP</option><option>Tablet</option>
+        </select>
+        <select class="field-input" style="max-width:160px" id="filtro-estado" onchange="filtrarEquipos()">
+          <option value="">Todos los estados</option>
+          <option>En uso</option><option>Disponible</option>
+          <option>Mantenimiento</option><option>Dado de baja</option>
+        </select>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px" id="grid-equipos"></div>
+    </div>
+
+    <!-- SEC TICKETS -->
+    <div id="sec-tickets" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:13px;color:var(--text-muted)">Solicitudes de soporte t&#xE9;cnico</div>
+        <button class="btn-primary btn-sm" onclick="abrirModal('modal-ticket')">&#x2795; Nuevo ticket</button>
+      </div>
+      <div id="lista-tickets"></div>
+    </div>
+
+    <!-- SEC FACTURAS -->
+    <div id="sec-facturas" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:13px;color:var(--text-muted)">Facturas de compra de equipos</div>
+        <button class="btn-primary btn-sm" onclick="abrirModal('modal-factura')">&#x2795; Adjuntar factura</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Equipo</th><th>Proveedor</th><th>Fecha compra</th><th>Valor</th><th>No. Factura</th><th>Garant&#xED;a hasta</th><th>Archivo</th></tr></thead>
+          <tbody id="tbody-facturas"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL NUEVO EQUIPO -->
+<div id="modal-equipo" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal('modal-equipo')">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">&#x1F4BB; Registrar equipo</div><button class="modal-close" onclick="cerrarModal('modal-equipo')">&#x2715;</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group"><label class="field-label">Tipo <span class="required">*</span></label>
+          <select class="field-input" id="eq-tipo">
+            <option>Laptop</option><option>Desktop</option><option>Monitor</option>
+            <option>Impresora</option><option>Tel&#xE9;fono IP</option><option>Tablet</option><option>Otro</option>
+          </select></div>
+        <div class="field-group"><label class="field-label">Marca <span class="required">*</span></label><input type="text" class="field-input" id="eq-marca" placeholder="Dell, HP, Lenovo..."></div>
+        <div class="field-group"><label class="field-label">Modelo</label><input type="text" class="field-input" id="eq-modelo" placeholder="Latitude 5520"></div>
+        <div class="field-group"><label class="field-label">Serial / S/N <span class="required">*</span></label><input type="text" class="field-input" id="eq-serial" placeholder="SN-2024-001"></div>
+        <div class="field-group"><label class="field-label">Estado</label>
+          <select class="field-input" id="eq-estado">
+            <option>En uso</option><option>Disponible</option><option>Mantenimiento</option><option>Dado de baja</option>
+          </select></div>
+        <div class="field-group"><label class="field-label">Asignado a empleado</label>
+          <select class="field-input" id="eq-empleado">
+            <option value="">Sin asignar</option>
+            <option value="1234567890">Carlos Andr&#xE9;s Rodr&#xED;guez</option>
+            <option value="52456789">Mar&#xED;a Fernanda L&#xF3;pez</option>
+            <option value="79234567">Jorge Alberto Mart&#xED;nez</option>
+            <option value="1098765432">Andrea Patricia Parra</option>
+            <option value="80123456">Luis Fernando Garc&#xED;a</option>
+            <option value="1020345678">Diana Carolina Herrera</option>
+            <option value="79876543">Ricardo Alejandro Mora</option>
+            <option value="52789012">Sandra Milena Castro</option>
+          </select></div>
+        <div class="field-group"><label class="field-label">Fecha de compra</label><input type="date" class="field-input" id="eq-fecha"></div>
+        <div class="field-group"><label class="field-label">Valor de compra (COP)</label><input type="number" class="field-input" id="eq-valor" placeholder="3500000"></div>
+        <div class="field-group span-2"><label class="field-label">Ubicaci&#xF3;n / Sede</label>
+          <select class="field-input" id="eq-sede">
+            <option>Bogot&#xE1; Principal</option><option>Medell&#xED;n</option><option>Cali</option>
+          </select></div>
+        <div class="field-group span-2"><label class="field-label">Observaciones</label><textarea class="field-input" id="eq-obs" rows="2" placeholder="Estado f&#xED;sico, accesorios incluidos..."></textarea></div>
+        <div class="field-group span-2">
+          <label class="field-label">Factura de compra (PDF / imagen)</label>
+          <div class="upload-zone" onclick="document.getElementById('eq-factura').click()">
+            &#x1F4C4; Haz click o arrastra el archivo aqu&#xED;<br><span style="font-size:11px">PDF, JPG, PNG — m&#xE1;x. 10MB</span>
+          </div>
+          <input type="file" id="eq-factura" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="mostrarArchivo(this,'eq-factura-nombre')">
+          <div id="eq-factura-nombre" style="font-size:12px;color:var(--primary);margin-top:4px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modal-equipo')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarEquipo()">&#x1F4BE; Guardar equipo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO TICKET -->
+<div id="modal-ticket" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal('modal-ticket')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header"><div class="modal-title">&#x1F9FE; Nuevo ticket de soporte</div><button class="modal-close" onclick="cerrarModal('modal-ticket')">&#x2715;</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group"><label class="field-label">Equipo afectado <span class="required">*</span></label>
+          <select class="field-input" id="tk-equipo">
+            <option value="">Seleccionar...</option>
+          </select></div>
+        <div class="field-group"><label class="field-label">Tipo de falla <span class="required">*</span></label>
+          <select class="field-input" id="tk-tipo">
+            <option>Hardware</option><option>Software</option><option>Red / Conectividad</option>
+            <option>Per&#xE9;if&#xE9;ricos</option><option>Mantenimiento preventivo</option><option>Otro</option>
+          </select></div>
+        <div class="field-group"><label class="field-label">Prioridad</label>
+          <select class="field-input" id="tk-prioridad">
+            <option>Alta</option><option>Media</option><option>Baja</option>
+          </select></div>
+        <div class="field-group"><label class="field-label">Solicitado por</label>
+          <select class="field-input" id="tk-solicitante">
+            <option value="1234567890">Carlos Andr&#xE9;s Rodr&#xED;guez</option>
+            <option value="52456789">Mar&#xED;a Fernanda L&#xF3;pez</option>
+            <option value="79234567">Jorge Alberto Mart&#xED;nez</option>
+            <option value="1098765432">Andrea Patricia Parra</option>
+          </select></div>
+        <div class="field-group span-2"><label class="field-label">Descripci&#xF3;n del problema <span class="required">*</span></label>
+          <textarea class="field-input" id="tk-desc" rows="3" placeholder="Describe el problema detalladamente..."></textarea></div>
+        <div class="field-group span-2">
+          <label class="field-label">Adjuntar evidencia (captura / foto)</label>
+          <div class="upload-zone" onclick="document.getElementById('tk-archivo').click()">
+            &#x1F4F7; Adjuntar imagen o documento
+          </div>
+          <input type="file" id="tk-archivo" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="mostrarArchivo(this,'tk-archivo-nombre')">
+          <div id="tk-archivo-nombre" style="font-size:12px;color:var(--primary);margin-top:4px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modal-ticket')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarTicket()">&#x1F4E8; Enviar ticket</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FACTURA -->
+<div id="modal-factura" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal('modal-factura')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header"><div class="modal-title">&#x1F4C4; Adjuntar factura</div><button class="modal-close" onclick="cerrarModal('modal-factura')">&#x2715;</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group span-2"><label class="field-label">Equipo <span class="required">*</span></label>
+          <select class="field-input" id="fac-equipo"></select></div>
+        <div class="field-group"><label class="field-label">Proveedor</label><input type="text" class="field-input" id="fac-proveedor" placeholder="CompuZona SAS"></div>
+        <div class="field-group"><label class="field-label">No. Factura</label><input type="text" class="field-input" id="fac-numero" placeholder="FE-2024-001234"></div>
+        <div class="field-group"><label class="field-label">Fecha compra</label><input type="date" class="field-input" id="fac-fecha"></div>
+        <div class="field-group"><label class="field-label">Valor (COP)</label><input type="number" class="field-input" id="fac-valor" placeholder="3500000"></div>
+        <div class="field-group span-2"><label class="field-label">Garant&#xED;a hasta</label><input type="date" class="field-input" id="fac-garantia"></div>
+        <div class="field-group span-2">
+          <label class="field-label">Archivo factura <span class="required">*</span></label>
+          <div class="upload-zone" onclick="document.getElementById('fac-archivo').click()">
+            &#x1F4C4; PDF o imagen de la factura
+          </div>
+          <input type="file" id="fac-archivo" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="mostrarArchivo(this,'fac-nombre')">
+          <div id="fac-nombre" style="font-size:12px;color:var(--primary);margin-top:4px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modal-factura')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarFactura()">&#x1F4BE; Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) { Auth.renderUserBar(session); Sidebar.inject('inventario-equipos.html'); }
+
+var TABS_SEC = ['sec-equipos','sec-tickets','sec-facturas'];
+function aTab(btn, id) {
+  document.querySelectorAll('.tab-sec button').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  TABS_SEC.forEach(function(t){ var el=document.getElementById(t); if(el) el.classList.add('hidden'); });
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function abrirModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function cerrarModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+function mostrarArchivo(input, targetId) {
+  var el = document.getElementById(targetId);
+  if (input.files && input.files[0]) {
+    el.textContent = '✅ ' + input.files[0].name + ' (' + (input.files[0].size/1024).toFixed(0) + ' KB)';
+  }
+}
+
+// ── Datos de ejemplo ──────────────────────────────────────────────
+var EQUIPOS = [
+  {id:1,tipo:'Laptop',marca:'Dell',modelo:'Latitude 5530',serial:'DL-2023-001',estado:'En uso',empleado:'Carlos Andrés Rodríguez',cedula:'1234567890',fecha:'15/03/2023',valor:4500000,sede:'Bogotá'},
+  {id:2,tipo:'Laptop',marca:'HP',modelo:'EliteBook 840',serial:'HP-2022-015',estado:'En uso',empleado:'María Fernanda López',cedula:'52456789',fecha:'10/08/2022',valor:4200000,sede:'Bogotá'},
+  {id:3,tipo:'Desktop',marca:'Lenovo',modelo:'ThinkCentre M70q',serial:'LN-2021-008',estado:'En uso',empleado:'Jorge Alberto Martínez',cedula:'79234567',fecha:'05/01/2021',valor:3800000,sede:'Medellín'},
+  {id:4,tipo:'Monitor',marca:'LG',modelo:'27UK850-W 4K',serial:'LG-2022-003',estado:'En uso',empleado:'Carlos Andrés Rodríguez',cedula:'1234567890',fecha:'15/03/2022',valor:1800000,sede:'Bogotá'},
+  {id:5,tipo:'Laptop',marca:'Lenovo',modelo:'ThinkPad E15',serial:'LN-2024-002',estado:'Disponible',empleado:'',cedula:'',fecha:'20/01/2024',valor:4100000,sede:'Bogotá'},
+  {id:6,tipo:'Impresora',marca:'HP',modelo:'LaserJet Pro M404dn',serial:'HP-2021-IMP-001',estado:'Mantenimiento',empleado:'',cedula:'',fecha:'12/06/2021',valor:2100000,sede:'Bogotá'},
+  {id:7,tipo:'Laptop',marca:'Dell',modelo:'Latitude 5430',serial:'DL-2024-007',estado:'En uso',empleado:'Ricardo Alejandro Mora',cedula:'79876543',fecha:'10/03/2024',valor:4300000,sede:'Bogotá'},
+  {id:8,tipo:'Tablet',marca:'Apple',modelo:'iPad Pro 11"',serial:'AP-2023-TAB-001',estado:'En uso',empleado:'Sandra Milena Castro',cedula:'52789012',fecha:'05/07/2023',valor:3200000,sede:'Medellín'},
+];
+
+var TICKETS = [
+  {id:'TK-001',equipo:'Dell Latitude 5530',tipo:'Software',prioridad:'Alta',solicitante:'Carlos Andrés Rodríguez',fecha:'20/05/2026',desc:'Pantalla azul al iniciar Windows. Error 0x000000d1.',estado:'En proceso'},
+  {id:'TK-002',equipo:'HP LaserJet Pro M404dn',tipo:'Hardware',prioridad:'Media',solicitante:'María Fernanda López',fecha:'18/05/2026',desc:'La impresora no toma el papel del bandeja principal.',estado:'Pendiente'},
+  {id:'TK-003',equipo:'HP EliteBook 840',tipo:'Red / Conectividad',prioridad:'Baja',solicitante:'María Fernanda López',fecha:'15/05/2026',desc:'WiFi se desconecta cada 30 minutos.',estado:'Resuelto'},
+  {id:'TK-004',equipo:'Lenovo ThinkPad E15',tipo:'Hardware',prioridad:'Alta',solicitante:'Ricardo Alejandro Mora',fecha:'22/05/2026',desc:'Teclado no responde correctamente en las teclas F1-F6.',estado:'Pendiente'},
+  {id:'TK-005',equipo:'LG 27UK850-W 4K',tipo:'Hardware',prioridad:'Baja',solicitante:'Carlos Andrés Rodríguez',fecha:'10/05/2026',desc:'Línea horizontal en la pantalla en la parte inferior.',estado:'Pendiente'},
+];
+
+var FACTURAS = [
+  {equipo:'Dell Latitude 5530',proveedor:'CompuZona SAS',fecha:'15/03/2023',valor:4500000,numero:'FE-2023-001456',garantia:'15/03/2026',archivo:'factura_dell_001.pdf'},
+  {equipo:'HP EliteBook 840',proveedor:'Syscom Colombia',fecha:'10/08/2022',valor:4200000,numero:'FV-2022-007821',garantia:'10/08/2025',archivo:'factura_hp_015.pdf'},
+  {equipo:'Lenovo ThinkCentre M70q',proveedor:'Lenovo Colombia',fecha:'05/01/2021',valor:3800000,numero:'FE-2021-003214',garantia:'05/01/2024',archivo:'factura_lenovo_008.pdf'},
+  {equipo:'LG 27UK850-W 4K',proveedor:'Éxito Tecnología',fecha:'15/03/2022',valor:1800000,numero:'FE-2022-019876',garantia:'15/03/2025',archivo:'factura_lg_003.pdf'},
+  {equipo:'Apple iPad Pro 11"',proveedor:'iShop Colombia',fecha:'05/07/2023',valor:3200000,numero:'FE-2023-045123',garantia:'05/07/2025',archivo:'factura_apple_tab.pdf'},
+];
+
+var equiposFiltrados = EQUIPOS.slice();
+
+function fmtM(n){ return '$' + n.toLocaleString('es-CO'); }
+
+var iconosTipo = {
+  'Laptop':'💻','Desktop':'🖥️','Monitor':'🖥️',
+  'Impresora':'🖨️','Teléfono IP':'📞','Tablet':'📱','Otro':'🔌'
+};
+var coloresTipo = {
+  'Laptop':'#dce3f8','Desktop':'#dff6dd','Monitor':'#fff4ce',
+  'Impresora':'#fde7e9','Tablet':'#e8d5ff','Otro':'#f0f0f0'
+};
+
+function badgeEstado(e) {
+  if(e==='En uso') return '<span class="eq-badge-ok">'+e+'</span>';
+  if(e==='Disponible') return '<span class="eq-badge-info">'+e+'</span>';
+  if(e==='Mantenimiento') return '<span class="eq-badge-warn">'+e+'</span>';
+  return '<span class="eq-badge-err">'+e+'</span>';
+}
+
+function renderEquipos() {
+  var grid = document.getElementById('grid-equipos');
+  if (!equiposFiltrados.length) {
+    grid.innerHTML = '<div style="grid-column:span 3;text-align:center;color:var(--text-muted);padding:40px">Sin equipos encontrados</div>';
+    return;
+  }
+  grid.innerHTML = equiposFiltrados.map(function(eq) {
+    return '<div class="eq-card">'+
+      '<div style="display:flex;gap:10px;align-items:flex-start">'+
+        '<div class="eq-icon" style="background:' + (coloresTipo[eq.tipo]||'#f0f0f0') + '">'+(iconosTipo[eq.tipo]||'🔌')+'</div>'+
+        '<div style="flex:1">'+
+          '<div style="font-weight:600;font-size:13px">'+eq.marca+' '+eq.modelo+'</div>'+
+          '<div style="font-size:11px;color:var(--text-muted)">'+eq.tipo+' · S/N: '+eq.serial+'</div>'+
+        '</div>'+
+        badgeEstado(eq.estado)+
+      '</div>'+
+      '<div style="font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:8px;margin-top:4px">'+
+        (eq.empleado ? '👤 '+eq.empleado : '<span style="color:var(--text-muted)">Sin asignar</span>')+
+        '<br>📍 '+eq.sede+' · 📅 '+eq.fecha+' · 💰 '+fmtM(eq.valor)+
+      '</div>'+
+      '<div style="display:flex;gap:6px;margin-top:4px">'+
+        '<button class="btn-secondary btn-sm" onclick="verEquipo('+eq.id+')">👁 Ver</button>'+
+        '<button class="btn-secondary btn-sm" onclick="abrirTicketEquipo('+eq.id+')">🎫 Ticket</button>'+
+        (eq.empleado ? '<button class="btn-secondary btn-sm" onclick="irPerfil(\''+eq.cedula+'\')">👤 Perfil</button>' : '')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function filtrarEquipos() {
+  var txt   = document.getElementById('buscar-eq').value.toLowerCase();
+  var tipo  = document.getElementById('filtro-tipo').value;
+  var estat = document.getElementById('filtro-estado').value;
+  equiposFiltrados = EQUIPOS.filter(function(eq) {
+    var matchTxt  = !txt  || (eq.marca+eq.modelo+eq.serial+eq.empleado).toLowerCase().includes(txt);
+    var matchTipo = !tipo || eq.tipo === tipo;
+    var matchEst  = !estat|| eq.estado === estat;
+    return matchTxt && matchTipo && matchEst;
+  });
+  renderEquipos();
+}
+
+function renderTickets() {
+  var bP = {Alta:'prioridad-alta',Media:'prioridad-media',Baja:'prioridad-baja'};
+  var bE = {Pendiente:'badge-warn','En proceso':'badge-info',Resuelto:'badge-ok'};
+  document.getElementById('lista-tickets').innerHTML = TICKETS.map(function(tk) {
+    return '<div class="ticket-card '+bP[tk.prioridad]+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">'+
+        '<div>'+
+          '<span style="font-family:monospace;font-size:11px;color:var(--text-muted)">'+tk.id+'</span>'+
+          ' &nbsp;<strong style="font-size:13px">'+tk.equipo+'</strong>'+
+          ' &nbsp;<span class="badge badge-muted">'+tk.tipo+'</span>'+
+        '</div>'+
+        '<span class="badge '+bE[tk.estado]+'">'+tk.estado+'</span>'+
+      '</div>'+
+      '<div style="font-size:12px;color:var(--text);margin-bottom:6px">'+tk.desc+'</div>'+
+      '<div style="font-size:11px;color:var(--text-muted)">'+
+        '👤 '+tk.solicitante+' &nbsp;·&nbsp; 📅 '+tk.fecha+' &nbsp;·&nbsp; '+
+        '<span style="color:'+(tk.prioridad==='Alta'?'#c50f1f':tk.prioridad==='Media'?'#797600':'#107c10')+'">●</span>'+
+        ' Prioridad '+tk.prioridad+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderFacturas() {
+  document.getElementById('tbody-facturas').innerHTML = FACTURAS.map(function(f) {
+    var hoy = new Date();
+    var gar = new Date(f.garantia.split('/').reverse().join('-'));
+    var vigente = gar > hoy;
+    return '<tr>'+
+      '<td><strong>'+f.equipo+'</strong></td>'+
+      '<td>'+f.proveedor+'</td>'+
+      '<td>'+f.fecha+'</td>'+
+      '<td style="font-weight:500;color:#107c10">'+fmtM(f.valor)+'</td>'+
+      '<td style="font-family:monospace;font-size:11px">'+f.numero+'</td>'+
+      '<td><span class="badge '+(vigente?'badge-ok':'badge-danger')+'">'+f.garantia+'</span></td>'+
+      '<td><button class="btn-secondary btn-sm" onclick="alert(\'Descargando: '+f.archivo+'\')">&#x1F4E5; Descargar</button></td>'+
+    '</tr>';
+  }).join('');
+}
+
+function verEquipo(id) {
+  var eq = EQUIPOS.find(function(e){ return e.id===id; });
+  if (!eq) return;
+  alert('Equipo: '+eq.marca+' '+eq.modelo+'\nSerial: '+eq.serial+'\nEstado: '+eq.estado+'\nAsignado a: '+(eq.empleado||'Sin asignar')+'\nSede: '+eq.sede+'\nFecha compra: '+eq.fecha+'\nValor: '+fmtM(eq.valor));
+}
+
+function abrirTicketEquipo(id) {
+  var eq = EQUIPOS.find(function(e){ return e.id===id; });
+  if (!eq) return;
+  abrirModal('modal-ticket');
+  // Pre-seleccionar el equipo
+  setTimeout(function(){
+    var sel = document.getElementById('tk-equipo');
+    for(var i=0;i<sel.options.length;i++){
+      if(sel.options[i].text.includes(eq.serial)) sel.selectedIndex = i;
+    }
+  }, 100);
+}
+
+function irPerfil(cedula) {
+  window.location = '/pages/mi-perfil.html?cedula=' + cedula;
+}
+
+function guardarEquipo() {
+  var marca = document.getElementById('eq-marca').value.trim();
+  var serial = document.getElementById('eq-serial').value.trim();
+  if (!marca || !serial) { alert('Marca y Serial son obligatorios'); return; }
+  var nuevo = {
+    id: EQUIPOS.length + 1,
+    tipo: document.getElementById('eq-tipo').value,
+    marca: marca,
+    modelo: document.getElementById('eq-modelo').value,
+    serial: serial,
+    estado: document.getElementById('eq-estado').value,
+    empleado: document.getElementById('eq-empleado').selectedOptions[0].text.replace('Sin asignar',''),
+    cedula: document.getElementById('eq-empleado').value,
+    fecha: new Date().toLocaleDateString('es-CO'),
+    valor: parseInt(document.getElementById('eq-valor').value)||0,
+    sede: document.getElementById('eq-sede').value,
+  };
+  EQUIPOS.push(nuevo);
+  equiposFiltrados = EQUIPOS.slice();
+  cerrarModal('modal-equipo');
+  renderEquipos();
+  alert('✅ Equipo registrado exitosamente');
+}
+
+function guardarTicket() {
+  var desc = document.getElementById('tk-desc').value.trim();
+  if (!desc) { alert('La descripción es obligatoria'); return; }
+  var nuevo = {
+    id: 'TK-00'+(TICKETS.length+1),
+    equipo: document.getElementById('tk-equipo').value || 'Sin especificar',
+    tipo: document.getElementById('tk-tipo').value,
+    prioridad: document.getElementById('tk-prioridad').value,
+    solicitante: document.getElementById('tk-solicitante').selectedOptions[0].text,
+    fecha: new Date().toLocaleDateString('es-CO'),
+    desc: desc,
+    estado: 'Pendiente',
+  };
+  TICKETS.unshift(nuevo);
+  cerrarModal('modal-ticket');
+  renderTickets();
+  alert('✅ Ticket creado: ' + nuevo.id);
+}
+
+function guardarFactura() {
+  var num = document.getElementById('fac-numero').value.trim();
+  if (!num) { alert('El número de factura es obligatorio'); return; }
+  cerrarModal('modal-factura');
+  alert('✅ Factura registrada exitosamente');
+}
+
+// Poblar select de equipos en modales
+function poblarSelectEquipos() {
+  var html = '<option value="">Seleccionar equipo...</option>';
+  EQUIPOS.forEach(function(eq){
+    html += '<option value="'+eq.id+'">'+eq.marca+' '+eq.modelo+' ('+eq.serial+')</option>';
+  });
+  document.getElementById('tk-equipo').innerHTML = html;
+  document.getElementById('fac-equipo').innerHTML = html;
+}
+
+// Inicializar
+renderEquipos();
+renderTickets();
+renderFacturas();
+poblarSelectEquipos();
+</script>
+</body>
+</html>

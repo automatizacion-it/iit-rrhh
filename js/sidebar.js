@@ -106,6 +106,14 @@ var Sidebar = (function () {
       ]
     },
     {
+      seccion: 'TI · Bienestar', icono: null, desplegable: true,
+      roles: ['empresa','administrador','usuario'],
+      items: [
+        { label:'Inventario equipos',    icon:'&#x1F4BB;', href:'/pages/inventario-equipos.html',   roles:['empresa','administrador','usuario'] },
+        { label:'Visitas domiciliarias', icon:'&#x1F3E0;', href:'/pages/visita-domiciliaria.html',  roles:['empresa','administrador'] },
+      ]
+    },
+    {
       seccion: 'Sistema', icono: null, desplegable: true,
       roles: ['empresa','administrador'],
       items: [

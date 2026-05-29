@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitas Domiciliarias — IIT RRHH</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sidebar.js"></script>
+<style>
+.visita-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;background:var(--bg-card);transition:box-shadow .2s}
+.visita-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.estado-pill{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.ep-pendiente{background:#fff4ce;color:#797600}
+.ep-realizada{background:#dff6dd;color:#107c10}
+.ep-reprogramada{background:#fde7e9;color:#c50f1f}
+.ep-cancelada{background:#f0f0f0;color:#605e5c}
+.tab-sec{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:14px}
+.tab-sec button{padding:8px 16px;font-size:12px;border:none;background:none;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-sec button:hover{color:var(--primary)}
+.tab-sec button.active{color:var(--primary);font-weight:600;border-bottom-color:var(--primary)}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;color:var(--text-muted)}
+.upload-zone:hover{border-color:var(--primary);color:var(--primary)}
+.foto-thumb{width:80px;height:80px;object-fit:cover;border-radius:var(--radius);border:1px solid var(--border)}
+.timeline-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.timeline-item:last-child{border:none}
+.timeline-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <header class="topbar">
+    <a href="/pages/dashboard.html" class="topbar-logo"><div class="logo-icon">IIT</div><span class="logo-main">RRHH</span></a>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="topbar-badge"></span>
+      <span class="topbar-name" id="topbar-name"></span>
+      <div class="topbar-avatar" id="topbar-avatar" onclick="Auth.logout()"></div>
+    </div>
+  </header>
+  <nav class="sidebar" id="main-sidebar"></nav>
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">&#x1F3E0; Visitas Domiciliarias</div>
+        <div class="page-sub">Programaci&#xF3;n · Informes · Seguimiento · Evidencia fotogr&#xE1;fica</div>
+      </div>
+      <button class="btn-primary" onclick="abrirModal('modal-visita')">&#x2795; Programar visita</button>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics-grid" style="margin-bottom:16px">
+      <div class="metric-card"><div class="metric-label">Total visitas</div><div class="metric-value" style="color:#0078d4">12</div></div>
+      <div class="metric-card"><div class="metric-label">Pendientes</div><div class="metric-value" style="color:#797600">4</div></div>
+      <div class="metric-card"><div class="metric-label">Realizadas 2026</div><div class="metric-value" style="color:#107c10">7</div></div>
+      <div class="metric-card"><div class="metric-label">Reprogramadas</div><div class="metric-value" style="color:#c50f1f">1</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-sec">
+      <button class="active" onclick="aTab(this,'sec-visitas')">&#x1F4CB; Visitas</button>
+      <button onclick="aTab(this,'sec-calendario')">&#x1F4C5; Calendario</button>
+      <button onclick="aTab(this,'sec-informes')">&#x1F4CA; Informes</button>
+    </div>
+
+    <!-- SEC VISITAS -->
+    <div id="sec-visitas">
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <input type="text" class="field-input" style="max-width:220px" placeholder="&#x1F50D; Buscar empleado..." id="buscar-vis" oninput="filtrarVisitas()">
+        <select class="field-input" style="max-width:160px" id="filtro-estado-vis" onchange="filtrarVisitas()">
+          <option value="">Todos los estados</option>
+          <option>Pendiente</option><option>Realizada</option>
+          <option>Reprogramada</option><option>Cancelada</option>
+        </select>
+        <select class="field-input" style="max-width:160px" id="filtro-tipo-vis" onchange="filtrarVisitas()">
+          <option value="">Todos los tipos</option>
+          <option>Ingreso</option><option>Peri&#xF3;dica</option>
+          <option>Seguimiento</option><option>Verificaci&#xF3;n</option>
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="lista-visitas"></div>
+    </div>
+
+    <!-- SEC CALENDARIO -->
+    <div id="sec-calendario" class="hidden">
+      <div class="card">
+        <div class="card-header"><div class="card-title">&#x1F4C5; Pr&#xF3;ximas visitas programadas</div></div>
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>Fecha</th><th>Hora</th><th>Empleado</th><th>Direcci&#xF3;n</th><th>Responsable</th><th>Tipo</th><th>Estado</th><th>Acci&#xF3;n</th></tr></thead>
+            <tbody id="tbody-cal"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEC INFORMES -->
+    <div id="sec-informes" class="hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">&#x1F4CA; Resumen por estado</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px" id="resumen-estado"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">&#x1F4CA; Resumen por tipo</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px" id="resumen-tipo"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="card-header">
+          <div class="card-title">&#x1F4DC; Informes de visitas realizadas</div>
+          <button class="btn-primary btn-sm" onclick="exportarInformes()">&#x1F4E5; Exportar</button>
+        </div>
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>Fecha</th><th>Empleado</th><th>Tipo</th><th>Resultado</th><th>Responsable</th><th>Fotos</th><th>Informe</th></tr></thead>
+            <tbody id="tbody-informes"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL PROGRAMAR VISITA -->
+<div id="modal-visita" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal('modal-visita')">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">&#x1F3E0; Programar visita domiciliaria</div><button class="modal-close" onclick="cerrarModal('modal-visita')">&#x2715;</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group"><label class="field-label">Empleado <span class="required">*</span></label>
+          <select class="field-input" id="vis-empleado" onchange="autocompletarDir()">
+            <option value="">Seleccionar...</option>
+            <option value="1234567890" data-dir="Cra 7 # 45-23, Chapinero, Bogotá">Carlos Andrés Rodríguez</option>
+            <option value="52456789" data-dir="Calle 72 # 11-25, Chapinero, Bogotá">María Fernanda López</option>
+            <option value="79234567" data-dir="Calle 50 # 38-15, El Poblado, Medellín">Jorge Alberto Martínez</option>
+            <option value="1098765432" data-dir="Av. Suba # 91-32, Suba, Bogotá">Andrea Patricia Parra</option>
+            <option value="80123456" data-dir="Av. 6N # 22-15, Ciudad Jardín, Cali">Luis Fernando García</option>
+            <option value="1020345678" data-dir="Cra 15 # 80-25, Cedritos, Bogotá">Diana Carolina Herrera</option>
+            <option value="79876543" data-dir="Calle 100 # 14-52, Usaquén, Bogotá">Ricardo Alejandro Mora</option>
+            <option value="52789012" data-dir="Cra 43A # 16-72, El Estadio, Medellín">Sandra Milena Castro</option>
+          </select></div>
+        <div class="field-group"><label class="field-label">Tipo de visita</label>
+          <select class="field-input" id="vis-tipo">
+            <option>Ingreso</option><option>Periódica</option>
+            <option>Seguimiento</option><option>Verificación</option>
+          </select></div>
+        <div class="field-group"><label class="field-label">Fecha programada <span class="required">*</span></label>
+          <input type="date" class="field-input" id="vis-fecha"></div>
+        <div class="field-group"><label class="field-label">Hora</label>
+          <input type="time" class="field-input" id="vis-hora" value="09:00"></div>
+        <div class="field-group span-2"><label class="field-label">Dirección de visita <span class="required">*</span></label>
+          <input type="text" class="field-input" id="vis-dir" placeholder="Se autocompleta al seleccionar empleado"></div>
+        <div class="field-group span-2"><label class="field-label">Responsable de la visita</label>
+          <select class="field-input" id="vis-responsable">
+            <option>María Fernanda López — RRHH</option>
+            <option>Andrea Patricia Parra — RRHH</option>
+          </select></div>
+        <div class="field-group span-2"><label class="field-label">Objetivo de la visita</label>
+          <textarea class="field-input" id="vis-objetivo" rows="2" placeholder="Verificar condiciones de vivienda, seguimiento..."></textarea></div>
+        <div class="field-group span-2"><label class="field-label">Observaciones previas</label>
+          <textarea class="field-input" id="vis-obs" rows="2" placeholder="Contexto, información previa relevante..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modal-visita')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarVisita()">&#x1F4BE; Programar visita</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REGISTRAR RESULTADO -->
+<div id="modal-resultado" class="modal-overlay hidden" onclick="if(event.target===this)cerrarModal('modal-resultado')">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">&#x1F4DD; Registrar resultado de visita</div><button class="modal-close" onclick="cerrarModal('modal-resultado')">&#x2715;</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group"><label class="field-label">Fecha realizada</label>
+          <input type="date" class="field-input" id="res-fecha"></div>
+        <div class="field-group"><label class="field-label">Resultado general</label>
+          <select class="field-input" id="res-resultado">
+            <option>Favorable</option><option>Con observaciones</option>
+            <option>Desfavorable</option><option>Reprogramar</option>
+          </select></div>
+        <div class="field-group span-2"><label class="field-label">Informe detallado <span class="required">*</span></label>
+          <textarea class="field-input" id="res-informe" rows="4" placeholder="Describe las condiciones observadas, hallazgos relevantes, recomendaciones..."></textarea></div>
+        <div class="field-group span-2"><label class="field-label">Compromisos del empleado</label>
+          <textarea class="field-input" id="res-compromisos" rows="2" placeholder="Compromisos adquiridos durante la visita..."></textarea></div>
+        <div class="field-group span-2">
+          <label class="field-label">Fotos de la visita</label>
+          <div class="upload-zone" onclick="document.getElementById('res-fotos').click()">
+            &#x1F4F7; Adjuntar fotos (múltiple)<br>
+            <span style="font-size:11px">JPG, PNG — máx. 5 fotos · 5MB c/u</span>
+          </div>
+          <input type="file" id="res-fotos" accept=".jpg,.jpeg,.png" multiple style="display:none" onchange="mostrarFotos(this)">
+          <div id="res-fotos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Informe firmado (PDF)</label>
+          <div class="upload-zone" onclick="document.getElementById('res-pdf').click()">
+            &#x1F4C4; Subir informe firmado en PDF
+          </div>
+          <input type="file" id="res-pdf" accept=".pdf" style="display:none" onchange="mostrarArchivo(this,'res-pdf-nombre')">
+          <div id="res-pdf-nombre" style="font-size:12px;color:var(--primary);margin-top:4px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal('modal-resultado')">Cancelar</button>
+      <button class="btn-primary" onclick="guardarResultado()">&#x2705; Registrar resultado</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+var session = Auth.requireAuth();
+if (session) { Auth.renderUserBar(session); Sidebar.inject('visita-domiciliaria.html'); }
+
+var TABS_SEC = ['sec-visitas','sec-calendario','sec-informes'];
+function aTab(btn, id) {
+  document.querySelectorAll('.tab-sec button').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  TABS_SEC.forEach(function(t){ var el=document.getElementById(t); if(el) el.classList.add('hidden'); });
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function abrirModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function cerrarModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+function mostrarArchivo(input, targetId) {
+  if (input.files && input.files[0]) {
+    document.getElementById(targetId).textContent = '✅ ' + input.files[0].name;
+  }
+}
+
+function mostrarFotos(input) {
+  var prev = document.getElementById('res-fotos-preview');
+  prev.innerHTML = '';
+  Array.from(input.files).slice(0,5).forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'foto-thumb';
+      prev.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function autocompletarDir() {
+  var sel = document.getElementById('vis-empleado');
+  var opt = sel.selectedOptions[0];
+  var dir = opt ? opt.getAttribute('data-dir') : '';
+  document.getElementById('vis-dir').value = dir || '';
+}
+
+// ── Datos ─────────────────────────────────────────────────────────
+var VISITAS = [
+  {id:'VD-001',empleado:'Carlos Andrés Rodríguez',cedula:'1234567890',tipo:'Ingreso',fecha:'15/03/2022',hora:'09:00',dir:'Cra 7 # 45-23, Chapinero, Bogotá',responsable:'María Fernanda López',estado:'Realizada',resultado:'Favorable',fotos:3,informe:true},
+  {id:'VD-002',empleado:'Luis Fernando García',cedula:'80123456',tipo:'Seguimiento',fecha:'10/04/2026',hora:'10:00',dir:'Av. 6N # 22-15, Ciudad Jardín, Cali',responsable:'Andrea Patricia Parra',estado:'Realizada',resultado:'Con observaciones',fotos:2,informe:true},
+  {id:'VD-003',empleado:'Andrea Patricia Parra',cedula:'1098765432',tipo:'Ingreso',fecha:'05/06/2026',hora:'09:00',dir:'Av. Suba # 91-32, Suba, Bogotá',responsable:'María Fernanda López',estado:'Pendiente',resultado:'',fotos:0,informe:false},
+  {id:'VD-004',empleado:'Ricardo Alejandro Mora',cedula:'79876543',tipo:'Periódica',fecha:'12/06/2026',hora:'11:00',dir:'Calle 100 # 14-52, Usaquén, Bogotá',responsable:'María Fernanda López',estado:'Pendiente',resultado:'',fotos:0,informe:false},
+  {id:'VD-005',empleado:'Diana Carolina Herrera',cedula:'1020345678',tipo:'Verificación',fecha:'28/05/2026',hora:'14:00',dir:'Cra 15 # 80-25, Cedritos, Bogotá',responsable:'Andrea Patricia Parra',estado:'Reprogramada',resultado:'',fotos:0,informe:false},
+  {id:'VD-006',empleado:'Jorge Alberto Martínez',cedula:'79234567',tipo:'Periódica',fecha:'20/06/2026',hora:'09:30',dir:'Calle 50 # 38-15, El Poblado, Medellín',responsable:'María Fernanda López',estado:'Pendiente',resultado:'',fotos:0,informe:false},
+  {id:'VD-007',empleado:'Sandra Milena Castro',cedula:'52789012',tipo:'Periódica',fecha:'15/01/2022',hora:'09:00',dir:'Cra 43A # 16-72, El Estadio, Medellín',responsable:'María Fernanda López',estado:'Realizada',resultado:'Favorable',fotos:4,informe:true},
+];
+
+var visitasFiltradas = VISITAS.slice();
+var visActual = null;
+
+function badgeEstado(e) {
+  var cls = {Pendiente:'ep-pendiente',Realizada:'ep-realizada',Reprogramada:'ep-reprogramada',Cancelada:'ep-cancelada'};
+  return '<span class="estado-pill '+(cls[e]||'')+'">'+e+'</span>';
+}
+
+function renderVisitas() {
+  var lista = document.getElementById('lista-visitas');
+  if (!visitasFiltradas.length) {
+    lista.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px">Sin visitas encontradas</div>';
+    return;
+  }
+  lista.innerHTML = visitasFiltradas.map(function(v) {
+    var btns = '<button class="btn-secondary btn-sm" onclick="verVisita(\''+v.id+'\')">👁 Ver</button>';
+    if (v.estado === 'Pendiente' || v.estado === 'Reprogramada') {
+      btns += ' <button class="btn-primary btn-sm" onclick="registrarResultado(\''+v.id+'\')">📝 Registrar resultado</button>';
+      btns += ' <button class="btn-secondary btn-sm" onclick="reprogramar(\''+v.id+'\')">📅 Reprogramar</button>';
+    }
+    btns += ' <button class="btn-secondary btn-sm" onclick="irPerfil(\''+v.cedula+'\')">👤 Perfil</button>';
+    return '<div class="visita-card">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">'+
+        '<div>'+
+          '<span style="font-family:monospace;font-size:11px;color:var(--text-muted)">'+v.id+'</span>'+
+          ' &nbsp;<span class="badge badge-muted">'+v.tipo+'</span>'+
+          '<div style="font-size:15px;font-weight:700;margin-top:2px">'+v.empleado+'</div>'+
+          '<div style="font-size:12px;color:var(--text-muted)">'+
+            '📍 '+v.dir+'<br>'+
+            '📅 '+v.fecha+' · ⏰ '+v.hora+' · 👩 '+v.responsable+
+          '</div>'+
+        '</div>'+
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+
+          badgeEstado(v.estado)+
+          (v.resultado ? '<span style="font-size:11px;color:var(--text-muted)">Resultado: <strong>'+v.resultado+'</strong></span>' : '')+
+          (v.fotos > 0 ? '<span style="font-size:11px;color:var(--text-muted)">📷 '+v.fotos+' fotos</span>' : '')+
+          (v.informe ? '<span style="font-size:11px;color:#107c10">✅ Informe registrado</span>' : '')+
+        '</div>'+
+      '</div>'+
+      '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">'+btns+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+function filtrarVisitas() {
+  var txt   = document.getElementById('buscar-vis').value.toLowerCase();
+  var estat = document.getElementById('filtro-estado-vis').value;
+  var tipo  = document.getElementById('filtro-tipo-vis').value;
+  visitasFiltradas = VISITAS.filter(function(v) {
+    return (!txt || v.empleado.toLowerCase().includes(txt)) &&
+           (!estat || v.estado === estat) &&
+           (!tipo  || v.tipo === tipo);
+  });
+  renderVisitas();
+}
+
+function renderCalendario() {
+  var proximas = VISITAS.filter(function(v){ return v.estado === 'Pendiente' || v.estado === 'Reprogramada'; });
+  document.getElementById('tbody-cal').innerHTML = proximas.length ?
+    proximas.map(function(v){
+      return '<tr>'+
+        '<td><strong>'+v.fecha+'</strong></td>'+
+        '<td>'+v.hora+'</td>'+
+        '<td>'+v.empleado+'</td>'+
+        '<td style="font-size:11px">'+v.dir+'</td>'+
+        '<td>'+v.responsable+'</td>'+
+        '<td><span class="badge badge-muted">'+v.tipo+'</span></td>'+
+        '<td>'+badgeEstado(v.estado)+'</td>'+
+        '<td><button class="btn-primary btn-sm" onclick="registrarResultado(\''+v.id+'\')">📝 Registrar</button></td>'+
+      '</tr>';
+    }).join('') :
+    '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px">Sin visitas pendientes</td></tr>';
+}
+
+function renderInformes() {
+  // Resumen estado
+  var estados = {Pendiente:0,Realizada:0,Reprogramada:0,Cancelada:0};
+  var tipos   = {Ingreso:0,Periódica:0,Seguimiento:0,Verificación:0};
+  VISITAS.forEach(function(v){ estados[v.estado]=(estados[v.estado]||0)+1; tipos[v.tipo]=(tipos[v.tipo]||0)+1; });
+  var cols = {Realizada:'#107c10',Pendiente:'#797600',Reprogramada:'#c50f1f',Cancelada:'#605e5c'};
+
+  document.getElementById('resumen-estado').innerHTML = Object.entries(estados).map(function(kv){
+    var pct = Math.round(kv[1]/VISITAS.length*100);
+    return '<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>'+kv[0]+'</span><strong>'+kv[1]+'</strong></div>'+
+      '<div style="background:var(--border);border-radius:10px;height:6px"><div style="background:'+(cols[kv[0]]||'#0078d4')+';width:'+pct+'%;height:6px;border-radius:10px"></div></div></div>';
+  }).join('');
+
+  document.getElementById('resumen-tipo').innerHTML = Object.entries(tipos).map(function(kv){
+    var pct = Math.round(kv[1]/VISITAS.length*100);
+    return '<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>'+kv[0]+'</span><strong>'+kv[1]+'</strong></div>'+
+      '<div style="background:var(--border);border-radius:10px;height:6px"><div style="background:#0078d4;width:'+pct+'%;height:6px;border-radius:10px"></div></div></div>';
+  }).join('');
+
+  // Tabla informes realizadas
+  var realizadas = VISITAS.filter(function(v){ return v.estado === 'Realizada'; });
+  document.getElementById('tbody-informes').innerHTML = realizadas.map(function(v){
+    return '<tr>'+
+      '<td>'+v.fecha+'</td>'+
+      '<td><strong>'+v.empleado+'</strong></td>'+
+      '<td><span class="badge badge-muted">'+v.tipo+'</span></td>'+
+      '<td><span class="badge '+(v.resultado==='Favorable'?'badge-ok':v.resultado==='Con observaciones'?'badge-warn':'badge-danger')+'">'+v.resultado+'</span></td>'+
+      '<td>'+v.responsable+'</td>'+
+      '<td>'+( v.fotos>0 ? '📷 '+v.fotos+' fotos' : '—' )+'</td>'+
+      '<td>'+(v.informe ? '<button class="btn-secondary btn-sm" onclick="descargarInforme(\''+v.id+'\')">📥 PDF</button>' : '<span style="color:var(--text-muted);font-size:11px">Sin PDF</span>')+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function verVisita(id) {
+  var v = VISITAS.find(function(x){ return x.id===id; });
+  if (!v) return;
+  alert('Visita '+v.id+'\n'+'Empleado: '+v.empleado+'\nDirección: '+v.dir+'\nFecha: '+v.fecha+' '+v.hora+'\nResponsable: '+v.responsable+'\nEstado: '+v.estado+(v.resultado?'\nResultado: '+v.resultado:''));
+}
+
+function registrarResultado(id) {
+  visActual = id;
+  document.getElementById('res-fecha').value = new Date().toISOString().split('T')[0];
+  abrirModal('modal-resultado');
+}
+
+function reprogramar(id) {
+  var nueva = prompt('Nueva fecha para la visita ' + id + ' (DD/MM/YYYY):');
+  if (!nueva) return;
+  var v = VISITAS.find(function(x){ return x.id===id; });
+  if (v) { v.estado = 'Reprogramada'; v.fecha = nueva; renderVisitas(); renderCalendario(); }
+}
+
+function guardarVisita() {
+  var emp = document.getElementById('vis-empleado');
+  var fecha = document.getElementById('vis-fecha').value;
+  if (!emp.value || !fecha) { alert('Empleado y fecha son obligatorios'); return; }
+  var nueva = {
+    id: 'VD-00'+(VISITAS.length+1),
+    empleado: emp.selectedOptions[0].text,
+    cedula: emp.value,
+    tipo: document.getElementById('vis-tipo').value,
+    fecha: new Date(fecha+'T12:00').toLocaleDateString('es-CO'),
+    hora: document.getElementById('vis-hora').value,
+    dir: document.getElementById('vis-dir').value,
+    responsable: document.getElementById('vis-responsable').value.split('—')[0].trim(),
+    estado: 'Pendiente', resultado: '', fotos: 0, informe: false,
+  };
+  VISITAS.unshift(nueva);
+  visitasFiltradas = VISITAS.slice();
+  cerrarModal('modal-visita');
+  renderVisitas();
+  renderCalendario();
+  alert('✅ Visita programada: ' + nueva.id);
+}
+
+function guardarResultado() {
+  var informe = document.getElementById('res-informe').value.trim();
+  if (!informe) { alert('El informe es obligatorio'); return; }
+  var v = VISITAS.find(function(x){ return x.id===visActual; });
+  if (v) {
+    v.estado = 'Realizada';
+    v.resultado = document.getElementById('res-resultado').value;
+    v.informe = true;
+    v.fotos = document.getElementById('res-fotos').files.length;
+    visitasFiltradas = VISITAS.slice();
+    renderVisitas();
+    renderCalendario();
+    renderInformes();
+  }
+  cerrarModal('modal-resultado');
+  alert('✅ Resultado registrado exitosamente');
+}
+
+function irPerfil(cedula) { window.location = '/pages/mi-perfil.html?cedula=' + cedula; }
+function descargarInforme(id) { alert('Descargando informe ' + id + '.pdf'); }
+function exportarInformes() { alert('Exportando informe consolidado de visitas domiciliarias...'); }
+
+// Inicializar
+renderVisitas();
+renderCalendario();
+renderInformes();
+</script>
+</body>
+</html>
