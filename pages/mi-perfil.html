@@ -305,7 +305,127 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
-if (session) { Auth.renderUserBar(session); Sidebar.inject('mi-perfil.html'); }
+if (session) { Auth.renderUserBar(session); }
+// Sidebar personalizado del perfil
+function buildPerfilSidebar() {
+  if (!session) return;
+  var rol = session.rol || 'empleado';
+  var nav = document.getElementById('main-sidebar');
+  if (!nav) return;
+  if (!document.getElementById('sb-styles')) {
+    var st = document.createElement('style');
+    st.id = 'sb-styles';
+    st.textContent = '.sg-h{display:flex;align-items:center;justify-content:space-between;padding:4px 16px;cursor:pointer;transition:background .15s}.sg-h:hover{background:var(--primary-light)}.sg-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}.sg-arr{font-size:10px;color:var(--text-muted);transition:transform .2s}.sg-h.open .sg-arr{transform:rotate(180deg)}.sg-items{overflow:hidden;max-height:0;transition:max-height .25s ease}.sg-items.open{max-height:600px}.sg-items .nav-item{padding-left:24px}';
+    document.head.appendChild(st);
+  }
+  function grp(label, items) {
+    var h = '<div class="sg-h" onclick="tgl(this)"><span class="sg-lbl">' + label + '</span><span class="sg-arr">&#9662;</span></div>';
+    var body = '<div class="sg-items open" style="max-height:600px">';
+    items.forEach(function(it) {
+      var oc = it.tab ? ' onclick="event.preventDefault();goTab(\'' + it.tab + '\'' + (it.sub ? ',\'' + it.sub + '\'' : '') + ')"' : '';
+      body += '<a class="nav-item" href="' + (it.href||'#') + '"' + oc + '><span class="nav-icon">' + it.icon + '</span> ' + it.label + '</a>';
+    });
+    body += '</div>'; return '<div>' + h + body + '</div>';
+  }
+  var html = '';
+  html += '<div class="nav-section">Principal</div>';
+  html += '<a class="nav-item" href="/pages/dashboard.html"><span class="nav-icon">&#128202;</span> Dashboard</a>';
+  if (rol !== 'empleado') {
+    html += '<div class="nav-section">Empleados</div>';
+    html += '<a class="nav-item" href="/pages/empleados.html"><span class="nav-icon">&#128101;</span> Empleados</a>';
+    if (rol === 'administrador' || rol === 'empresa') {
+      html += '<a class="nav-item" href="/pages/nuevo-empleado.html"><span class="nav-icon">&#43;</span> Nuevo empleado</a>';
+    }
+  }
+  html += '<div class="nav-section">Mi informaci&#243;n</div>';
+  html += '<a class="nav-item active" href="#"><span class="nav-icon">&#128100;</span> Mi perfil</a>';
+  html += '<a class="nav-item" href="#" onclick="event.preventDefault();goTab(\'t3\')"><span class="nav-icon">&#128193;</span> Mis documentos</a>';
+  html += grp('&#128336; Tiempo', [
+    {icon:'&#127958;', label:'Vacaciones',           tab:'t4'},
+    {icon:'&#9208;',   label:'Permisos',             tab:'t5'},
+    {icon:'&#9208;',   label:'Permisos remunerados', tab:'t5'},
+    {icon:'&#128683;', label:'Ausencias',            tab:'t5'},
+    {icon:'&#127973;', label:'Incapacidades',        tab:'t6'},
+    {icon:'&#128203;', label:'Licencias',            tab:'t5'},
+    {icon:'&#128336;', label:'Asistencia',           tab:'t7'},
+  ]);
+  if (rol === 'administrador' || rol === 'empresa') {
+    html += grp('&#128176; N&#243;mina', [
+      {icon:'&#128176;', label:'N&#243;mina',      tab:'t13', sub:'n0'},
+      {icon:'&#9200;',   label:'Horas extras',     tab:'t7'},
+      {icon:'&#128188;', label:'Liquidaci&#243;n', tab:'t13', sub:'n2'},
+      {icon:'&#10084;',  label:'Seg. social',      tab:'t13', sub:'n3'},
+      {icon:'&#127974;', label:'Pr&#233;stamos',   tab:'t13', sub:'n4'},
+    ]);
+  } else {
+    html += '<div class="nav-section">N&#243;mina</div>';
+    html += '<a class="nav-item" href="#" onclick="event.preventDefault();goTab(\'t7\')"><span class="nav-icon">&#9200;</span> Horas extras</a>';
+  }
+  html += grp('&#129466; SST', [
+    {icon:'&#129466;', label:'ARL &#183; Accidentes',    tab:'t9',  sub:'s0'},
+    {icon:'&#129658;', label:'Ex&#225;menes m&#233;dicos',tab:'t9', sub:'s1'},
+  ]);
+  html += grp('&#127873; Bienestar', [
+    {icon:'&#127873;', label:'Incentivos',    tab:'t10', sub:'b0'},
+    {icon:'&#9878;',   label:'Convivencia',   tab:'t10', sub:'b1'},
+    {icon:'&#128220;', label:'Disciplinario', tab:'t10', sub:'b2'},
+  ]);
+  html += grp('&#127891; Formaci&#243;n', [
+    {icon:'&#127891;', label:'Capacitaciones',     tab:'t11', sub:'f0'},
+    {icon:'&#128226;', label:'Socializaci&#243;n', tab:'t11', sub:'f1'},
+    {icon:'&#127979;', label:'Estudios',           tab:'t11', sub:'f2'},
+  ]);
+  html += grp('&#127959; Operaciones', [
+    {icon:'&#127959;', label:'Proyectos',         tab:'t12', sub:'o0'},
+    {icon:'&#128203;', label:'Cl&#225;usulas',    tab:'t12', sub:'o1'},
+    {icon:'&#128172;', label:'Sugerencias jefe',  tab:'t12', sub:'o2'},
+  ]);
+  if (rol === 'administrador' || rol === 'empresa') {
+    html += '<div class="nav-section">Sistema</div>';
+    html += '<a class="nav-item" href="/pages/informes.html"><span class="nav-icon">&#128200;</span> Informes</a>';
+    html += '<a class="nav-item" href="/pages/config-empresa.html"><span class="nav-icon">&#9881;</span> Configuraci&#243;n</a>';
+  }
+  if (rol === 'empresa') {
+    html += '<a class="nav-item" href="/pages/auditoria.html"><span class="nav-icon">&#128220;</span> Auditor&#237;a</a>';
+  }
+  html += '<div class="nav-section">Sesi&#243;n</div>';
+  html += '<a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">&#128682;</span> Cerrar sesi&#243;n</a>';
+  nav.innerHTML = html;
+}
+
+function tgl(header) {
+  header.classList.toggle('open');
+  var items = header.nextElementSibling;
+  if (items) {
+    items.classList.toggle('open');
+    items.style.maxHeight = items.classList.contains('open') ? items.scrollHeight + 'px' : '0';
+  }
+}
+
+function goTab(tabId, subId) {
+  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
+  TABS.forEach(function(t){ var el=document.getElementById(t); if(el) el.classList.add('hidden'); });
+  var tabEl = document.getElementById(tabId);
+  if (tabEl) tabEl.classList.remove('hidden');
+  document.querySelectorAll('.tb').forEach(function(b){
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf("'" + tabId + "'") !== -1) b.classList.add('active');
+  });
+  if (subId && tabEl) {
+    setTimeout(function(){
+      tabEl.querySelectorAll('[id]').forEach(function(el){
+        if (/^[snbfo]\d+$/.test(el.id)) el.classList.add('hidden');
+      });
+      var subEl = document.getElementById(subId);
+      if (subEl) subEl.classList.remove('hidden');
+      tabEl.querySelectorAll('.stt').forEach(function(b){
+        b.classList.remove('active');
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf("'" + subId + "'") !== -1) b.classList.add('active');
+      });
+    }, 30);
+  }
+  window.scrollTo({top:80, behavior:'smooth'});
+}
+
 
 var TABS = ['t0','t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11','t12','t13'];
 
@@ -429,6 +549,7 @@ function cargar(){
 function prevFoto(input){ if(!input.files||!input.files[0])return; var r=new FileReader(); r.onload=function(ev){ var a=document.getElementById('av'); a.style.backgroundImage='url('+ev.target.result+')'; a.style.backgroundSize='cover'; document.getElementById('ai').style.display='none'; }; r.readAsDataURL(input.files[0]); }
 
 cargar();
+buildPerfilSidebar();
 </script>
 </body>
 </html>
