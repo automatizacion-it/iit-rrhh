@@ -354,10 +354,12 @@ function buildPerfilSidebar() {
     var h = '<div class="sg-h" onclick="tgl(this)"><span class="sg-lbl">' + label + '</span><span class="sg-arr">&#9662;</span></div>';
     var body = '<div class="sg-items open" style="max-height:600px">';
     items.forEach(function(it) {
-      var oc = it.tab ? ' onclick="event.preventDefault();goTab(\'' + it.tab + '\'' + (it.sub ? ',\'' + it.sub + '\'' : '') + ')"' : '';
-      body += '<a class="nav-item" href="' + (it.href||'#') + '"' + oc + '><span class="nav-icon">' + it.icon + '</span> ' + it.label + '</a>';
+      var dtab = it.tab ? ' data-tab="' + it.tab + '"' : '';
+      var dsub = it.sub ? ' data-sub="' + it.sub + '"' : '';
+      body += '<a class="nav-item pf-link" href="#"' + dtab + dsub + '><span class="nav-icon">' + it.icon + '</span> ' + it.label + '</a>';
     });
-    body += '</div>'; return '<div>' + h + body + '</div>';
+    body += '</div>';
+    return '<div>' + h + body + '</div>';
   }
   var html = '';
   html += '<div class="nav-section">Principal</div>';
@@ -423,6 +425,23 @@ function buildPerfilSidebar() {
   html += '<div class="nav-section">Sesi&#243;n</div>';
   html += '<a class="nav-item" onclick="Auth.logout()" style="cursor:pointer"><span class="nav-icon">&#128682;</span> Cerrar sesi&#243;n</a>';
   nav.innerHTML = html;
+
+  // Event listener para links del sidebar del perfil
+  nav.querySelectorAll('.pf-link').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      var tab = this.getAttribute('data-tab');
+      var sub = this.getAttribute('data-sub');
+      if (tab) goTab(tab, sub || null);
+    });
+  });
+
+  // Event listener para headers desplegables
+  nav.querySelectorAll('.sg-h').forEach(function(h) {
+    h.addEventListener('click', function() {
+      tgl(this);
+    });
+  });
 }
 
 function tgl(header) {
@@ -585,7 +604,12 @@ function cargar(){
 function prevFoto(input){ if(!input.files||!input.files[0])return; var r=new FileReader(); r.onload=function(ev){ var a=document.getElementById('av'); a.style.backgroundImage='url('+ev.target.result+')'; a.style.backgroundSize='cover'; document.getElementById('ai').style.display='none'; }; r.readAsDataURL(input.files[0]); }
 
 cargar();
-buildPerfilSidebar();
+// Llamar sidebar despues de que el DOM este completamente listo
+if (document.readyState === 'complete') {
+  buildPerfilSidebar();
+} else {
+  window.addEventListener('load', buildPerfilSidebar);
+}
 </script>
 </body>
 </html>
