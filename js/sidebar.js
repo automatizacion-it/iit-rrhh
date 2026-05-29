@@ -77,7 +77,8 @@ var Sidebar = (function () {
       items: [
         { label:'Asistente IA',        icon:'🤖', href:'/pages/asistente-ia.html', roles:['empresa','administrador'] },
         { label:'Aspirantes',          icon:'👔', href:'/pages/aspirantes.html',   roles:['empresa','administrador'] },
-        { label:'Plantillas contrato', icon:'📄', href:'/pages/contratos.html',    roles:['empresa','administrador'] },
+        { label:'Plantillas contrato',     icon:'📄',        href:'/pages/contratos.html',          roles:['empresa','administrador'] },
+        { label:'Visitas domiciliarias',    icon:'🏠',        href:'/pages/visita-domiciliaria.html', roles:['empresa','administrador'] },
       ]
     },
     {
@@ -110,7 +111,6 @@ var Sidebar = (function () {
       roles: ['empresa','administrador','usuario'],
       items: [
         { label:'Inventario equipos',    icon:'&#x1F4BB;', href:'/pages/inventario-equipos.html',   roles:['empresa','administrador','usuario'] },
-        { label:'Visitas domiciliarias', icon:'&#x1F3E0;', href:'/pages/visita-domiciliaria.html',  roles:['empresa','administrador'] },
       ]
     },
     {
