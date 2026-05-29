@@ -114,6 +114,7 @@
       <button class="tb" onclick="aTab(this,'t10')">&#x1F381; Bienestar</button>
       <button class="tb" onclick="aTab(this,'t11')">&#x1F393; Formaci&#xF3;n</button>
       <button class="tb" onclick="aTab(this,'t12')">&#x1F3D7;&#xFE0F; Operaciones</button>
+      <button class="tb" onclick="aTab(this,'tti')">&#x1F4BB; TI &middot; Bienestar</button>
       <button class="tb" id="tbn" onclick="aTab(this,'t13')" style="display:none">&#x1F4B0; N&#xF3;mina</button>
     </div>
 
@@ -353,6 +354,38 @@
         <div class="table-wrap" style="margin:0"><table><thead><tr><th>Per&#xED;odo</th><th>Categor&#xED;a</th><th>T&#xED;tulo</th><th>Tipo</th><th>Le&#xED;da</th></tr></thead><tbody id="tsug"></tbody></table></div>
       </div></div>
     </div>
+
+    <!-- ═══ TAB TI · BIENESTAR ═══ -->
+    <div id="tti" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">&#x1F4BB; Mis equipos asignados</div>
+          <button class="btn-secondary btn-sm" onclick="window.location='/pages/inventario-equipos.html'">Ver m&#xF3;dulo</button>
+        </div>
+        <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+          <div class="metric-card"><div class="metric-label">Equipos asignados</div><div class="metric-value" style="color:#0078d4" id="ti-total">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Tickets abiertos</div><div class="metric-value" style="color:#c50f1f" id="ti-tickets">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">&#xDA;ltimo ticket</div><div class="metric-value" style="font-size:12px" id="ti-ultimo">&#x2014;</div></div>
+        </div>
+        <div class="table-wrap" style="margin:0;margin-bottom:16px">
+          <table>
+            <thead><tr><th>Tipo</th><th>Marca / Modelo</th><th>Serial</th><th>Estado</th><th>Desde</th><th>Ticket</th></tr></thead>
+            <tbody id="t-ti-equipos"></tbody>
+          </table>
+        </div>
+        <div class="card-header" style="padding:0 0 8px 0;border-top:1px solid var(--border);margin-top:4px">
+          <div class="card-title" style="padding-top:12px">&#x1F9FE; Mis tickets de soporte</div>
+          <button class="btn-primary btn-sm" onclick="window.location='/pages/inventario-equipos.html'">+ Nuevo ticket</button>
+        </div>
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>ID</th><th>Equipo</th><th>Falla</th><th>Prioridad</th><th>Fecha</th><th>Estado</th></tr></thead>
+            <tbody id="t-ti-tickets"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div id="t13" class="hidden">
       <div class="st">
         <button class="stt active" onclick="aST(this,'n0')">&#x1F4B0; Salario</button>
@@ -556,7 +589,7 @@ function goTab(tabId, subId) {
 }
 
 
-var TABS = ['t0','t1','t2','t3','tt','t9','t10','t11','t12','t13'];
+var TABS = ['t0','t1','t2','t3','tt','t9','t10','t11','t12','tti','t13'];
 
 function aTab(btn, id) {
   document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
@@ -607,6 +640,100 @@ function vacio(n){ return '<tr><td colspan="'+n+'" style="text-align:center;colo
 var bE = {aprobado:'badge-ok',aprobada:'badge-ok',disfrutado:'badge-ok',pendiente:'badge-warn',rechazado:'badge-danger',terminado:'badge-muted'};
 function tx(id,v){ document.getElementById(id).textContent = v||'\u2014'; }
 function row(arr,fn){ return arr&&arr.length ? arr.map(fn).join('') : vacio(6); }
+
+// ── DB Equipos por empleado ───────────────────────────────────────
+var DB_EQUIPOS = {
+  '1234567890': {
+    total:2, tickets_ab:2, ultimo:'TK-001 · 20/05/2026',
+    equipos:[
+      {tipo:'Laptop',  marca:'Dell Latitude 5530',  serial:'DL-2023-001', estado:'En uso',     desde:'15/03/2023'},
+      {tipo:'Monitor', marca:'LG 27UK850-W 4K',     serial:'LG-2022-003', estado:'En uso',     desde:'15/03/2022'},
+    ],
+    tickets:[
+      {id:'TK-001',equipo:'Dell Latitude 5530',falla:'Software',prioridad:'Alta',  fecha:'20/05/2026',estado:'En proceso'},
+      {id:'TK-005',equipo:'LG 27UK850-W 4K',  falla:'Hardware',prioridad:'Baja',  fecha:'10/05/2026',estado:'Pendiente'},
+    ]
+  },
+  '52456789': {
+    total:1, tickets_ab:1, ultimo:'TK-003 · 15/05/2026',
+    equipos:[
+      {tipo:'Laptop',marca:'HP EliteBook 840',serial:'HP-2022-015',estado:'En uso',desde:'10/08/2022'},
+    ],
+    tickets:[
+      {id:'TK-003',equipo:'HP EliteBook 840',falla:'Red / Conectividad',prioridad:'Baja',fecha:'15/05/2026',estado:'Resuelto'},
+    ]
+  },
+  '79234567': {
+    total:1, tickets_ab:0, ultimo:'Sin tickets',
+    equipos:[
+      {tipo:'Desktop',marca:'Lenovo ThinkCentre M70q',serial:'LN-2021-008',estado:'En uso',desde:'05/01/2021'},
+    ],
+    tickets:[]
+  },
+  '1098765432': {total:0, tickets_ab:0, ultimo:'Sin equipos', equipos:[], tickets:[]},
+  '80123456':   {total:0, tickets_ab:0, ultimo:'Sin equipos', equipos:[], tickets:[]},
+  '1020345678': {total:0, tickets_ab:0, ultimo:'Sin equipos', equipos:[], tickets:[]},
+  '79876543': {
+    total:1, tickets_ab:1, ultimo:'TK-004 · 22/05/2026',
+    equipos:[
+      {tipo:'Laptop',marca:'Lenovo ThinkPad E15',serial:'LN-2024-002',estado:'En uso',desde:'10/03/2024'},
+    ],
+    tickets:[
+      {id:'TK-004',equipo:'Lenovo ThinkPad E15',falla:'Hardware',prioridad:'Alta',fecha:'22/05/2026',estado:'Pendiente'},
+    ]
+  },
+  '52789012': {
+    total:1, tickets_ab:0, ultimo:'Sin tickets',
+    equipos:[
+      {tipo:'Tablet',marca:'Apple iPad Pro 11"',serial:'AP-2023-TAB-001',estado:'En uso',desde:'05/07/2023'},
+    ],
+    tickets:[]
+  }
+};
+
+var iconoTipo = {'Laptop':'💻','Desktop':'🖥️','Monitor':'🖥️','Impresora':'🖨️','Tablet':'📱','Otro':'🔌'};
+var colPrioridad = {'Alta':'badge-danger','Media':'badge-warn','Baja':'badge-muted'};
+var colEstTicket = {'Pendiente':'badge-warn','En proceso':'badge-info','Resuelto':'badge-ok'};
+
+function cargarTI(ced) {
+  var d = DB_EQUIPOS[ced];
+  if (!d) { d = {total:0, tickets_ab:0, ultimo:'Sin registros', equipos:[], tickets:[]}; }
+
+  // Métricas
+  document.getElementById('ti-total').textContent   = d.total;
+  document.getElementById('ti-tickets').textContent = d.tickets_ab;
+  document.getElementById('ti-ultimo').textContent  = d.ultimo;
+
+  // Tabla equipos
+  var bEq = {'En uso':'badge-ok','Disponible':'badge-info','Mantenimiento':'badge-warn','Dado de baja':'badge-danger'};
+  document.getElementById('t-ti-equipos').innerHTML = d.equipos.length
+    ? d.equipos.map(function(eq){
+        return '<tr>' +
+          '<td>' + (iconoTipo[eq.tipo]||'🔌') + ' ' + eq.tipo + '</td>' +
+          '<td><strong>' + eq.marca + '</strong></td>' +
+          '<td style="font-family:monospace;font-size:11px">' + eq.serial + '</td>' +
+          '<td><span class="badge ' + (bEq[eq.estado]||'badge-muted') + '">' + eq.estado + '</span></td>' +
+          '<td>' + eq.desde + '</td>' +
+          '<td><button class="btn-secondary btn-sm" onclick="window.location='/pages/inventario-equipos.html'">🎫 Ticket</button></td>' +
+        '</tr>';
+      }).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px">Sin equipos asignados</td></tr>';
+
+  // Tabla tickets
+  document.getElementById('t-ti-tickets').innerHTML = d.tickets.length
+    ? d.tickets.map(function(tk){
+        return '<tr>' +
+          '<td style="font-family:monospace;font-size:11px">' + tk.id + '</td>' +
+          '<td>' + tk.equipo + '</td>' +
+          '<td>' + tk.falla + '</td>' +
+          '<td><span class="badge ' + (colPrioridad[tk.prioridad]||'badge-muted') + '">' + tk.prioridad + '</span></td>' +
+          '<td>' + tk.fecha + '</td>' +
+          '<td><span class="badge ' + (colEstTicket[tk.estado]||'badge-muted') + '">' + tk.estado + '</span></td>' +
+        '</tr>';
+      }).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px">Sin tickets registrados</td></tr>';
+}
+
 
 function cargar(){
   var ced = qp('cedula').replace(/[\.\s]/g,'');
