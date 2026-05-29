@@ -109,18 +109,7 @@
       <button class="tb" onclick="aTab(this,'t1')">&#x1F4BC; Laboral</button>
       <button class="tb" onclick="aTab(this,'t2')">&#x1F4DE; Contacto</button>
       <button class="tb" onclick="aTab(this,'t3')">&#x1F4C1; Docs</button>
-      <div class="tb-dropdown" id="dd-tiempo">
-        <button class="tb" onclick="toggleTiempo(event)">&#x1F550; Tiempo &#9662;</button>
-        <div class="tb-dropdown-menu" id="dd-tiempo-menu">
-          <a href="#" onclick="event.preventDefault();goTab('t4');closeTiempo()">&#x1F3D6; Vacaciones</a>
-          <a href="#" onclick="event.preventDefault();goTab('t5','t5-permisos');closeTiempo()">&#x23F8; Permisos</a>
-          <a href="#" onclick="event.preventDefault();goTab('t5','t5-permrem');closeTiempo()">&#x23F8; Permisos remunerados</a>
-          <a href="#" onclick="event.preventDefault();goTab('t5','t5-ausencias');closeTiempo()">&#x1F6AB; Ausencias</a>
-          <a href="#" onclick="event.preventDefault();goTab('t6');closeTiempo()">&#x1F3E5; Incapacidades</a>
-          <a href="#" onclick="event.preventDefault();goTab('t5','t5-licencias');closeTiempo()">&#x1F4CB; Licencias</a>
-          <a href="#" onclick="event.preventDefault();goTab('t7','t7-asistencia');closeTiempo()">&#x1F550; Asistencia</a>
-        </div>
-      </div>
+      <button class="tb" onclick="aTab(this,'tt')">&#x1F550; Tiempo</button>
       <button class="tb" onclick="aTab(this,'t9')">&#x1F9BA; SST</button>
       <button class="tb" onclick="aTab(this,'t10')">&#x1F381; Bienestar</button>
       <button class="tb" onclick="aTab(this,'t11')">&#x1F393; Formaci&#xF3;n</button>
@@ -241,6 +230,48 @@
     <div id="t8" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F393; Capacitaciones</div></div>
       <div class="table-wrap" style="margin:0"><table><thead><tr><th>Curso</th><th>Entidad</th><th>Fecha</th><th>Horas</th><th>Certificado</th><th>Vence</th></tr></thead><tbody id="tcap"></tbody></table></div>
     </div></div>
+    <div id="tt" class="hidden">
+      <div class="st">
+        <button class="stt active" onclick="aST(this,'tt0')">&#x1F3D6; Vacaciones</button>
+        <button class="stt" onclick="aST(this,'tt1')">&#x23F8; Permisos</button>
+        <button class="stt" onclick="aST(this,'tt2')">&#x23F8; Perm. remunerados</button>
+        <button class="stt" onclick="aST(this,'tt3')">&#x1F6AB; Ausencias</button>
+        <button class="stt" onclick="aST(this,'tt4')">&#x1F3E5; Incapacidades</button>
+        <button class="stt" onclick="aST(this,'tt5')">&#x1F4CB; Licencias</button>
+        <button class="stt" onclick="aST(this,'tt6')">&#x1F550; Asistencia</button>
+      </div>
+      <div id="tt0"><div class="card"><div class="card-header"><div class="card-title">&#x1F3D6; Mis vacaciones</div><button class="btn-primary btn-sm" onclick="window.location='/pages/vacaciones.html'">+ Solicitar</button></div>
+        <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+          <div class="metric-card"><div class="metric-label">Disponibles</div><div class="metric-value" style="color:#107c10" id="vd">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Disfrutados</div><div class="metric-value" id="vdis">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Pendiente</div><div class="metric-value" style="color:#797600" id="vp">&#x2014;</div></div>
+        </div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Per&#xED;odo</th><th>Inicio</th><th>Fin</th><th>D&#xED;as</th><th>Estado</th></tr></thead><tbody id="tv"></tbody></table></div>
+      </div></div>
+      <div id="tt1" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x23F8; Mis permisos</div><button class="btn-primary btn-sm" onclick="window.location='/pages/permisos.html'">+ Solicitar</button></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Tipo</th><th>Fecha</th><th>Horas</th><th>Motivo</th><th>Estado</th></tr></thead><tbody id="tperm"></tbody></table></div>
+      </div></div>
+      <div id="tt2" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x23F8; Permisos remunerados</div><button class="btn-secondary btn-sm" onclick="window.location='/pages/permisos-remunerados.html'">Ver m&#xF3;dulo</button></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Tipo</th><th>Ley</th><th>Fecha</th><th>Horas</th><th>Estado</th></tr></thead><tbody id="tpermrem"></tbody></table></div>
+      </div></div>
+      <div id="tt3" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F6AB; Mis ausencias</div><button class="btn-secondary btn-sm" onclick="window.location='/pages/ausencias.html'">Ver m&#xF3;dulo</button></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Tipo</th><th>Fecha</th><th>Horas</th><th>Justificada</th><th>Estado</th></tr></thead><tbody id="tausencias"></tbody></table></div>
+      </div></div>
+      <div id="tt4" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F3E5; Mis incapacidades</div></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Diagn&#xF3;stico</th><th>Inicio</th><th>Fin</th><th>D&#xED;as</th><th>Entidad</th></tr></thead><tbody id="tinc"></tbody></table></div>
+      </div></div>
+      <div id="tt5" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F4CB; Mis licencias</div><button class="btn-secondary btn-sm" onclick="window.location='/pages/licencias.html'">Ver m&#xF3;dulo</button></div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Tipo</th><th>Remunerada</th><th>Inicio</th><th>Fin</th><th>D&#xED;as</th><th>Estado</th></tr></thead><tbody id="tlicencias"></tbody></table></div>
+      </div></div>
+      <div id="tt6" class="hidden"><div class="card"><div class="card-header"><div class="card-title">&#x1F550; Mi asistencia</div><button class="btn-secondary btn-sm" onclick="window.location='/pages/asistencia.html'">Ver m&#xF3;dulo</button></div>
+        <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+          <div class="metric-card"><div class="metric-label">D&#xED;as trabajados</div><div class="metric-value" style="color:#107c10" id="ast-trabajados">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Tardanzas</div><div class="metric-value" style="color:#797600" id="ast-tardanzas">&#x2014;</div></div>
+          <div class="metric-card"><div class="metric-label">Ausencias</div><div class="metric-value" style="color:#c50f1f" id="ast-ausencias">&#x2014;</div></div>
+        </div>
+        <div class="table-wrap" style="margin:0"><table><thead><tr><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Novedad</th></tr></thead><tbody id="tasistencia"></tbody></table></div>
+      </div></div>
+    </div>
     <div id="t9" class="hidden">
       <div class="st">
         <button class="stt active" onclick="aST(this,'s0')">&#x1F9BA; ARL</button>
@@ -412,13 +443,13 @@ function buildPerfilSidebar() {
   html += '<a class="nav-item active" href="#"><span class="nav-icon">&#128100;</span> Mi perfil</a>';
   html += '<a class="nav-item" href="#" onclick="event.preventDefault();goTab(\'t3\')"><span class="nav-icon">&#128193;</span> Mis documentos</a>';
   html += grp('&#128336; Tiempo', [
-    {icon:'&#127958;', label:'Vacaciones',           tab:'t4'},
-    {icon:'&#9208;',   label:'Permisos',             tab:'t5', sub:'t5-permisos'},
-    {icon:'&#9208;',   label:'Permisos remunerados', tab:'t5', sub:'t5-permrem'},
-    {icon:'&#128683;', label:'Ausencias',            tab:'t5', sub:'t5-ausencias'},
-    {icon:'&#127973;', label:'Incapacidades',        tab:'t6'},
-    {icon:'&#128203;', label:'Licencias',            tab:'t5', sub:'t5-licencias'},
-    {icon:'&#128336;', label:'Asistencia',           tab:'t7', sub:'t7-asistencia'},
+    {icon:'&#127958;', label:'Vacaciones',           tab:'tt', sub:'tt0'},
+    {icon:'&#9208;',   label:'Permisos',             tab:'tt', sub:'tt1'},
+    {icon:'&#9208;',   label:'Permisos remunerados', tab:'tt', sub:'tt2'},
+    {icon:'&#128683;', label:'Ausencias',            tab:'tt', sub:'tt3'},
+    {icon:'&#127973;', label:'Incapacidades',        tab:'tt', sub:'tt4'},
+    {icon:'&#128203;', label:'Licencias',            tab:'tt', sub:'tt5'},
+    {icon:'&#128336;', label:'Asistencia',           tab:'tt', sub:'tt6'},
   ]);
   if (rol === 'administrador' || rol === 'empresa') {
     html += grp('&#128176; N&#243;mina', [
@@ -520,7 +551,7 @@ function goTab(tabId, subId) {
 }
 
 
-var TABS = ['t0','t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11','t12','t13'];
+var TABS = ['t0','t1','t2','t3','tt','t9','t10','t11','t12','t13'];
 
 function aTab(btn, id) {
   document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
