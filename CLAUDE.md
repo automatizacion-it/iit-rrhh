@@ -1,208 +1,341 @@
-# CLAUDE.md — infraestructura-it.github.io
-**Proyecto:** Sitio corporativo IIT  
-**Repo:** `infraestructura-it/infraestructura-it.github.io`  
-**Deploy:** GitHub Pages → `infraestructura-it.github.io` → `infraestructura-it.com` (Cloudflare)  
-**Stack:** Vanilla HTML · CSS · JS · Sin frameworks · Sin build step  
-**Última actualización:** 2026-06-26  
+# CLAUDE.md — IIT RRHH · Sistema de Recursos Humanos
+> Archivo de continuidad para sesiones Claude. Actualizar con cada cambio significativo.
+> Última actualización: 2026-07-28 · v2.1
 
 ---
 
-## Arquitectura del sitio
+## 1. Descripción del proyecto
+
+Sistema de Recursos Humanos web para InfraestructuraIT (IIT), construido en **vanilla HTML/CSS/JS sin frameworks**, desplegado en **Azure Static Web Apps** con **Supabase** como backend (PostgreSQL + REST API).
+
+- **Producción:** https://wonderful-island-0960e8a10.7.azurestaticapps.net/
+- **Repo:** https://github.com/automatizacion-it/iit-rrhh
+- **Local:** `C:\Users\User01\OneDrive\2026-proyectos\iit-rrhh`
+- **Rama principal:** `main`
+- **Versión actual:** v2.1
+- **Carpeta de descargas:** `C:\Descargas`
+
+---
+
+## 2. Stack técnico
+
+| Capa | Tecnología |
+|------|-----------|
+| Frontend | Vanilla HTML5 / CSS3 / JavaScript ES6 (sin frameworks) |
+| Estilos | CSS custom properties en `css/styles.css` (tema Fluent Design) |
+| Auth | `js/auth.js` v2.0 — Supabase REST, hash demo `$demo$password` |
+| Navegación | `js/sidebar.js` — sidebar con secciones desplegables, roles dinámicos |
+| Hosting | Azure Static Web Apps (Free tier) — deploy automático desde `main` |
+| Base de datos | **Supabase PostgreSQL** |
+| Autenticación | Tabla propia `usuarios_sistema` (NO Supabase Auth) |
+
+---
+
+## 3. Supabase
+
+- **URL:** `https://jntxowiyfwhthxhuoifb.supabase.co`
+- **Anon key:** `sb_publishable_tMC3EDKF1yXy8bz_yQGDOA_IfSBvuj7`
+- **REST base:** `https://jntxowiyfwhthxhuoifb.supabase.co/rest/v1`
+- **RLS:** habilitado en todas las tablas, políticas permisivas (se refinan con Auth real)
+- **Hash actual:** `'$demo$' + password` — solo demo, reemplazar por bcrypt en producción
+- **Trigger `set_updated_at()`:** función global para actualizar `updated_at` automáticamente
+
+---
+
+## 4. Base de datos — tablas creadas
+
+Todas creadas el 2026-07-28 via SQL Editor de Supabase. RLS habilitado con políticas `for all using (true)`.
+
+### Tablas operativas (16 tablas)
+
+| Tabla | Descripción | FK principal |
+|-------|-------------|-------------|
+| `empleados` | Tabla core — todos la referencian | — |
+| `usuarios_sistema` | Cuentas de acceso, 4 roles | `empleados.id` |
+| `vacaciones` | Solicitudes de vacaciones | `empleados.id` |
+| `permisos` | Permisos remunerados y no remunerados | `empleados.id` |
+| `ausencias` | Registro de ausencias | `empleados.id` |
+| `incapacidades` | Incapacidades médicas | `empleados.id` |
+| `licencias` | Licencias (maternidad, luto, etc.) | `empleados.id` |
+| `nomina_periodos` | Cabecera de períodos de nómina | — |
+| `nomina_items` | Detalle de nómina por empleado | `empleados.id`, `nomina_periodos.id` |
+| `horas_extras` | Registro y liquidación HE | `empleados.id` |
+| `prestamos` | Préstamos a empleados | `empleados.id` |
+| `arl_accidentes` | Accidentes laborales | `empleados.id` |
+| `examenes_medicos` | Exámenes de ingreso/retiro/periódico | `empleados.id` |
+| `aspirantes` | Candidatos con score IA | — |
+| `contratos` | Contratos laborales | `empleados.id` |
+| `auditoria_log` | Log de todas las acciones del sistema | `usuarios_sistema.id` |
+
+### Tablas pendientes de crear
+
+| Tabla | Módulo |
+|-------|--------|
+| `capacitaciones` | `capacitaciones.html` |
+| `disciplinario` | `disciplinario.html` |
+| `inventario_equipos` | `inventario-equipos.html` |
+| `proyectos` + `proyectos_empleados` | `proyectos.html` |
+| `estudios_seguridad` | `seguridad.html` |
+| `visitas_domiciliarias` | `visita-domiciliaria.html` |
+| `examenes_medicos` | `examenes-medicos.html` |
+
+### Datos demo insertados
+
+| Tabla | Registros |
+|-------|-----------|
+| `usuarios_sistema` | 4 usuarios (empresa, admin, usuario, empleado) |
+| `empleados` | 2 empleados (Carlos Rodríguez + Jairo Sepúlveda — creado en prueba real) |
+
+### Vinculación usuarios ↔ empleados
+
+```sql
+-- Ejecutado 2026-07-28: vincula empleado_id en usuarios_sistema
+update usuarios_sistema u
+set empleado_id = e.id
+from empleados e
+where u.cedula = e.cedula;
+```
+
+Resultado: solo Carlos Rodríguez quedó vinculado. Los usuarios empresa/admin/usuario no tienen ficha de empleado (normal — son administrativos).
+
+---
+
+## 5. Sistema de roles
+
+| Rol | Acceso | Credenciales demo |
+|-----|--------|------------------|
+| `empresa` | Total | `empresa@iit.com.co` / `Iit2026*` |
+| `administrador` | Casi total | `admin@iit.com.co` / `Admin2026*` |
+| `usuario` | Operativo | `usuario@iit.com.co` / `User2026*` |
+| `empleado` | Solo su info | `c.rodriguez@iit.com.co` / `Emp2026*` |
+
+**Sesión:** `localStorage` clave `iit_rrhh_session`
+**Redirect post-login:** `/pages/dashboard.html`
+
+---
+
+## 6. Estructura de archivos
 
 ```
-infraestructura-it.github.io/
-├── index.html            ← Homepage
-├── datacenter.html       ← Servicio: Data Center Modular
-├── solar.html            ← Servicio: Energía Solar
-├── redes.html            ← Servicio: Redes Empresariales
-├── iot.html              ← Servicio: IoT & Automatización
-├── ia.html               ← Servicio: IA & Automatización
-├── casos.html            ← Portafolio de proyectos ejecutados
-├── assets/
-│   ├── logo-iit-core.svg ← Logo chip 1080×1080 (redes sociales / OG image)
-│   ├── logo-iit-nav.svg  ← Logo horizontal compacto 260×44 (referencia)
-│   └── favicon.ico
-└── CLAUDE.md             ← Este archivo
+iit-rrhh/
+├── CLAUDE.md                   # Este archivo
+├── index.html                  # Login principal
+├── favicon.svg
+├── .nojekyll
+├── .nvmrc
+├── staticwebapp.config.json    # Rutas Azure SWA
+├── css/
+│   └── styles.css              # Estilos globales + variables CSS
+├── js/
+│   ├── auth.js                 # v2.0 — Supabase REST + Auth.db.*
+│   └── sidebar.js              # Menú lateral unificado
+└── pages/                      # 40 páginas
 ```
 
-> **Nota:** El logo del nav está incrustado **inline SVG** directamente en el `<a class="nav-logo">` de cada página HTML. No se carga como `<img src>` — esto evita una petición HTTP extra y garantiza que los colores y pines se rendericen correctamente en todos los navegadores.
+---
+
+## 7. Páginas y estado de conexión a Supabase
+
+### ✅ Conectadas a Supabase (datos reales)
+
+| Página | Operaciones |
+|--------|-------------|
+| `index.html` | Login real contra `usuarios_sistema` + log `auditoria_log` |
+| `pages/nuevo-empleado.html` | INSERT en `empleados` + INSERT en `usuarios_sistema` + log auditoría |
+| `pages/sabana.html` | SELECT de todos los empleados, filtros, métricas, export TSV |
+
+### 🔴 Pendientes de conectar (aún usan datos demo hardcodeados)
+
+`dashboard.html`, `empleados.html`, `mi-perfil.html`, `mis-documentos.html`,
+`vacaciones.html`, `permisos.html`, `permisos-remunerados.html`, `ausencias.html`,
+`incapacidades.html`, `licencias.html`, `asistencia.html`, `nomina.html`,
+`horas-extras.html`, `liquidacion.html`, `seguridad-social.html`, `prestamos.html`,
+`arl.html`, `examenes-medicos.html`, `incentivos.html`, `disciplinario.html`,
+`convivencia.html`, `asistente-ia.html`, `aspirantes.html`, `contratos.html`,
+`clausulas.html`, `capacitaciones.html`, `seguridad.html`, `validacion-identidad.html`,
+`visita-domiciliaria.html`, `socializacion.html`, `usuarios.html`, `config-empresa.html`,
+`inventario-equipos.html`, `proyectos.html`, `informes.html`, `sugerencias-jefe.html`,
+`auditoria.html`, `backup.html`
 
 ---
 
-## Identidad visual IIT
+## 8. API de datos — Auth.db.*
 
-| Token | Valor | Uso |
-|---|---|---|
-| `--bg` | `#080b10` | Fondo global |
-| `--surface` | `#0e1420` | Superficies elevadas |
-| `--card` | `#131b28` | Cards de servicio |
-| `--border` | `#1e2d42` | Bordes, separadores |
-| `--cyan` | `#00d4ff` | Acento principal (Datacenter, IA, nav) |
-| `--green` | `#10b981` | Acento Redes · pines verdes del logo |
-| `--amber` | `#f59e0b` | Acento Solar |
-| `--purple` | `#7c3aed` | Acento IoT |
-| `--text` | `#e2e8f0` | Texto principal |
-| `--muted` | `#64748b` | Texto secundario |
-| `--dim` | `#334155` | Texto terciario / labels |
+`auth.js` expone `Auth.db.*` para que todas las páginas usen Supabase sin fetch manual:
 
-**Tipografía:**
-- Display/Headings: `Syne` (Google Fonts) — `font-weight: 800`
-- Monoespaciado / logo / valores técnicos: `Space Mono`
-- Fallback: `DM Mono, system-ui, sans-serif`
+```javascript
+// SELECT con filtros PostgREST
+Auth.db.query('empleados',
+  { 'estado': 'eq.activo' },     // filtros
+  'id,nombres,apellidos,cargo',  // select (null = *)
+  'apellidos.asc',               // order
+  100                            // limit
+).then(function(rows) { /* array */ });
 
-**Color acento por página de servicio:**
+// SELECT simple
+Auth.db.get('empleados', { 'cedula': 'eq.79374699', 'select': '*' });
 
-| Página | Color acento | Hero chip |
-|---|---|---|
-| `datacenter.html` | `#00d4ff` cyan | RACK-01 ONLINE |
-| `solar.html` | `#f59e0b` amber | INVERSOR 5kWp SOC 87% |
-| `redes.html` | `#10b981` green | CORE SWITCH UPLINK 10G |
-| `iot.html` | `#7c3aed` purple | ESP32-S3 12 NODOS ACTIVOS |
-| `ia.html` | `#00d4ff` cyan | CLAUDE API TEMPERATURA 0 |
+// INSERT — retorna array con el registro creado
+Auth.db.insert('vacaciones', { empleado_id: 'uuid', fecha_inicio: '2026-08-01', ... });
+
+// UPDATE por filtro
+Auth.db.update('vacaciones', { id: 'uuid' }, { estado: 'aprobado' });
+
+// DELETE
+Auth.db.delete('aspirantes', { id: 'uuid' });
+```
+
+**Filtros PostgREST frecuentes:**
+- `'estado': 'eq.activo'` → igual a
+- `'salario': 'gte.2000000'` → mayor o igual
+- `'nombres': 'ilike.*juan*'` → contiene (case insensitive)
+- `'select': 'id,nombres,cargo'` → columnas específicas
+- `'order': 'apellidos.asc'` → ordenar
 
 ---
 
-## Logo IIT — especificaciones
+## 9. Patrones de código — estructura de cada página
 
-### Logo chip cuadrado `logo-iit-core.svg`
-- **Uso:** Perfil de redes sociales, Instagram, LinkedIn, OG image
-- **Tamaño:** 1080×1080 px (exportado con `width="1080" height="1080"`)
-- **ViewBox:** `0 0 680 680`
-- **Elementos:** Chip IC con pines cyan y verdes, grid interior, core circular, `IIT-CORE`, `REV.2026`, `infraestructura-it.com`
-- **Leyenda:** `infraestructura-it.com` centrada bajo el chip con separador de puntos cyan
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Módulo] — IIT RRHH</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/sidebar.js"></script>
+</head>
+<body>
+<div class="app-layout">
+  <header class="topbar">...</header>
+  <nav class="sidebar" id="main-sidebar"></nav>
+  <main class="main-content">
+    <div class="page-header">...</div>
+    <!-- contenido -->
+  </main>
+</div>
+<script src="/js/auth.js"></script>
+<script>
+  var session = Auth.requireAuth();
+  Sidebar.render('main-sidebar', session);
+  Auth.renderUserBar(session);
 
-### Logo nav inline SVG
-- **Uso:** `<a class="nav-logo">` en todas las páginas HTML — **incrustado inline**
-- **ViewBox:** `0 0 260 44` · renderizado a `width="200" height="32"`
-- **Elementos:** Chip mini con pines (cyan + verde), separador, `IIT` (segunda I en cyan), separador, `INFRAESTRUCTURA / IT · BOGOTÁ`
-- **CSS nav-logo:**
-  ```css
-  .nav-logo { display:flex; align-items:center; text-decoration:none; line-height:0; }
-  .nav-logo:hover { opacity: 0.85; }
-  ```
-- **Accesibilidad:** `aria-label="Infraestructura-IT — Inicio"` en el `<a>`
+  // Cargar datos
+  Auth.db.query('empleados', {'estado':'eq.activo'}, 'id,nombres,apellidos,cargo', 'apellidos.asc', 100)
+    .then(function(rows) { /* renderizar */ });
+</script>
+</body>
+</html>
+```
 
-### Actualizar el logo en todas las páginas
-Si se modifica el SVG del logo nav, hay que reemplazarlo en los **5 archivos de servicio** + `index.html` + `casos.html`. Script de reemplazo:
+### Clases utilitarias frecuentes
+- `.card` / `.card-header` / `.card-title`
+- `.table-wrap` → tabla con scroll horizontal
+- `.metrics-grid` / `.metric-card` / `.metric-value` / `.metric-label` / `.metric-sub`
+- `.field-group` / `.field-label` / `.field-input`
+- `.btn-primary` / `.btn-secondary` / `.btn-sm` / `.btn-full` / `.btn-group`
+- `.alert` / `.alert-error` / `.alert-warning` / `.alert-info`
+- `.badge` / `.badge-ok` / `.badge-warning` / `.badge-danger` / `.badge-muted`
+- `.page-header` / `.page-title` / `.page-sub`
+- `.form-grid` / `.span-2`
+- `.modal-overlay` / `.modal` / `.modal-header` / `.modal-body` / `.modal-footer`
+- `.hidden` → display:none
+- `.pagination` / `.page-btns` / `.page-btn.active`
+
+---
+
+## 10. Variables CSS (Fluent Design — NO el dark cyberpunk de otros proyectos IIT)
+
+```css
+--primary:       #0078d4
+--primary-dark:  #005a9e
+--primary-light: #e6f2fb
+--success:       #107c10
+--warning:       #797600
+--danger:        #c50f1f
+--bg:            #f3f2f1
+--bg-card:       #ffffff
+--bg-sidebar:    #1b1b1b
+--sidebar-active:#0078d4
+--radius:        6px
+--radius-lg:     10px
+--sidebar-w:     220px
+--topbar-h:      52px
+--font:          'Segoe UI', system-ui
+--border:        #e1dfdd
+--border-dark:   #c8c6c4
+--text-muted:    #605e5c
+--text-light:    #a19f9d
+--transition:    all 0.15s ease
+```
+
+---
+
+## 11. Despliegue
+
 ```powershell
-# En PowerShell desde el repo
-$OLD = '<a href="/index.html" class="nav-logo" aria-label="Infraestructura-IT — Inicio"><svg ...'
-$NEW = '<a href="/index.html" class="nav-logo" aria-label="Infraestructura-IT — Inicio"><svg ...'  # nuevo SVG
-Get-ChildItem *.html | ForEach-Object { (Get-Content $_) -replace [regex]::Escape($OLD), $NEW | Set-Content $_ }
+cd C:\Users\User01\OneDrive\2026-proyectos\iit-rrhh
+
+# Copiar archivo modificado desde descargas
+Copy-Item "C:\Descargas\archivo.html" "pages\archivo.html" -Force
+Copy-Item "C:\Descargas\auth.js"      "js\auth.js"         -Force
+Copy-Item "C:\Descargas\CLAUDE.md"    "CLAUDE.md"          -Force
+
+# Commit y push
+git add -A
+git commit -m "feat: descripción - closes #N"
+git push
+# Azure SWA despliega automáticamente en ~1 min
 ```
 
 ---
 
-## Estructura de cada página de servicio
-
-```
-1. <nav>              — sticky, blur, logo SVG inline + links + CTA
-2. <section.hero>     — hero-chip animado + h1 + subtítulo + 2 CTAs + status bar
-3. <div.stats-bar>    — 4 métricas (grid 4 col)
-4. <section>          — 6 tarjetas (.services-grid) + marcas (.brands-row)
-5. <section>          — Proceso 5 pasos (.proceso-grid)
-6. <section>          — Tabla specs (.specs-table)
-7. <section>          — CTA final (.cta-block)
-8. <footer>           — copyright + email
-```
-
----
-
-## Componentes CSS reutilizables
-
-| Clase | Descripción |
-|---|---|
-| `.nav-logo` | Contenedor del SVG inline del logo — flex, sin text-decoration |
-| `.hero-chip` | Badge animado con punto pulsante, color por página |
-| `.stats-bar` | Grid 4 columnas con separadores entre items |
-| `.services-grid` | Grid auto-fit 280px, gap 1px (efecto cuadrícula) |
-| `.svc-card` | Card servicio con hover bg |
-| `.tag` / `.tag.accent` | Pill técnico, `.accent` usa color de la página |
-| `.brand-pill` | Pill de marca, fondo surface |
-| `.proceso-grid` | Grid 5 col para proceso numerado |
-| `.specs-table` | Tabla técnica con hover row y `.val` monospace cyan |
-| `.cta-block` | Banner CTA flex con texto + botones |
-| `.btn-primary` | Filled con color acento de la página |
-| `.btn-outline` | Outline que adopta color acento en hover |
-
----
-
-## SEO
-
-Cada página tiene `<title>`, `<meta description>` y `<meta keywords>` con términos Colombia/Bogotá. Schema.org pendiente → issue #1.
-
----
-
-## Issues abiertos
-
-| # | Descripción | Prioridad |
-|---|---|---|
-| #1 | Schema.org `LocalBusiness` + `Service` en todas las páginas | Alta |
-| #2 | Fichas reales en `casos.html` (Proarques, JVTEL, etc.) | Alta |
-| #3 | ~~Logo nav inline en `index.html` y `casos.html`~~ — **CERRADO** | ✅ |
-| #4 | `og-image.png` 1200×630 usando `logo-iit-core.svg` | Media |
-| #5 | Sección testimonios en homepage | Media |
-| #6 | Formulario contacto funcional (Formspree) | Media |
-| #7 | Sección certificaciones (RETIE, TIA-942, Uptime) | Baja |
-| #8 | `prefers-reduced-motion` para animaciones | Baja |
-
----
-
-## Historial de cambios
-
-### v2.2 — 2026-06-26
-- **fix:** Nav de páginas de servicio unificado con index — agrega Chatbot y Blog, logo texto "Infraestructura-IT"
-- **fix:** `casos.html` creado con card Proarques linkeando a `infraestructura-it.com/caso-exito-solar-offgrid-proarques/`
-- **fix:** Logo del nav = texto simple "Infraestructura-**IT**" (no SVG) — coherente con index, punto 4 respetado
-- **chore:** CLAUDE.md v2.2
-
-### v2.1 — 2026-06-26
-- **feat:** Logo IIT-CORE chip SVG 1080×1080 con leyenda `infraestructura-it.com` (`logo-iit-core.svg`)
-- **feat:** Logo nav horizontal inline SVG en los 5 archivos de servicio (datacenter, solar, redes, iot, ia)
-- **fix:** CSS `.nav-logo` actualizado para contener SVG (flex, sin text-decoration)
-- **chore:** CLAUDE.md actualizado con spec completa del logo y tabla de colores por página
-
-### v2.0 — 2026-06-26
-- **feat:** Contenido real en 5 páginas de servicio (6 cards + specs + proceso + CTA)
-- **feat:** Stats bar con 4 métricas por página
-- **feat:** Marcas reales por servicio (Schneider, Felicity, Cisco, ESP32, Claude API...)
-- **feat:** SEO meta tags en todas las páginas
-- **feat:** Color acento diferenciado por página
-- **chore:** CLAUDE.md inicial del proyecto
-
-### v1.0 — 2024 (baseline)
-- Hero chip animado por página, nav sticky, footer
-
----
-
-## Flujo de trabajo Git (trazabilidad IIT)
+## 12. Convención de issues (trazabilidad)
 
 ```powershell
-cd C:\Users\User01\OneDrive\2026-proyectos\infraestructura-it.github.io
-
-git status
-git add .
-git commit -m "feat: logo IIT-CORE SVG inline en nav + leyenda infraestructura-it.com closes #3
-
-- logo-iit-core.svg: chip 1080x1080 con infraestructura-it.com
-- logo-iit-nav.svg: version horizontal compacta (referencia)
-- datacenter/solar/redes/iot/ia.html: logo inline SVG en nav
-- CLAUDE.md v2.1: spec logo actualizada"
-
-git push origin main
+gh issue create --title "feat: descripción" --body "Detalle del problema o mejora"
+# → implementar el cambio
+git commit -m "feat: descripción - closes #N"
+# → actualizar CLAUDE.md
+git push
 ```
 
 ---
 
-## Notas de arquitectura
+## 13. Historial de cambios
 
-- **Sin build step:** HTML/CSS/JS plano. Sin `package.json`, bundler ni preprocesador.
-- **Logo inline:** SVG del nav incrustado directamente en el HTML — cero peticiones extra, funciona offline.
-- **Fuentes:** Google Fonts (`Syne` + `Space Mono`). Fallback sistema mantiene legibilidad.
-- **Deploy automático:** `push` a `main` → GitHub Pages actualiza en ~30 segundos.
-- **DNS:** Cloudflare CNAME `infraestructura-it.com` → `infraestructura-it.github.io`.
-- **Chatbot:** `/iit-chatbot/` es subdirectorio independiente, no afectado.
+| Fecha | Versión | Cambio |
+|-------|---------|--------|
+| 2026-07-28 | v1.0 | Proyecto inicial — 40 páginas scaffolding, auth demo, Azure SWA |
+| 2026-07-28 | v2.0 | auth.js v2.0 con Supabase REST — reemplaza DEMO_USERS |
+| 2026-07-28 | v2.0 | Supabase: 16 tablas creadas (5 bloques SQL), RLS habilitado |
+| 2026-07-28 | v2.0 | Datos demo: 4 usuarios + 1 empleado (Carlos Rodríguez) |
+| 2026-07-28 | v2.0 | nuevo-empleado.html conectado a Supabase (INSERT real) |
+| 2026-07-28 | v2.1 | sabana.html conectada a Supabase (SELECT real, filtros, métricas, export) |
+| 2026-07-28 | v2.1 | Prueba real: Jairo Sepúlveda (79374699) creado exitosamente en BD |
 
 ---
 
-*Mantenido por Jairo Sepúlveda — IIT Director General — jairo@infraestructura-it.com*
+## 14. Estado y próximos pasos
+
+### ✅ Completado
+- Login real contra Supabase
+- 16 tablas PostgreSQL con RLS
+- nuevo-empleado.html → INSERT real en empleados + usuarios_sistema
+- sabana.html → SELECT real, filtros, métricas dinámicas, export TSV
+- Auditoría automática en login/logout/create
+
+### 🔴 Prioridad inmediata
+1. **empleados.html** — directorio con cards, conectar a Supabase
+2. **dashboard.html** — KPIs reales desde Supabase (COUNT por estado, nómina total)
+3. **mi-perfil.html** — perfil del empleado por `?cedula=` desde Supabase
+
+### 🟡 Siguiente fase
+4. Módulos de Tiempo (vacaciones, permisos) — CRUD completo
+5. Nómina real — cálculos colombianos 2026 (salario mínimo $1.423.500, aux. transporte $200.000)
+6. Asistente IA — Claude API en `asistente-ia.html`
+7. Tablas pendientes: `capacitaciones`, `disciplinario`, `inventario_equipos`, `proyectos`
+8. Hash bcrypt real via Supabase Edge Function (reemplazar `$demo$`)
+9. usuarios.html — CRUD de usuarios del sistema
