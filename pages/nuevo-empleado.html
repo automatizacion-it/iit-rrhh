@@ -6,50 +6,7 @@
 <title>Nuevo Empleado — IIT RRHH</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/css/styles.css">
-<script src="/js/sidebar.js">
-// ── Precargar datos desde aspirante contratado ────────────────────
-window.addEventListener('load', function() {
-  var datos = sessionStorage.getItem('iit_nuevo_empleado');
-  if (!datos) return;
-
-  try {
-    var d = JSON.parse(datos);
-    if (!d.desde_aspirante) return;
-
-    // Mostrar banner
-    var banner = document.createElement('div');
-    banner.className = 'alert alert-info';
-    banner.style.marginBottom = '14px';
-    banner.innerHTML = '🎉 <strong>Datos precargados desde el proceso de selección</strong> · Aspirante: <strong>'+d.nombres+' '+d.apellidos+'</strong> · Revisa y completa los campos faltantes.';
-    document.querySelector('.main-content').insertBefore(banner, document.querySelector('.page-header').nextSibling);
-
-    // Precargar campos
-    var set = function(id, val) { var el = document.getElementById(id); if(el && val) el.value = val; };
-    set('emp-nombres',   d.nombres);
-    set('emp-apellidos', d.apellidos);
-    set('emp-cedula',    d.cedula);
-    set('emp-email-corp', d.email ? d.email.replace('@gmail.com','@iit.com.co').replace('@hotmail.com','@iit.com.co') : '');
-    set('emp-email-pers', d.email);
-    set('emp-telefono',  d.telefono);
-    set('emp-educacion', d.educacion);
-    set('emp-salario',   d.salario);
-
-    // Limpiar sessionStorage para no precargar en recarga
-    sessionStorage.removeItem('iit_nuevo_empleado');
-
-  } catch(e) {
-    console.error('Error precargando aspirante:', e);
-  }
-});
-
-// Al guardar, redirigir al perfil del nuevo empleado
-function guardarYVerPerfil(cedula) {
-  var cedulaLimpia = (cedula || '').replace(/[.\s]/g, '');
-  alert('✅ Empleado registrado exitosamente.\nRedirigiendo a su perfil completo...');
-  window.location.href = '/pages/mi-perfil.html?cedula=' + cedulaLimpia;
-}
-
-</script>
+<script src="/js/sidebar.js"></script>
 <style>
 .wizard-panel { display:none; }
 .wizard-panel.active { display:block; }
@@ -117,7 +74,6 @@ function guardarYVerPerfil(cedula) {
           <div class="card-title">👤 Datos personales y fotografía</div>
         </div>
 
-        <!-- Foto -->
         <div style="display:flex;gap:24px;align-items:flex-start;margin-bottom:20px">
           <div>
             <div class="field-label">Fotografía</div>
@@ -160,10 +116,6 @@ function guardarYVerPerfil(cedula) {
             <input type="date" class="field-input" id="fecha-nac">
           </div>
           <div class="field-group">
-            <label class="field-label">Lugar de nacimiento</label>
-            <input type="text" class="field-input" id="lugar-nac" placeholder="Bogotá, Colombia">
-          </div>
-          <div class="field-group">
             <label class="field-label">Género</label>
             <select class="field-input" id="genero">
               <option value="M">Masculino</option>
@@ -194,7 +146,7 @@ function guardarYVerPerfil(cedula) {
             </select>
           </div>
           <div class="field-group">
-            <label class="field-label">Teléfono</label>
+            <label class="field-label">Teléfono / Celular</label>
             <input type="tel" class="field-input" id="telefono" placeholder="+57 310 456 7890">
           </div>
           <div class="field-group">
@@ -215,7 +167,21 @@ function guardarYVerPerfil(cedula) {
           </div>
           <div class="field-group">
             <label class="field-label">Contacto de emergencia</label>
-            <input type="text" class="field-input" id="contacto-emerg" placeholder="María García · 311 234 5678">
+            <input type="text" class="field-input" id="contacto-emerg-nombre" placeholder="María García">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Tel. emergencia</label>
+            <input type="text" class="field-input" id="contacto-emerg-tel" placeholder="311 234 5678">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Parentesco</label>
+            <select class="field-input" id="contacto-emerg-parentesco">
+              <option>Cónyuge</option>
+              <option>Padre/Madre</option>
+              <option>Hijo/a</option>
+              <option>Hermano/a</option>
+              <option>Otro</option>
+            </select>
           </div>
         </div>
 
@@ -269,10 +235,11 @@ function guardarYVerPerfil(cedula) {
           <div class="field-group">
             <label class="field-label">Tipo de contrato <span class="required">*</span></label>
             <select class="field-input" id="tipo-contrato">
-              <option>Indefinido</option>
-              <option>Término fijo</option>
-              <option>Obra labor</option>
-              <option>Aprendizaje</option>
+              <option value="indefinido">Indefinido</option>
+              <option value="fijo">Término fijo</option>
+              <option value="obra">Obra labor</option>
+              <option value="aprendizaje">Aprendizaje</option>
+              <option value="prestacion">Prestación de servicios</option>
             </select>
           </div>
           <div class="field-group">
@@ -294,10 +261,6 @@ function guardarYVerPerfil(cedula) {
           <div class="field-group">
             <label class="field-label">Salario básico <span class="required">*</span></label>
             <input type="number" class="field-input" id="salario" placeholder="2800000" min="1423500">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Auxilio de transporte</label>
-            <input type="number" class="field-input" id="aux-transporte" value="200000">
           </div>
           <div class="field-group">
             <label class="field-label">Banco</label>
@@ -339,42 +302,28 @@ function guardarYVerPerfil(cedula) {
           <div class="field-group">
             <label class="field-label">EPS <span class="required">*</span></label>
             <select class="field-input" id="eps">
-              <option>Sanitas</option>
-              <option>Sura</option>
-              <option>Compensar</option>
-              <option>Nueva EPS</option>
-              <option>Famisanar</option>
-              <option>Coomeva</option>
-              <option>Salud Total</option>
+              <option>Sanitas</option><option>Sura</option><option>Compensar</option>
+              <option>Nueva EPS</option><option>Famisanar</option><option>Coomeva</option><option>Salud Total</option>
             </select>
           </div>
           <div class="field-group">
             <label class="field-label">Fondo de pensión <span class="required">*</span></label>
             <select class="field-input" id="pension">
-              <option>Porvenir</option>
-              <option>Protección</option>
-              <option>Colpensiones</option>
-              <option>Skandia</option>
-              <option>Colfondos</option>
+              <option>Porvenir</option><option>Protección</option><option>Colpensiones</option>
+              <option>Skandia</option><option>Colfondos</option>
             </select>
           </div>
           <div class="field-group">
             <label class="field-label">Fondo de cesantías</label>
             <select class="field-input" id="cesantias">
-              <option>Porvenir</option>
-              <option>Protección</option>
-              <option>Colfondos</option>
-              <option>Skandia</option>
+              <option>Porvenir</option><option>Protección</option><option>Colfondos</option><option>Skandia</option>
             </select>
           </div>
           <div class="field-group">
             <label class="field-label">ARL <span class="required">*</span></label>
             <select class="field-input" id="arl">
-              <option>Sura</option>
-              <option>Positiva</option>
-              <option>Colmena</option>
-              <option>Liberty</option>
-              <option>Equidad</option>
+              <option>Sura</option><option>Positiva</option><option>Colmena</option>
+              <option>Liberty</option><option>Equidad</option>
             </select>
           </div>
           <div class="field-group">
@@ -390,18 +339,14 @@ function guardarYVerPerfil(cedula) {
           <div class="field-group">
             <label class="field-label">Caja de compensación</label>
             <select class="field-input" id="caja">
-              <option>Compensar</option>
-              <option>Cafam</option>
-              <option>Colsubsidio</option>
-              <option>Comfenalco</option>
-              <option>Comfama</option>
+              <option>Compensar</option><option>Cafam</option><option>Colsubsidio</option>
+              <option>Comfenalco</option><option>Comfama</option>
             </select>
           </div>
         </div>
 
-        <!-- Resumen de aportes -->
         <div class="alert alert-info" style="margin-top:16px">
-          <strong>Aportes mensuales estimados</strong> (se calculan automáticamente con el salario ingresado)<br>
+          <strong>Aportes mensuales estimados</strong><br>
           <div id="resumen-aportes" style="margin-top:8px;font-size:12px"></div>
         </div>
 
@@ -419,7 +364,7 @@ function guardarYVerPerfil(cedula) {
         </div>
 
         <div class="alert alert-info">
-          El empleado recibirá un correo con el link de activación. Usará su <strong>cédula</strong> como identificador principal.
+          El empleado podrá ingresar con su <strong>cédula</strong> o <strong>email corporativo</strong> usando la contraseña temporal asignada.
         </div>
 
         <div class="form-grid" style="margin-top:16px">
@@ -446,22 +391,24 @@ function guardarYVerPerfil(cedula) {
           </div>
         </div>
 
-        <!-- Cláusula de confidencialidad -->
         <div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
           <div style="font-size:13px;font-weight:600;margin-bottom:8px">📋 Cláusula de confidencialidad</div>
           <div style="font-size:12px;color:var(--text-muted);max-height:100px;overflow-y:auto;line-height:1.6">
-            El empleado se compromete a mantener la confidencialidad de toda la información de la empresa IIT InfraestructuraIT a la que tenga acceso en razón de su cargo, tanto durante su vinculación como después de ella. Esta obligación incluye información técnica, comercial, financiera y de clientes.
+            El empleado se compromete a mantener la confidencialidad de toda la información de la empresa IIT InfraestructuraIT a la que tenga acceso en razón de su cargo, tanto durante su vinculación como después de ella.
           </div>
           <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
             <input type="checkbox" id="acepta-clausula" style="width:16px;height:16px">
-            <label for="acepta-clausula" style="font-size:12px;cursor:pointer">El administrador confirma que el empleado ha sido informado sobre la cláusula de confidencialidad</label>
+            <label for="acepta-clausula" style="font-size:12px;cursor:pointer">Confirmo que el empleado fue informado sobre la cláusula de confidencialidad</label>
           </div>
         </div>
+
+        <!-- Mensaje de estado -->
+        <div id="msg-guardado" style="display:none;margin-top:16px"></div>
 
         <div class="divider"></div>
         <div style="display:flex;justify-content:space-between">
           <button class="btn-secondary" onclick="siguientePaso(3)">← Anterior</button>
-          <button class="btn-primary" onclick="guardarEmpleado()" style="background:#107c10">✅ Crear empleado</button>
+          <button class="btn-primary" id="btn-guardar" onclick="guardarEmpleado()" style="background:#107c10">✅ Crear empleado</button>
         </div>
       </div>
 
@@ -472,70 +419,79 @@ function guardarYVerPerfil(cedula) {
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
-if (session) Sidebar.inject('nuevo-empleado.html');
-if (session) {
-  Auth.renderUserBar(session);
-  if (!Auth.isAdmin()) {
-    document.querySelector('.main-content').innerHTML =
-      '<div class="alert alert-error" style="margin:40px">⛔ Solo administradores pueden crear empleados.</div>';
-  }
+Sidebar.render('main-sidebar', session);
+Auth.renderUserBar(session);
+
+if (!Auth.isAdmin()) {
+  document.querySelector('.main-content').innerHTML =
+    '<div class="alert alert-error" style="margin:40px">⛔ Solo administradores pueden crear empleados.</div>';
 }
 
+// ── Precargar desde aspirante ────────────────────────────────────
+window.addEventListener('load', function() {
+  var datos = sessionStorage.getItem('iit_nuevo_empleado');
+  if (!datos) return;
+  try {
+    var d = JSON.parse(datos);
+    if (!d.desde_aspirante) return;
+    var banner = document.createElement('div');
+    banner.className = 'alert alert-info';
+    banner.style.marginBottom = '14px';
+    banner.innerHTML = '🎉 <strong>Datos precargados desde selección</strong> · Aspirante: <strong>'+d.nombres+' '+d.apellidos+'</strong>';
+    document.querySelector('.main-content').insertBefore(banner, document.querySelector('.page-header').nextSibling);
+    var set = function(id, val) { var el = document.getElementById(id); if(el && val) el.value = val; };
+    set('cedula',     d.cedula);
+    set('nombres',    d.nombres);
+    set('apellidos',  d.apellidos);
+    set('email-corp', d.email ? d.email.replace(/@.+/, '@iit.com.co') : '');
+    set('email-pers', d.email);
+    set('telefono',   d.telefono);
+    set('salario',    d.salario);
+    sessionStorage.removeItem('iit_nuevo_empleado');
+  } catch(e) { console.error(e); }
+});
+
+// ── Wizard ───────────────────────────────────────────────────────
 var pasoActual = 1;
 
 function siguientePaso(paso) {
-  // Validación básica
   if (paso > pasoActual) {
     if (pasoActual === 1) {
-      if (!document.getElementById('cedula').value.trim()) {
-        alert('La cédula es obligatoria'); return;
-      }
-      if (!document.getElementById('nombres').value.trim()) {
-        alert('El nombre es obligatorio'); return;
-      }
+      if (!document.getElementById('cedula').value.trim())    { alert('La cédula es obligatoria'); return; }
+      if (!document.getElementById('nombres').value.trim())   { alert('El nombre es obligatorio'); return; }
+      if (!document.getElementById('apellidos').value.trim()) { alert('Los apellidos son obligatorios'); return; }
+      if (!document.getElementById('email-corp').value.trim()){ alert('El email corporativo es obligatorio'); return; }
     }
     if (pasoActual === 2) {
-      if (!document.getElementById('salario').value) {
-        alert('El salario es obligatorio'); return;
-      }
+      if (!document.getElementById('salario').value)          { alert('El salario es obligatorio'); return; }
+      if (!document.getElementById('fecha-ingreso').value)    { alert('La fecha de ingreso es obligatoria'); return; }
     }
   }
-
-  // Sincronizar datos entre paneles
   if (paso === 3) calcularAportes();
   if (paso === 4) {
     document.getElementById('acc-cedula').value = document.getElementById('cedula').value;
     document.getElementById('acc-email').value  = document.getElementById('email-corp').value;
   }
-
   document.getElementById('panel-'+pasoActual).classList.remove('active');
   document.getElementById('ws-'+pasoActual).classList.remove('active');
-
   pasoActual = paso;
-
   document.getElementById('panel-'+pasoActual).classList.add('active');
-  var stepEl = document.getElementById('ws-'+pasoActual);
-  stepEl.classList.add('active');
-
-  // Marcar pasos completados
-  for (var i=1; i<pasoActual; i++) {
+  document.getElementById('ws-'+pasoActual).classList.add('active');
+  for (var i = 1; i < pasoActual; i++) {
     document.getElementById('ws-'+i).classList.add('done');
     document.getElementById('ws-'+i).classList.remove('active');
   }
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
 }
 
 function calcularAportes() {
   var salario = parseFloat(document.getElementById('salario').value) || 0;
-  if (!salario) { document.getElementById('resumen-aportes').textContent = 'Ingresa el salario en el paso anterior.'; return; }
-  var fmt = function(n){ return '$'+Math.round(n).toLocaleString('es-CO'); };
-  document.getElementById('resumen-aportes').innerHTML =
-    'Salud empleado (4%): <b>'+fmt(salario*0.04)+'</b> · ' +
-    'Pensión empleado (4%): <b>'+fmt(salario*0.04)+'</b> · ' +
-    'Salud empresa (8.5%): <b>'+fmt(salario*0.085)+'</b> · ' +
-    'Pensión empresa (12%): <b>'+fmt(salario*0.12)+'</b> · ' +
-    'ARL (1.044%): <b>'+fmt(salario*0.01044)+'</b> · ' +
-    'Caja (4%): <b>'+fmt(salario*0.04)+'</b>';
+  var fmt = function(n) { return '$' + Math.round(n).toLocaleString('es-CO'); };
+  document.getElementById('resumen-aportes').innerHTML = salario
+    ? 'Salud emp. (4%): <b>'+fmt(salario*0.04)+'</b> · Pensión emp. (4%): <b>'+fmt(salario*0.04)+'</b> · '+
+      'Salud emp. (8.5%): <b>'+fmt(salario*0.085)+'</b> · Pensión emp. (12%): <b>'+fmt(salario*0.12)+'</b> · '+
+      'ARL (1.044%): <b>'+fmt(salario*0.01044)+'</b> · Caja (4%): <b>'+fmt(salario*0.04)+'</b>'
+    : 'Ingresa el salario en el paso anterior.';
 }
 
 function previewFoto(input) {
@@ -547,18 +503,118 @@ function previewFoto(input) {
   reader.readAsDataURL(input.files[0]);
 }
 
+// ── Guardar en Supabase ──────────────────────────────────────────
+function mostrarMsg(tipo, texto) {
+  var el = document.getElementById('msg-guardado');
+  el.className = 'alert alert-' + tipo;
+  el.textContent = texto;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function val(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
 function guardarEmpleado() {
   if (!document.getElementById('acepta-clausula').checked) {
     alert('Debes confirmar que el empleado fue informado sobre la cláusula de confidencialidad.');
     return;
   }
-  var cedula = document.getElementById('cedula').value.trim();
-  var nombres = document.getElementById('nombres').value.trim();
-  var apellidos = document.getElementById('apellidos').value.trim();
 
-  // Simulación de guardado
-  alert('✅ Empleado '+nombres+' '+apellidos+' ('+cedula+') creado exitosamente.\n\nSe enviará el link de activación al correo registrado.');
-  window.location.href = '/pages/sabana.html';
+  var btn = document.getElementById('btn-guardar');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  var cedula    = val('cedula').replace(/[.\s]/g, '');
+  var nombres   = val('nombres');
+  var apellidos = val('apellidos');
+  var emailCorp = val('email-corp');
+  var password  = val('acc-pass');
+  var rol       = val('acc-rol');
+
+  // 1. Insertar en empleados
+  var empleadoData = {
+    cedula:        cedula,
+    nombres:       nombres,
+    apellidos:     apellidos,
+    email_corp:    emailCorp,
+    email_pers:    val('email-pers') || null,
+    telefono:      val('telefono')   || null,
+    celular:       val('telefono')   || null,
+    fecha_nac:     val('fecha-nac')  || null,
+    genero:        val('genero')     || null,
+    estado_civil:  val('estado-civil') || null,
+    direccion:     val('direccion')  || null,
+    ciudad:        val('ciudad')     || null,
+    cargo:         val('cargo'),
+    departamento:  val('departamento'),
+    sede:          val('sede'),
+    tipo_contrato: val('tipo-contrato'),
+    fecha_ingreso: val('fecha-ingreso') || null,
+    estado:        'activo',
+    salario:       parseFloat(document.getElementById('salario').value) || null,
+    banco:         val('banco')      || null,
+    cuenta_banco:  val('num-cuenta') || null,
+    tipo_cuenta:   val('tipo-cuenta')|| null,
+    eps:           val('eps')        || null,
+    fondo_pension: val('pension')    || null,
+    arl:           val('arl')        || null,
+    caja_comp:     val('caja')       || null,
+    educacion:     val('nivel-edu')  || null,
+    contacto_emergencia_nombre:     val('contacto-emerg-nombre') || null,
+    contacto_emergencia_tel:        val('contacto-emerg-tel')    || null,
+    contacto_emergencia_parentesco: val('contacto-emerg-parentesco') || null
+  };
+
+  Auth.db.insert('empleados', empleadoData)
+  .then(function(empRows) {
+    if (!empRows || empRows.length === 0 || empRows.error) {
+      var detalle = empRows && empRows.message ? empRows.message : 'Error desconocido';
+      throw new Error('Error al crear empleado: ' + detalle);
+    }
+    var nuevoEmp = empRows[0];
+
+    // 2. Crear usuario del sistema
+    var usuarioData = {
+      empleado_id:   nuevoEmp.id,
+      cedula:        cedula,
+      email:         emailCorp,
+      password_hash: '$demo$' + password,
+      rol:           rol,
+      activo:        true,
+      primer_acceso: true
+    };
+
+    return Auth.db.insert('usuarios_sistema', usuarioData)
+    .then(function(usuRows) {
+      if (!usuRows || usuRows.error) {
+        var detalle = usuRows && usuRows.message ? usuRows.message : 'Error desconocido';
+        throw new Error('Empleado creado pero error en usuario: ' + detalle);
+      }
+
+      // 3. Log auditoría
+      Auth.db.insert('auditoria_log', {
+        usuario_id:  session.id,
+        accion:      'create',
+        tabla:       'empleados',
+        registro_id: nuevoEmp.id,
+        descripcion: 'Nuevo empleado: ' + nombres + ' ' + apellidos + ' (' + cedula + ')'
+      }).catch(function() {});
+
+      mostrarMsg('success', '✅ Empleado ' + nombres + ' ' + apellidos + ' creado exitosamente. Redirigiendo...');
+      setTimeout(function() {
+        window.location.href = '/pages/sabana.html';
+      }, 1800);
+    });
+  })
+  .catch(function(err) {
+    console.error('Error guardando empleado:', err);
+    mostrarMsg('error', '❌ ' + (err.message || 'Error al guardar. Intenta nuevamente.'));
+    btn.disabled = false;
+    btn.textContent = '✅ Crear empleado';
+  });
 }
 </script>
 </body>
