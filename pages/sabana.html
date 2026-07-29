@@ -34,7 +34,7 @@
     <div class="page-header">
       <div>
         <div class="page-title">Sábana general de empleados</div>
-        <div class="page-sub" id="sabana-sub">Todos los empleados activos</div>
+        <div class="page-sub" id="sabana-sub">Cargando...</div>
       </div>
       <div class="btn-group">
         <button class="btn-secondary btn-sm" onclick="exportarExcel()">📊 Excel</button>
@@ -61,7 +61,7 @@
           <div class="field-label">Sede</div>
           <select class="field-input" style="width:120px" onchange="filtrarTabla()" id="f-sede">
             <option value="">Todas</option>
-            <option>Bogotá</option>
+            <option>Bogotá Principal</option>
             <option>Medellín</option>
             <option>Cali</option>
           </select>
@@ -70,76 +70,81 @@
           <div class="field-label">Estado</div>
           <select class="field-input" style="width:110px" onchange="filtrarTabla()" id="f-estado">
             <option value="">Todos</option>
-            <option>Activo</option>
-            <option>Incapacitado</option>
-            <option>Vacaciones</option>
-            <option>Retirado</option>
+            <option value="activo">Activo</option>
+            <option value="incapacitado">Incapacitado</option>
+            <option value="vacaciones">Vacaciones</option>
+            <option value="retirado">Retirado</option>
           </select>
         </div>
         <div class="filter-group">
           <div class="field-label">Contrato</div>
           <select class="field-input" style="width:130px" onchange="filtrarTabla()" id="f-contrato">
             <option value="">Todos</option>
-            <option>Indefinido</option>
-            <option>Término fijo</option>
-            <option>Obra labor</option>
+            <option value="indefinido">Indefinido</option>
+            <option value="fijo">Término fijo</option>
+            <option value="obra">Obra labor</option>
+            <option value="aprendizaje">Aprendizaje</option>
+            <option value="prestacion">Prestación</option>
           </select>
         </div>
         <button class="btn-secondary btn-sm" onclick="limpiarFiltros()" style="align-self:flex-end">🔄 Limpiar</button>
       </div>
     </div>
 
-    <!-- Métricas rápidas -->
+    <!-- Métricas -->
     <div class="metrics-grid" style="margin-bottom:12px">
       <div class="metric-card">
         <div class="metric-label">Total empleados</div>
-        <div class="metric-value" style="color:#0078d4" id="m-total">38</div>
+        <div class="metric-value" style="color:#0078d4" id="m-total">—</div>
         <div class="metric-sub">activos en IIT</div>
       </div>
       <div class="metric-card">
-        <div class="metric-label">Nuevos 2026</div>
-        <div class="metric-value" style="color:#107c10">5</div>
-        <div class="metric-sub">ingresos año</div>
+        <div class="metric-label">Indefinido</div>
+        <div class="metric-value" style="color:#107c10" id="m-indefinido">—</div>
+        <div class="metric-sub">contratos</div>
       </div>
       <div class="metric-card">
-        <div class="metric-label">Incapacitados</div>
-        <div class="metric-value" style="color:#c50f1f">2</div>
-        <div class="metric-sub">hoy</div>
+        <div class="metric-label">Término fijo</div>
+        <div class="metric-value" style="color:#797600" id="m-fijo">—</div>
+        <div class="metric-sub">contratos</div>
       </div>
       <div class="metric-card">
-        <div class="metric-label">En vacaciones</div>
-        <div class="metric-value" style="color:#797600">3</div>
-        <div class="metric-sub">hoy</div>
+        <div class="metric-label">Retirados</div>
+        <div class="metric-value" style="color:#c50f1f" id="m-retirado">—</div>
+        <div class="metric-sub">total histórico</div>
       </div>
       <div class="metric-card">
-        <div class="metric-label">Perfil completo</div>
-        <div class="metric-value" style="color:#0078d4">72%</div>
-        <div class="metric-sub">datos cargados</div>
+        <div class="metric-label">Nómina estimada</div>
+        <div class="metric-value" style="color:#0078d4;font-size:18px" id="m-nomina">—</div>
+        <div class="metric-sub">salarios activos</div>
       </div>
     </div>
 
-    <!-- Tabla sábana -->
-    <div class="table-wrap">
+    <!-- Loading / Error -->
+    <div id="loading-msg" class="alert alert-info">⏳ Cargando empleados desde la base de datos...</div>
+    <div id="error-msg" class="alert alert-error" style="display:none"></div>
+
+    <!-- Tabla -->
+    <div class="table-wrap" id="tabla-wrap" style="display:none">
       <table id="sabana-table">
         <thead>
           <tr>
-            <th style="width:200px">Empleado</th>
+            <th style="width:210px">Empleado</th>
             <th style="width:110px">Cédula</th>
-            <th style="width:130px">Cargo</th>
-            <th style="width:100px">Departamento</th>
-            <th style="width:80px">Sede</th>
-            <th style="width:85px">Ingreso</th>
-            <th style="width:100px">Salario</th>
-            <th style="width:90px">Contrato</th>
-            <th style="width:70px">Vacac.</th>
-            <th style="width:60px">Estado</th>
+            <th style="width:140px">Cargo</th>
+            <th style="width:110px">Departamento</th>
+            <th style="width:90px">Sede</th>
+            <th style="width:90px">Ingreso</th>
+            <th style="width:110px">Salario</th>
+            <th style="width:100px">Contrato</th>
+            <th style="width:70px">Estado</th>
             <th style="width:50px">Ver</th>
           </tr>
         </thead>
         <tbody id="sabana-tbody"></tbody>
       </table>
       <div class="pagination">
-        <span id="pag-info">Mostrando 1–10 de 38 empleados</span>
+        <span id="pag-info"></span>
         <div class="page-btns" id="pag-btns"></div>
       </div>
     </div>
@@ -156,6 +161,7 @@
     </div>
     <div class="modal-body" id="modal-body"></div>
     <div class="modal-footer">
+      <a id="modal-link-perfil" href="#" class="btn-primary btn-sm">👤 Ver perfil completo</a>
       <button class="btn-secondary" onclick="cerrarModal()">Cerrar</button>
     </div>
   </div>
@@ -164,128 +170,178 @@
 <script src="/js/auth.js"></script>
 <script>
 var session = Auth.requireAuth();
-if (session) Sidebar.inject('sabana.html');
-if (session) {
-  Auth.renderUserBar(session);
-  if (!Auth.isAdmin()) {
-    document.querySelector('.main-content').innerHTML =
-      '<div class="alert alert-error" style="margin:40px">⛔ Solo administradores pueden ver la sábana general.</div>';
-  }
+Sidebar.render('main-sidebar', session);
+Auth.renderUserBar(session);
+
+if (!Auth.isAdmin()) {
+  document.querySelector('.main-content').innerHTML =
+    '<div class="alert alert-error" style="margin:40px">⛔ Solo administradores pueden ver la sábana general.</div>';
 }
 
-// Datos demo
-var EMPLEADOS = [
-  { id:1, nombres:'Carlos Andrés', apellidos:'Rodríguez Gómez', cedula:'1.234.567.890', cargo:'Téc. Eléctrico', depto:'Instalaciones', sede:'Bogotá', ingreso:'15/03/2022', salario:2800000, contrato:'Indefinido', vacaciones:12, estado:'Activo' },
-  { id:2, nombres:'María Fernanda', apellidos:'López Castillo', cedula:'52.456.789', cargo:'Coordinadora', depto:'Administración', sede:'Bogotá', ingreso:'02/01/2020', salario:4500000, contrato:'Indefinido', vacaciones:15, estado:'Activo' },
-  { id:3, nombres:'Jorge Alberto', apellidos:'Martínez Ruiz', cedula:'79.234.567', cargo:'Ing. Proyectos', depto:'Instalaciones', sede:'Medellín', ingreso:'10/06/2021', salario:5200000, contrato:'Indefinido', vacaciones:6, estado:'Activo' },
-  { id:4, nombres:'Andrea Patricia', apellidos:'Parra Vargas', cedula:'1.098.765.432', cargo:'Asistente RRHH', depto:'RRHH', sede:'Bogotá', ingreso:'15/02/2024', salario:2200000, contrato:'Término fijo', vacaciones:15, estado:'Activo' },
-  { id:5, nombres:'Luis Fernando', apellidos:'García Mora', cedula:'80.123.456', cargo:'Téc. Solar', depto:'Instalaciones', sede:'Cali', ingreso:'03/03/2022', salario:2600000, contrato:'Indefinido', vacaciones:3, estado:'Incapacitado' },
-  { id:6, nombres:'Diana Carolina', apellidos:'Herrera Díaz', cedula:'1.020.345.678', cargo:'Asesor Comercial', depto:'Comercial', sede:'Bogotá', ingreso:'01/08/2023', salario:3100000, contrato:'Indefinido', vacaciones:10, estado:'Activo' },
-  { id:7, nombres:'Ricardo Alejandro', apellidos:'Mora Peña', cedula:'79.876.543', cargo:'Téc. Redes', depto:'Tecnología', sede:'Bogotá', ingreso:'15/11/2022', salario:2900000, contrato:'Indefinido', vacaciones:8, estado:'Vacaciones' },
-  { id:8, nombres:'Sandra Milena', apellidos:'Castro Reyes', cedula:'52.789.012', cargo:'Administradora', depto:'Administración', sede:'Medellín', ingreso:'05/04/2021', salario:3800000, contrato:'Indefinido', vacaciones:12, estado:'Activo' }
-];
-
+var TODOS      = [];
+var filtrados  = [];
 var paginaActual = 1;
-var porPagina   = 10;
-var filtrados   = EMPLEADOS.slice();
+var porPagina    = 15;
 
-var colores = ['#0078d4','#107c10','#797600','#c50f1f','#8764b8','#038387','#ca5010'];
+var colores = ['#0078d4','#107c10','#797600','#8764b8','#038387','#ca5010','#c50f1f'];
 
 function iniciales(emp) {
-  return (emp.nombres[0] + emp.apellidos[0]).toUpperCase();
+  var n = (emp.nombres  || '').trim().charAt(0).toUpperCase();
+  var a = (emp.apellidos|| '').trim().charAt(0).toUpperCase();
+  return n + a || '??';
 }
 
-function colorAvatar(id) {
-  return colores[(id-1) % colores.length];
+function colorAvatar(cedula) {
+  var sum = 0;
+  for (var i = 0; i < cedula.length; i++) sum += cedula.charCodeAt(i);
+  return colores[sum % colores.length];
 }
 
 function badgeEstado(e) {
-  var map = { 'Activo':'badge-ok','Incapacitado':'badge-danger','Vacaciones':'badge-warn','Retirado':'badge-muted' };
-  return '<span class="badge '+(map[e]||'badge-muted')+'">'+e+'</span>';
+  var map = { activo:'badge-ok', incapacitado:'badge-danger', vacaciones:'badge-warn', retirado:'badge-muted', licencia:'badge-warn' };
+  var label = e.charAt(0).toUpperCase() + e.slice(1);
+  return '<span class="badge '+(map[e]||'badge-muted')+'">'+label+'</span>';
+}
+
+function fmtFecha(f) {
+  if (!f) return '—';
+  var d = new Date(f);
+  return d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear();
+}
+
+function fmtSalario(s) {
+  if (!s) return '—';
+  return '$'+Math.round(s).toLocaleString('es-CO');
+}
+
+function cargarEmpleados() {
+  Auth.db.query('empleados', {}, 
+    'id,cedula,nombres,apellidos,cargo,departamento,sede,fecha_ingreso,salario,tipo_contrato,estado,email_corp',
+    'apellidos.asc', 500)
+  .then(function(rows) {
+    document.getElementById('loading-msg').style.display = 'none';
+
+    if (!rows || rows.error) {
+      document.getElementById('error-msg').textContent = '❌ Error al cargar: ' + (rows && rows.message ? rows.message : 'Sin respuesta');
+      document.getElementById('error-msg').style.display = 'block';
+      return;
+    }
+
+    TODOS     = rows;
+    filtrados = rows.slice();
+    actualizarMetricas(rows);
+    document.getElementById('tabla-wrap').style.display = 'block';
+    document.getElementById('sabana-sub').textContent = rows.length + ' empleados registrados';
+    renderTabla();
+  })
+  .catch(function(err) {
+    document.getElementById('loading-msg').style.display = 'none';
+    document.getElementById('error-msg').textContent = '❌ Error de conexión: ' + err.message;
+    document.getElementById('error-msg').style.display = 'block';
+  });
+}
+
+function actualizarMetricas(rows) {
+  var activos    = rows.filter(function(e){ return e.estado === 'activo'; });
+  var indefinido = rows.filter(function(e){ return e.tipo_contrato === 'indefinido'; });
+  var fijo       = rows.filter(function(e){ return e.tipo_contrato === 'fijo'; });
+  var retirado   = rows.filter(function(e){ return e.estado === 'retirado'; });
+  var nomina     = activos.reduce(function(acc, e){ return acc + (parseFloat(e.salario)||0); }, 0);
+
+  document.getElementById('m-total').textContent    = activos.length;
+  document.getElementById('m-indefinido').textContent = indefinido.length;
+  document.getElementById('m-fijo').textContent     = fijo.length;
+  document.getElementById('m-retirado').textContent = retirado.length;
+  document.getElementById('m-nomina').textContent   = '$' + Math.round(nomina).toLocaleString('es-CO');
 }
 
 function renderTabla() {
   var tbody = document.getElementById('sabana-tbody');
-  var start = (paginaActual-1)*porPagina;
-  var page  = filtrados.slice(start, start+porPagina);
+  var start = (paginaActual - 1) * porPagina;
+  var page  = filtrados.slice(start, start + porPagina);
 
-  tbody.innerHTML = page.map(function(e) {
-    return '<tr>' +
-      '<td><div class="cell-avatar">' +
-        '<div class="avatar" style="background:'+colorAvatar(e.id)+'">'+iniciales(e)+'</div>' +
-        '<div><div class="cell-name">'+e.nombres+' '+e.apellidos+'</div></div>' +
-      '</div></td>' +
-      '<td style="font-size:12px;color:#605e5c">'+e.cedula+'</td>' +
-      '<td>'+e.cargo+'</td>' +
-      '<td>'+e.depto+'</td>' +
-      '<td>'+e.sede+'</td>' +
-      '<td style="font-size:12px;color:#605e5c">'+e.ingreso+'</td>' +
-      '<td style="font-weight:500">$'+e.salario.toLocaleString('es-CO')+'</td>' +
-      '<td><span class="badge badge-muted">'+e.contrato+'</span></td>' +
-      '<td style="color:'+(e.vacaciones>=10?'#107c10':'#c50f1f');'font-weight:500">'+e.vacaciones+' días</td>' +
-      '<td>'+badgeEstado(e.estado)+'</td>' +
-      '<td><button class="btn-secondary btn-sm btn-icon" onclick="verEmpleado('+e.id+')" title="Ver detalle">👁</button></td>' +
-    '</tr>';
-  }).join('');
+  if (page.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:#605e5c">No se encontraron empleados con los filtros aplicados.</td></tr>';
+  } else {
+    tbody.innerHTML = page.map(function(e) {
+      return '<tr>' +
+        '<td><div class="cell-avatar">' +
+          '<div class="avatar" style="background:'+colorAvatar(e.cedula||'')+'">'+iniciales(e)+'</div>' +
+          '<div><div class="cell-name">'+(e.nombres||'')+' '+(e.apellidos||'')+'</div>' +
+          '<div style="font-size:11px;color:#605e5c">'+(e.email_corp||'')+'</div></div>' +
+        '</div></td>' +
+        '<td style="font-size:12px;color:#605e5c">'+(e.cedula||'—')+'</td>' +
+        '<td>'+(e.cargo||'—')+'</td>' +
+        '<td>'+(e.departamento||'—')+'</td>' +
+        '<td>'+(e.sede||'—')+'</td>' +
+        '<td style="font-size:12px;color:#605e5c">'+fmtFecha(e.fecha_ingreso)+'</td>' +
+        '<td style="font-weight:500">'+fmtSalario(e.salario)+'</td>' +
+        '<td><span class="badge badge-muted">'+(e.tipo_contrato||'—')+'</span></td>' +
+        '<td>'+badgeEstado(e.estado||'activo')+'</td>' +
+        '<td><button class="btn-secondary btn-sm btn-icon" onclick="verEmpleado(\''+e.id+'\')" title="Ver detalle">👁</button></td>' +
+      '</tr>';
+    }).join('');
+  }
 
   document.getElementById('pag-info').textContent =
+    filtrados.length === 0 ? 'Sin resultados' :
     'Mostrando '+(start+1)+'–'+Math.min(start+porPagina, filtrados.length)+' de '+filtrados.length+' empleados';
 
   var btns = document.getElementById('pag-btns');
-  var totalPags = Math.ceil(filtrados.length/porPagina);
+  var total = Math.ceil(filtrados.length / porPagina);
   btns.innerHTML = '';
-  for (var i=1; i<=totalPags; i++) {
-    btns.innerHTML += '<button class="page-btn'+(i===paginaActual?' active':'')+'" onclick="irPagina('+i+')">'+i+'</button>';
+  for (var i = 1; i <= total; i++) {
+    btns.innerHTML += '<button class="page-btn'+(i===paginaActual?' active':'')+('" onclick="irPagina('+i+')">'+i+'</button>');
   }
-  document.getElementById('m-total').textContent = filtrados.length;
 }
 
 function irPagina(p) { paginaActual = p; renderTabla(); }
 
 function filtrarTabla() {
-  var txt  = (document.getElementById('search-input').value||'').toLowerCase();
-  var dep  = document.getElementById('f-depto').value;
-  var sed  = document.getElementById('f-sede').value;
-  var est  = document.getElementById('f-estado').value;
-  var con  = document.getElementById('f-contrato').value;
+  var txt = (document.getElementById('search-input').value||'').toLowerCase();
+  var dep = document.getElementById('f-depto').value.toLowerCase();
+  var sed = document.getElementById('f-sede').value.toLowerCase();
+  var est = document.getElementById('f-estado').value.toLowerCase();
+  var con = document.getElementById('f-contrato').value.toLowerCase();
 
-  filtrados = EMPLEADOS.filter(function(e) {
-    var matchTxt = !txt || (e.nombres+' '+e.apellidos+' '+e.cedula).toLowerCase().includes(txt);
-    var matchDep = !dep || e.depto === dep;
-    var matchSed = !sed || e.sede === sed;
-    var matchEst = !est || e.estado === est;
-    var matchCon = !con || e.contrato === con;
-    return matchTxt && matchDep && matchSed && matchEst && matchCon;
+  filtrados = TODOS.filter(function(e) {
+    var nombre = ((e.nombres||'')+' '+(e.apellidos||'')+' '+(e.cedula||'')).toLowerCase();
+    return (!txt || nombre.includes(txt)) &&
+           (!dep || (e.departamento||'').toLowerCase() === dep) &&
+           (!sed || (e.sede||'').toLowerCase().includes(sed.split(' ')[0])) &&
+           (!est || (e.estado||'').toLowerCase() === est) &&
+           (!con || (e.tipo_contrato||'').toLowerCase() === con);
   });
   paginaActual = 1;
   renderTabla();
+  document.getElementById('m-total').textContent = filtrados.filter(function(e){ return e.estado==='activo'; }).length;
 }
 
 function limpiarFiltros() {
   document.getElementById('search-input').value = '';
-  document.getElementById('f-depto').value = '';
-  document.getElementById('f-sede').value  = '';
-  document.getElementById('f-estado').value = '';
-  document.getElementById('f-contrato').value = '';
-  filtrados = EMPLEADOS.slice();
+  ['f-depto','f-sede','f-estado','f-contrato'].forEach(function(id){ document.getElementById(id).value = ''; });
+  filtrados = TODOS.slice();
   paginaActual = 1;
+  actualizarMetricas(TODOS);
   renderTabla();
 }
 
 function verEmpleado(id) {
-  var e = EMPLEADOS.find(function(x){return x.id===id;});
+  var e = TODOS.find(function(x){ return x.id === id; });
   if (!e) return;
-  document.getElementById('modal-title').textContent = e.nombres+' '+e.apellidos;
+  document.getElementById('modal-title').textContent = (e.nombres||'')+' '+(e.apellidos||'');
+  document.getElementById('modal-link-perfil').href = '/pages/mi-perfil.html?cedula='+(e.cedula||'');
   document.getElementById('modal-body').innerHTML =
     '<div class="form-grid">' +
-      '<div class="field-group"><div class="field-label">Cédula</div><div>'+e.cedula+'</div></div>' +
-      '<div class="field-group"><div class="field-label">Cargo</div><div>'+e.cargo+'</div></div>' +
-      '<div class="field-group"><div class="field-label">Departamento</div><div>'+e.depto+'</div></div>' +
-      '<div class="field-group"><div class="field-label">Sede</div><div>'+e.sede+'</div></div>' +
-      '<div class="field-group"><div class="field-label">Fecha ingreso</div><div>'+e.ingreso+'</div></div>' +
-      '<div class="field-group"><div class="field-label">Salario</div><div>$'+e.salario.toLocaleString('es-CO')+'</div></div>' +
-      '<div class="field-group"><div class="field-label">Contrato</div><div>'+e.contrato+'</div></div>' +
-      '<div class="field-group"><div class="field-label">Estado</div><div>'+badgeEstado(e.estado)+'</div></div>' +
+      '<div class="field-group"><div class="field-label">Cédula</div><div>'+(e.cedula||'—')+'</div></div>' +
+      '<div class="field-group"><div class="field-label">Cargo</div><div>'+(e.cargo||'—')+'</div></div>' +
+      '<div class="field-group"><div class="field-label">Departamento</div><div>'+(e.departamento||'—')+'</div></div>' +
+      '<div class="field-group"><div class="field-label">Sede</div><div>'+(e.sede||'—')+'</div></div>' +
+      '<div class="field-group"><div class="field-label">Fecha ingreso</div><div>'+fmtFecha(e.fecha_ingreso)+'</div></div>' +
+      '<div class="field-group"><div class="field-label">Salario</div><div>'+fmtSalario(e.salario)+'</div></div>' +
+      '<div class="field-group"><div class="field-label">Contrato</div><div>'+(e.tipo_contrato||'—')+'</div></div>' +
+      '<div class="field-group"><div class="field-label">Estado</div><div>'+badgeEstado(e.estado||'activo')+'</div></div>' +
+      '<div class="field-group span-2"><div class="field-label">Email corporativo</div><div>'+(e.email_corp||'—')+'</div></div>' +
     '</div>';
   document.getElementById('modal-emp').classList.remove('hidden');
 }
@@ -295,14 +351,26 @@ function cerrarModal() {
 }
 
 function exportarExcel() {
-  alert('Exportación a Excel — disponible con conexión a base de datos');
+  if (!TODOS.length) { alert('No hay datos para exportar.'); return; }
+  var cols = ['Cédula','Nombres','Apellidos','Cargo','Departamento','Sede','Ingreso','Salario','Contrato','Estado'];
+  var rows = filtrados.map(function(e) {
+    return [e.cedula,e.nombres,e.apellidos,e.cargo,e.departamento,e.sede,
+            fmtFecha(e.fecha_ingreso),e.salario,e.tipo_contrato,e.estado].join('\t');
+  });
+  var tsv  = [cols.join('\t')].concat(rows).join('\n');
+  var blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href   = url; a.download = 'sabana-empleados.tsv'; a.click();
+  URL.revokeObjectURL(url);
 }
 
 function exportarPDF() {
-  alert('Exportación a PDF — disponible con conexión a base de datos');
+  window.print();
 }
 
-renderTabla();
+// Iniciar
+cargarEmpleados();
 </script>
 </body>
 </html>
