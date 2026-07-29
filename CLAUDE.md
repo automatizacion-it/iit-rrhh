@@ -1,18 +1,19 @@
 # CLAUDE.md — IIT RRHH · Sistema de Recursos Humanos
 > Archivo de continuidad para sesiones Claude. Actualizar con cada cambio significativo.
-> Última actualización: 2026-07-28 · v2.3
+> Última actualización: 2026-07-28 · v2.4
 
 ---
 
 ## 1. Descripción del proyecto
 
-Sistema de Recursos Humanos web para InfraestructuraIT (IIT), construido en **vanilla HTML/CSS/JS sin frameworks**, desplegado en **Azure Static Web Apps** con **Supabase** como backend (PostgreSQL + REST API).
+Sistema de Recursos Humanos web para InfraestructuraIT (IIT), construido en **vanilla HTML/CSS/JS sin frameworks**, desplegado en **GitHub Pages** con dominio personalizado y **Supabase** como backend (PostgreSQL + REST API).
 
-- **Producción:** https://wonderful-island-0960e8a10.7.azurestaticapps.net/
+- **Producción:** https://rrhh.infraestructura-it.com
+- **GitHub Pages:** https://automatizacion-it.github.io/iit-rrhh/
 - **Repo:** https://github.com/automatizacion-it/iit-rrhh
 - **Local:** `C:\Users\User01\OneDrive\2026-proyectos\iit-rrhh`
 - **Rama principal:** `main`
-- **Versión actual:** v2.3
+- **Versión actual:** v2.4
 - **Carpeta de descargas:** `C:\Descargas`
 
 ---
@@ -25,69 +26,65 @@ Sistema de Recursos Humanos web para InfraestructuraIT (IIT), construido en **va
 | Estilos | CSS custom properties en `css/styles.css` (tema Fluent Design) |
 | Auth | `js/auth.js` v2.0 — Supabase REST, hash demo `$demo$password` |
 | Navegación | `js/sidebar.js` — sidebar con secciones desplegables, roles dinámicos |
-| Hosting | Azure Static Web Apps (Free tier) |
-| CI/CD | GitHub Actions — deploy automático en push a `main` |
+| Hosting | **GitHub Pages** (gratuito, deploy automático desde `main`) |
+| DNS | **Cloudflare** — CNAME `rrhh` → `automatizacion-it.github.io` |
+| HTTPS | GitHub Pages + Cloudflare (enforce HTTPS activo) |
 | Base de datos | Supabase PostgreSQL |
 | Autenticación | Tabla propia `usuarios_sistema` (NO Supabase Auth) |
 
 ---
 
-## 3. Infraestructura Azure Static Web Apps
+## 3. Infraestructura GitHub Pages
 
-### Datos del recurso
+### Configuración
 
 | Campo | Valor |
 |-------|-------|
-| Nombre del recurso | `wonderful-island-0960e8a10` |
-| URL de producción | https://wonderful-island-0960e8a10.7.azurestaticapps.net/ |
-| Plan | Free |
-| Node.js | 18 (definido en `.nvmrc`) |
+| Repo | `automatizacion-it/iit-rrhh` |
+| Source | `Deploy from a branch` |
+| Branch | `main` → `/ (root)` |
+| Custom domain | `rrhh.infraestructura-it.com` |
+| HTTPS | Enforce HTTPS ✅ |
+| Node.js | 18 (`.nvmrc`) |
 
-### GitHub Actions — workflow de deploy
+### Archivos requeridos en raíz del repo
 
-**Archivo:** `.github/workflows/azure-static-web-apps-wonderful-island-0960e8a10.yml`
+| Archivo | Propósito |
+|---------|-----------|
+| `CNAME` | Contiene `rrhh.infraestructura-it.com` — indica el dominio personalizado |
+| `.nojekyll` | Desactiva el procesador Jekyll de GitHub Pages |
+| `404.html` | SPA fallback — redirige rutas no encontradas a `index.html` |
 
-- **Trigger:** push a `main` o PR abierto/actualizado/cerrado contra `main`
-- **Runner:** `ubuntu-latest`
-- **Action:** `Azure/static-web-apps-deploy@v1`
-- **`app_location`:** `/` (raíz del repo)
-- **`api_location`:** vacío (no hay Azure Functions)
-- **`output_location`:** vacío (sin build step — sitio estático puro)
-- **`skip_app_build`:** `true` — no hay paso de compilación
-- **Secret:** `AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_ISLAND_0960E8A10` (GitHub → Settings → Secrets)
-- **Tiempo de deploy:** ~1 minuto tras el push
+### DNS Cloudflare
 
-### staticwebapp.config.json
+| Tipo | Nombre | Contenido | Proxy |
+|------|--------|-----------|-------|
+| `CNAME` | `rrhh` | `automatizacion-it.github.io` | ☁️ DNS only |
+| `TXT` | `_github-pages-challenge-automatizacion-it.rrhh` | `[código de verificación]` | DNS only |
 
-```json
-{
-  "routes": [
-    { "route": "/pages/*", "allowedRoles": ["anonymous"] },
-    { "route": "/",        "rewrite": "/index.html" }
-  ],
-  "responseOverrides": {
-    "404": { "rewrite": "/index.html" }
-  },
-  "globalHeaders": {
-    "Cache-Control": "no-cache"
-  }
-}
-```
+> ⚠️ El CNAME debe ser **DNS only** (nube gris) — NO proxied. GitHub Pages necesita verificar el dominio directamente.
 
-- Rutas `/pages/*` públicas — auth manejada en JS cliente
-- 404 redirige a `index.html` (SPA fallback)
-- `no-cache` global para reflejar cambios inmediatamente
-
-### Comando de deploy
+### Deploy
 
 ```powershell
 cd C:\Users\User01\OneDrive\2026-proyectos\iit-rrhh
+
 Copy-Item "C:\Descargas\archivo.ext" "ruta\destino\archivo.ext" -Force
+
 git add -A
 git commit -m "feat: descripción - closes #N"
 git push
-# Azure SWA despliega en ~1 min
+# GitHub Pages despliega en ~30 segundos tras el push a main
 ```
+
+> Verificar en https://rrhh.infraestructura-it.com
+
+### Migración desde Azure SWA
+
+- ❌ **Azure Static Web Apps** — ya no se usa (era `wonderful-island-0960e8a10.7.azurestaticapps.net`)
+- ✅ **GitHub Pages** — activo desde 2026-07-28
+- El archivo `staticwebapp.config.json` puede eliminarse del repo en una limpieza futura
+- El workflow `.github/workflows/azure-static-web-apps-*.yml` puede eliminarse también
 
 ---
 
@@ -106,14 +103,14 @@ git push
 
 ## 5. Base de datos — SQLs en repositorio
 
-> **Los scripts SQL están en `database/`** — ver `database/README.md` para instrucciones de ejecución.
+> Los scripts SQL están en `database/` — ver `database/README.md` para instrucciones.
 
-### Orden de ejecución y estado
+### Estado de ejecución
 
 | # | Archivo | Tablas creadas | Estado |
 |---|---------|---------------|--------|
 | 1 | `database/01_extensiones_empleados.sql` | `empleados` + fn `set_updated_at()` | ✅ Ejecutado 2026-07-28 |
-| 2 | `database/02_usuarios_sistema.sql` | `usuarios_sistema` + 4 usuarios demo + 1 empleado demo | ✅ Ejecutado 2026-07-28 |
+| 2 | `database/02_usuarios_sistema.sql` | `usuarios_sistema` + datos demo | ✅ Ejecutado 2026-07-28 |
 | 3 | `database/03_modulos_tiempo.sql` | `vacaciones`, `permisos`, `ausencias`, `incapacidades`, `licencias` | ✅ Ejecutado 2026-07-28 |
 | 4 | `database/04_nomina_finanzas.sql` | `nomina_periodos`, `nomina_items`, `horas_extras`, `prestamos` | ✅ Ejecutado 2026-07-28 |
 | 5 | `database/05_sst_seleccion_auditoria.sql` | `arl_accidentes`, `examenes_medicos`, `aspirantes`, `contratos`, `auditoria_log` | ✅ Ejecutado 2026-07-28 |
@@ -135,7 +132,7 @@ git push
 | `usuario@iit.com.co` | `User2026*` | usuario |
 | `c.rodriguez@iit.com.co` | `Emp2026*` | empleado |
 
-### Verificación rápida en SQL Editor
+### Verificación rápida
 
 ```sql
 select 'usuarios_sistema' as tabla, count(*) as registros from usuarios_sistema
@@ -156,7 +153,7 @@ union all select 'auditoria_log', count(*) from auditoria_log;
 | `usuario` | Operativo | `usuario@iit.com.co` / `User2026*` |
 | `empleado` | Solo su info | `c.rodriguez@iit.com.co` / `Emp2026*` |
 
-**Sesión:** `localStorage` clave `iit_rrhh_session`  
+**Sesión:** `localStorage` clave `iit_rrhh_session`
 **Redirect post-login:** `/pages/dashboard.html`
 
 ---
@@ -166,21 +163,23 @@ union all select 'auditoria_log', count(*) from auditoria_log;
 ```
 iit-rrhh/
 ├── CLAUDE.md
+├── CNAME                       # rrhh.infraestructura-it.com
+├── 404.html                    # SPA fallback GitHub Pages
 ├── index.html                  # Login principal
 ├── favicon.svg
-├── .nojekyll
+├── .nojekyll                   # Desactiva Jekyll
 ├── .nvmrc                      # Node 18
-├── staticwebapp.config.json
+├── staticwebapp.config.json    # ← obsoleto, eliminar en limpieza
 ├── .github/
 │   └── workflows/
-│       └── azure-static-web-apps-wonderful-island-0960e8a10.yml
+│       └── azure-static-web-apps-*.yml  # ← obsoleto, eliminar en limpieza
 ├── css/
-│   └── styles.css              # Variables CSS Fluent Design
+│   └── styles.css
 ├── js/
 │   ├── auth.js                 # v2.0 Supabase REST + Auth.db.*
-│   └── sidebar.js              # Menú lateral dinámico por rol
-├── database/                   # ← SQLs de la BD
-│   ├── README.md               # Instrucciones de ejecución
+│   └── sidebar.js
+├── database/
+│   ├── README.md
 │   ├── 01_extensiones_empleados.sql
 │   ├── 02_usuarios_sistema.sql
 │   ├── 03_modulos_tiempo.sql
@@ -241,8 +240,7 @@ Auth.db.update('vacaciones', { id: 'uuid' }, { estado: 'aprobado' });
 Auth.db.delete('aspirantes', { id: 'uuid' });
 ```
 
-**Filtros PostgREST frecuentes:**
-`eq.` igual · `neq.` distinto · `gte.` mayor-igual · `lte.` menor-igual · `ilike.*x*` contiene · `in.(a,b)` en lista
+**Filtros PostgREST:** `eq.` igual · `neq.` distinto · `gte.` mayor-igual · `lte.` menor-igual · `ilike.*x*` contiene · `in.(a,b)` en lista
 
 ---
 
@@ -329,21 +327,23 @@ git push
 |-------|---------|--------|
 | 2026-07-28 | v1.0 | Proyecto inicial — 40 páginas scaffolding, auth demo, Azure SWA live |
 | 2026-07-28 | v2.0 | `auth.js` v2.0 — Supabase REST, reemplaza DEMO_USERS |
-| 2026-07-28 | v2.0 | Supabase: 16 tablas creadas (5 bloques SQL ejecutados), RLS habilitado |
+| 2026-07-28 | v2.0 | Supabase: 16 tablas creadas (5 bloques SQL), RLS habilitado |
 | 2026-07-28 | v2.0 | Datos demo: 4 usuarios + Carlos Rodríguez en `empleados` |
 | 2026-07-28 | v2.0 | Vinculación `empleado_id` en `usuarios_sistema` ejecutada |
 | 2026-07-28 | v2.0 | `nuevo-empleado.html` → INSERT real en `empleados` + `usuarios_sistema` |
 | 2026-07-28 | v2.1 | `sabana.html` → SELECT real, filtros, métricas dinámicas, export TSV |
 | 2026-07-28 | v2.1 | Prueba exitosa: Jairo Sepúlveda (79374699) creado en BD |
-| 2026-07-28 | v2.2 | `CLAUDE.md` — documentación Azure SWA, workflow CI/CD completo |
+| 2026-07-28 | v2.2 | `CLAUDE.md` — documentación Azure SWA y CI/CD completos |
 | 2026-07-28 | v2.3 | Carpeta `database/` con 6 SQLs versionados + `database/README.md` |
+| 2026-07-28 | v2.4 | **Migración Azure SWA → GitHub Pages** con dominio `rrhh.infraestructura-it.com` |
+| 2026-07-28 | v2.4 | DNS Cloudflare: CNAME `rrhh` → `automatizacion-it.github.io` verificado ✅ |
 
 ---
 
 ## 14. Próximos pasos
 
 ### 🔴 Prioridad inmediata
-1. `database/06_tablas_pendientes.sql` — ejecutar en Supabase cuando se implementen esos módulos
+1. Limpiar archivos obsoletos: eliminar `staticwebapp.config.json` y workflow Azure del repo
 2. `dashboard.html` — KPIs reales desde Supabase
 3. `empleados.html` — directorio con cards conectado a Supabase
 4. `mi-perfil.html` — perfil por `?cedula=` desde Supabase
@@ -352,5 +352,6 @@ git push
 5. Módulos de Tiempo — CRUD real (vacaciones, permisos, ausencias)
 6. Nómina 2026 — SMM $1.423.500, aux. transporte $200.000
 7. `asistente-ia.html` — Claude API integrado
-8. Hash bcrypt real via Supabase Edge Function
-9. `usuarios.html` — CRUD de usuarios del sistema
+8. `database/06_tablas_pendientes.sql` — ejecutar en Supabase
+9. Hash bcrypt real via Supabase Edge Function
+10. `usuarios.html` — CRUD de usuarios del sistema
